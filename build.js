@@ -114,6 +114,9 @@ const maxMonthly = Math.max(...allPackages.map((p) => p.monthly));
 
 const F = C.founding || {};
 const foundingOn = F.enabled === true && Number(F.spotsLeft) > 0;
+// Percentage off the setup fee for founding clients (100 = free setup).
+const foundingPct = Math.min(100, Math.max(0, Number(F.setupDiscountPercent ?? 100) || 0));
+const foundingSetup = (setup) => Math.round(setup * (100 - foundingPct) / 100);
 
 const examples = (C.examples || []).filter((e) => {
   if (!isSet(e.name)) { warn('An example has no name, so it was skipped.'); return false; }
@@ -149,6 +152,7 @@ const tokens = {
   fromPrice: month(minMonthly),
   spotsTotal: F.spotsTotal,
   spotsLeft: F.spotsLeft,
+  foundingDiscount: `${foundingPct}%`,
   siteName: site.name,
   domain: site.domain,
   email: contact.email,
@@ -255,7 +259,7 @@ ${opts.compact ? '' : action}
 
 function planCard(p, page, opts = {}) {
   const setup = foundingOn
-    ? `<p class="plan-setup"><s>${rand(p.setup)}</s> <strong>R0 setup</strong> for founding clients</p>`
+    ? `<p class="plan-setup"><s>${rand(p.setup)}</s> <strong>${rand(foundingSetup(p.setup))} setup</strong> for founding clients</p>`
     : `<p class="plan-setup">+ ${rand(p.setup)} once-off setup</p>`;
   const actions = [mockupButton(page, 'btn btn-gold'), `<a class="btn btn-ghost" href="/start">Sign up</a>`].filter(Boolean).join('');
   return `<article class="plan${p.featured ? ' plan-featured' : ''}" id="plan-${esc(p.id)}">

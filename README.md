@@ -57,7 +57,7 @@ If neither WhatsApp nor email is filled in, the mock-up form and every "Free moc
 
 You can use these in any text in `content.json`, and in the privacy, terms and guide pages:
 
-`{fromPrice}` (lowest monthly price, e.g. R399/month) · `{buyout}` · `{extraWorkFrom}` · `{minimumMonths}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{goLive}` · `{spotsTotal}` · `{spotsLeft}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
+`{fromPrice}` (lowest monthly price, e.g. R399/month) · `{buyout}` · `{extraWorkFrom}` · `{minimumMonths}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{goLive}` · `{spotsTotal}` · `{spotsLeft}` · `{foundingDiscount}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
 
 A FAQ item that needs a blank detail can be hidden until it's filled in: add `"requires": ["process.goLive"]`. In the HTML pages, wrap the text in `{{#if contact.email}} … {{/if}}`.
 
@@ -76,11 +76,13 @@ Other money amounts are under `terms`: the buyout price (`buyout`), the starting
 ## Turn the founding-client offer on or off
 
 ```json
-"founding": { "enabled": true, "spotsTotal": 5, "spotsLeft": 5, ... }
+"founding": { "enabled": true, "spotsTotal": 3, "spotsLeft": 3, "setupDiscountPercent": 50, ... }
 ```
 
+- `setupDiscountPercent` is how much founding clients save on the setup fee (50 = half price, 100 = free). The plan cards show the normal fee crossed out next to the founding price.
 - Each time someone signs up as a founding client, lower `spotsLeft` and rebuild.
 - When `spotsLeft` reaches `0`, or `enabled` is `false`, the banner disappears everywhere and the plan cards show the normal setup fee again.
+- Make founding-client PayFast links separately (with the discounted setup fee) and send them on WhatsApp. The Start page tells founding clients to message you first.
 - The wording is in `founding.title`, `founding.text` and `founding.startNote`.
 
 ## Add an example

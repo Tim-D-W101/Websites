@@ -14,16 +14,16 @@
     "summary": "Front Door Sites builds and looks after websites for South African guesthouses, salons and restaurants, on a simple monthly subscription."
   },
   "contact": {
-    "firstName": "TODO: your first name, e.g. Tim",
-    "whatsapp": "TODO: WhatsApp Business number, international format without +, e.g. 27821234567",
+    "firstName": "John",
+    "whatsapp": "27732426068",
     "email": "TODO: business email, e.g. hello@frontdoorsites.co.za",
-    "serviceArea": "TODO: base town or service area, e.g. Pretoria East",
-    "replyHours": "TODO: e.g. Weekdays 17:00–20:00, Sat 08:00–12:00",
+    "serviceArea": "KwaZulu-Natal",
+    "replyHours": "within 24 hours",
     "googleBusinessProfile": "TODO: link to your Google Business Profile (optional)",
     "whatsappGreeting": "Hi {firstName}, I have a question about a website for my business."
   },
   "process": {
-    "goLive": "TODO: typical time from payment + content received to live, e.g. 7 days",
+    "goLive": "5 working days",
     "onboardingForm": "TODO: link to your onboarding form (Tally or Google Form)"
   },
   "terms": {
@@ -37,18 +37,19 @@
   },
   "legal": {
     "_note": "Shown on the Terms and Privacy pages only. ECTA asks online sellers to show these; check with your adviser.",
-    "legalName": "TODO: your full legal name or company name, e.g. Tim Smith trading as Front Door Sites",
-    "registrationNumber": "TODO: company registration number (leave as TODO if you're a sole proprietor)",
+    "legalName": "John Knot trading as Front Door Sites",
+    "registrationNumber": "",
     "noticeAddress": "TODO: postal or physical address for legal notices (Terms page only)",
     "lastUpdated": "2026-10-14"
   },
   "founding": {
     "enabled": true,
-    "spotsTotal": 5,
-    "spotsLeft": 5,
-    "title": "Founding-client offer: no setup fee",
-    "text": "My first {spotsTotal} clients pay no setup fee. In return, you commit to {minimumMonths} months, leave a Google review once you're live, and let me show your site as an example.",
-    "startNote": "Founding client? Don't pay the setup fee. Message me first and I'll send you a payment link for the monthly fee only."
+    "spotsTotal": 3,
+    "spotsLeft": 3,
+    "setupDiscountPercent": 50,
+    "title": "Founding-client offer: half-price setup",
+    "text": "My first {spotsTotal} clients pay {foundingDiscount} less on the setup fee. Same plans, same {minimumMonths}-month minimum, no strings attached. If you're happy with your site, I'd love an honest Google review.",
+    "startNote": "Founding client? You pay {foundingDiscount} less on the setup fee. Message me before you pay and I'll send you the right payment link."
   },
   "home": {
     "seo": {
@@ -508,7 +509,7 @@
         "Changing your opening hours or contact details"
       ],
       "notIncluded": "New pages, new features and redesigns aren't small edits. I quote for those separately, from {extraWorkFrom}, and only start once you've said yes.",
-      "timing": "Edits sent by {editsDeadline} go live by {editsLive}."
+      "timing": "Edits sent by {editsDeadline} go live by {editsLive}. Unused edits don't carry over to the next month."
     }
   },
   "faqPage": {
@@ -528,7 +529,7 @@
     {
       "id": "small-edit",
       "q": "What's a small edit?",
-      "a": "A text, price, photo or hours change. New pages or redesigns are quoted separately, from {extraWorkFrom}. Edits sent by {editsDeadline} go live by {editsLive}."
+      "a": "A text, price, photo or hours change. New pages or redesigns are quoted separately, from {extraWorkFrom}. Edits sent by {editsDeadline} go live by {editsLive}, and unused edits don't carry over to the next month."
     },
     {
       "id": "domain",

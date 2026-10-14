@@ -19,7 +19,11 @@
 
 <h2>Who I am</h2>
 <p>This website belongs to Front Door Sites{{#if legal.legalName}} ({legalName}){{/if}}. Under the Protection of Personal Information Act (POPIA), I’m the “responsible party” for the personal information described on this page, and I’m also the Information Officer.</p>
-<p>You can reach me about anything on this page{{#if contact.email}} by email at <a href="mailto:{email}">{email}</a>{{/if}}{{#if contact.whatsapp}} or on WhatsApp at {whatsapp}{{/if}}.</p>
+<p>You can reach me about anything on this page:</p>
+<ul>
+  {{#if contact.whatsapp}}<li>WhatsApp: {whatsapp}</li>{{/if}}
+  {{#if contact.email}}<li>Email: <a href="mailto:{email}">{email}</a></li>{{/if}}
+</ul>
 
 <h2>Cookies and tracking</h2>
 <p>This website doesn’t set cookies and doesn’t use analytics, advertising pixels or any other tracking. It doesn’t load fonts, scripts or images from other companies: everything comes from this site.</p>
