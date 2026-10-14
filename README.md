@@ -49,6 +49,7 @@ Open `content.json`. Anything that's empty or starts with `TODO` counts as blank
 | `process.goLive` | e.g. `7 days`. Shown on the Start page and in "How fast will it be live?" |
 | `process.onboardingForm` | Your Tally or Google Form link (Start page, step 3) |
 | `niches[].packages[].payfast` | One PayFast link per package (Start page, step 2) |
+| `niches[].packages[].payfastYearly` | One yearly PayFast link per package (Start page, step 2) |
 | `legal.*` | Your legal name, registration number and an address for legal notices (Terms and Privacy pages only) |
 
 If neither WhatsApp nor email is filled in, the mock-up form and every "Free mock-up" button stay hidden, because there would be nowhere to send them.
@@ -57,7 +58,7 @@ If neither WhatsApp nor email is filled in, the mock-up form and every "Free moc
 
 You can use these in any text in `content.json`, and in the privacy, terms and guide pages:
 
-`{fromPrice}` (lowest monthly price, e.g. R399/month) · `{buyout}` · `{extraWorkFrom}` · `{minimumMonths}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{goLive}` · `{spotsTotal}` · `{spotsLeft}` · `{foundingDiscount}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
+`{fromPrice}` (lowest monthly price, e.g. R399/month) · `{buyout}` · `{extraWorkFrom}` · `{minimumMonths}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{goLive}` · `{spotsTotal}` · `{spotsLeft}` · `{foundingDiscount}` · `{yearlyPaysMonths}` · `{yearlyFree}` · `{fromYearly}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
 
 A FAQ item that needs a blank detail can be hidden until it's filled in: add `"requires": ["process.goLive"]`. In the HTML pages, wrap the text in `{{#if contact.email}} … {{/if}}`.
 
@@ -72,6 +73,16 @@ Prices are plain numbers in rand. Find the package in `content.json` under `nich
 Then run `node build.js`. Every page updates: the pricing cards, the calculators, "From R399/month" in the headings and descriptions, the Start page and the search-engine data. Remember to update the matching PayFast link too.
 
 Other money amounts are under `terms`: the buyout price (`buyout`), the starting price for extra work (`extraWorkFrom`), the minimum term and the notice period.
+
+## Yearly payments
+
+```json
+"terms": { ..., "yearlyPaysMonths": 10, ... }
+```
+
+Clients can pay for a year upfront and get 12 months for the price of `yearlyPaysMonths`. With `10`, a R399/month plan costs R3 990 a year (2 months free). Every plan card, the Start page, the FAQ and the Terms show the yearly price automatically. Set it to `0` to switch yearly payments off everywhere.
+
+Add a yearly PayFast link for each package under `payfastYearly`, next to its monthly `payfast` link.
 
 ## Turn the founding-client offer on or off
 

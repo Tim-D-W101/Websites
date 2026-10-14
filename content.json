@@ -29,6 +29,7 @@
   "terms": {
     "minimumMonths": 12,
     "noticeDays": 30,
+    "yearlyPaysMonths": 10,
     "buyout": 3500,
     "extraWorkFrom": 500,
     "editsDeadline": "Thursday",
@@ -226,7 +227,8 @@
             "Google Business Profile set up",
             "2 small edits a month"
           ],
-          "payfast": "TODO: PayFast link for Guesthouse Starter"
+          "payfast": "TODO: PayFast link for Guesthouse Starter",
+          "payfastYearly": "TODO: PayFast link for Guesthouses Starter, paid yearly"
         },
         {
           "id": "guesthouse-direct",
@@ -242,7 +244,8 @@
             "Review link and print-ready QR card",
             "4 small edits a month, plus your seasonal special updated for you"
           ],
-          "payfast": "TODO: PayFast link for Guesthouse Direct Bookings"
+          "payfast": "TODO: PayFast link for Guesthouse Direct Bookings",
+          "payfastYearly": "TODO: PayFast link for Guesthouses Direct Bookings, paid yearly"
         }
       ],
       "faq": [
@@ -321,7 +324,8 @@
             "Your reviews shown on your site",
             "2 small edits a month"
           ],
-          "payfast": "TODO: PayFast link for Beauty Starter"
+          "payfast": "TODO: PayFast link for Beauty Starter",
+          "payfastYearly": "TODO: PayFast link for Salons Starter, paid yearly"
         },
         {
           "id": "beauty-bookings",
@@ -336,7 +340,8 @@
             "Review request QR card",
             "4 small edits a month"
           ],
-          "payfast": "TODO: PayFast link for Beauty Bookings"
+          "payfast": "TODO: PayFast link for Beauty Bookings",
+          "payfastYearly": "TODO: PayFast link for Salons Bookings, paid yearly"
         }
       ],
       "faq": [
@@ -451,7 +456,8 @@
             "Google Business Profile set up",
             "2 small edits a month"
           ],
-          "payfast": "TODO: PayFast link for Restaurant Menu site"
+          "payfast": "TODO: PayFast link for Restaurant Menu site",
+          "payfastYearly": "TODO: PayFast link for Restaurants Menu site, paid yearly"
         },
         {
           "id": "restaurant-tables",
@@ -464,7 +470,8 @@
             "Everything in Menu site, plus:",
             "Table request form, sent to you by WhatsApp or email"
           ],
-          "payfast": "TODO: PayFast link for Restaurant Menu + table requests"
+          "payfast": "TODO: PayFast link for Restaurant Menu + table requests",
+          "payfastYearly": "TODO: PayFast link for Restaurants Menu + table requests, paid yearly"
         }
       ],
       "faq": [
@@ -497,6 +504,12 @@
     "termsSummary": [
       "{minimumMonths}-month minimum, then month-to-month with {noticeDays} days' notice.",
       "Setup fee paid upfront. Monthly fee by card or debit order through PayFast.",
+      {
+        "text": "Prefer to pay once a year? You get 12 months for the price of {yearlyPaysMonths}.",
+        "requires": [
+          "terms.yearlyPaysMonths"
+        ]
+      },
       "All prices are in South African rand."
     ],
     "smallEdit": {
@@ -557,6 +570,14 @@
       "a": "The setup fee is paid upfront. After that, the monthly fee is paid by card or debit order through PayFast, a South African payment provider."
     },
     {
+      "id": "yearly",
+      "q": "Can I pay yearly?",
+      "a": "Yes. Pay for a year upfront and you get 12 months for the price of {yearlyPaysMonths}, so {yearlyFree} free. For example, a {fromPrice} plan costs {fromYearly}.",
+      "requires": [
+        "terms.yearlyPaysMonths"
+      ]
+    },
+    {
       "id": "speed",
       "q": "How fast will it be live?",
       "a": "Usually within {goLive} of your payment and your content (logo, photos, prices and hours) reaching me.",
@@ -600,8 +621,9 @@
       },
       {
         "id": "pay",
-        "title": "Pay the setup fee and set up your monthly payment",
+        "title": "Pay the setup fee and set up your payment",
         "text": "Both go through PayFast, a South African payment provider, by card or debit order. I never see your card details.",
+        "yearlyText": "Prefer to pay once a year? Pay for 12 months upfront and get {yearlyFree} free.",
         "noLinksText": "Message me and I'll send you a secure PayFast payment link for your package."
       },
       {

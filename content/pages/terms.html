@@ -7,6 +7,8 @@
     section 14 lets them end a fixed-term agreement early with 20 business days' notice, subject to a
     reasonable cancellation charge. The clause below is written with that in mind; have it checked.
   - Founding clients: their early-cancellation charge includes the setup discount they received.
+  - Yearly plans: paid upfront, renew each year unless cancelled with notice before the renewal
+    date, and unused months aren't refunded. Check this against the CPA if clients count as consumers.
   - Price increases (no increase in the first 12 months, then notice) and the liability cap
     (fees paid in the last 3 months).
   - ECTA section 43 asks businesses that sell online to show their full name, legal status,
@@ -32,6 +34,7 @@
 <ul>
   <li>The setup fee is paid upfront, before I start building. Founding clients pay a discounted setup fee.</li>
   <li>The monthly fee is paid by card or debit order through PayFast. It starts in the month your site goes live.</li>
+  {{#if terms.yearlyPaysMonths}}<li>You can pay yearly instead: 12 months for the price of {yearlyPaysMonths}, paid upfront through PayFast. Your first year starts when your site goes live.</li>{{/if}}
   <li>All prices are in South African rand.</li>
   <li>I won’t increase your monthly fee during your first {minimumMonths} months. After that, I’ll give you at least {noticeDays} days’ notice of any increase, and you can cancel instead.</li>
 </ul>
@@ -39,7 +42,8 @@
 <h2>Minimum term and cancelling</h2>
 <ul>
   <li>There’s a {minimumMonths}-month minimum, counted from the day your site goes live.</li>
-  <li>After that, your subscription runs month-to-month. You can cancel any time with {noticeDays} days’ notice by WhatsApp or email.</li>
+  <li>After that, monthly plans run month-to-month. You can cancel any time with {noticeDays} days’ notice by WhatsApp or email.</li>
+  {{#if terms.yearlyPaysMonths}}<li>Yearly plans renew for another year unless you tell me at least {noticeDays} days before the renewal date. You can also switch to monthly payments at renewal. Yearly fees cover the whole year and aren’t refunded for unused months.</li>{{/if}}
   <li>If you need to cancel during the first {minimumMonths} months, tell me in writing (WhatsApp or email is fine) and give at least 20 business days’ notice. A reasonable cancellation charge applies. It will never be more than the monthly fees left in your minimum term. For founding clients, it also includes the setup discount you received.</li>
 </ul>
 
@@ -61,7 +65,7 @@
 </ul>
 
 <h2>Failed payments</h2>
-<p>If a monthly payment fails, you’ll get an automatic reminder. If it’s still unpaid {suspendAfterDays} days after the due date, your site shows a “temporarily unavailable” page until the payment comes through. Your site comes back as soon as you’ve paid.</p>
+<p>If a payment fails, you’ll get an automatic reminder. If it’s still unpaid {suspendAfterDays} days after the due date, your site shows a “temporarily unavailable” page until the payment comes through. Your site comes back as soon as you’ve paid.</p>
 
 <h2>Other services</h2>
 <p>Your site may connect to services run by other companies, like your booking system (for example NightsBridge, Fresha or Booksy), Google, WhatsApp, PayFast and the hosting provider. Those services have their own terms and fees. I’m not responsible for their outages or changes, but I’ll help where I can.</p>

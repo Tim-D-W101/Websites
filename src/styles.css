@@ -400,6 +400,10 @@ img, svg { max-width: 100%; }
 .plan-amount { font-family: var(--head); font-size: 2.9rem; line-height: 1; color: var(--navy-900); }
 .plan-per { font-weight: 700; color: var(--muted); }
 .plan-setup { margin: .4rem 0 1.25rem; color: var(--muted); }
+.plan-yearly { margin: .35rem 0 0; color: var(--muted); }
+.plan-yearly strong { color: var(--navy-900); }
+.plan-save { display: inline-block; margin-left: .2rem; padding: 0 .5rem; border-radius: 999px; background: var(--ok-bg); color: var(--ok); font-weight: 700; font-size: .85rem; white-space: nowrap; }
+.start-body .callout { margin-bottom: 1rem; }
 .plan-setup strong { color: var(--navy-900); background: var(--gold-200); padding: 0 .3rem; border-radius: 4px; }
 .plan .ticks { flex: 1; align-content: start; margin-bottom: 1.5rem; }
 .plan-actions { display: flex; flex-wrap: wrap; gap: .5rem; }

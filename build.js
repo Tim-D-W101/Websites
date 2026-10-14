@@ -107,7 +107,8 @@ const goLive = val('process.goLive');
 const allPackages = niches.flatMap((n, ni) => n.packages.map((p, pi) => ({
   ...p,
   niche: n,
-  payfastUrl: link(`niches.${ni}.packages.${pi}.payfast`, `PayFast link for ${n.navLabel} ${p.name}`)
+  payfastUrl: link(`niches.${ni}.packages.${pi}.payfast`, `PayFast link for ${n.navLabel} ${p.name}`),
+  payfastYearlyUrl: link(`niches.${ni}.packages.${pi}.payfastYearly`, `Yearly PayFast link for ${n.navLabel} ${p.name}`)
 })));
 const minMonthly = Math.min(...allPackages.map((p) => p.monthly));
 const maxMonthly = Math.max(...allPackages.map((p) => p.monthly));
@@ -117,6 +118,14 @@ const foundingOn = F.enabled === true && Number(F.spotsLeft) > 0;
 // Percentage off the setup fee for founding clients (100 = free setup).
 const foundingPct = Math.min(100, Math.max(0, Number(F.setupDiscountPercent ?? 100) || 0));
 const foundingSetup = (setup) => Math.round(setup * (100 - foundingPct) / 100);
+
+// Yearly billing: pay for this many months and get 12. Blank, 0 or 12+ turns it off.
+const yearlyMonths = Number(T.yearlyPaysMonths) || 0;
+const yearlyOn = yearlyMonths > 0 && yearlyMonths < 12;
+const yearly = (monthlyFee) => monthlyFee * yearlyMonths;
+const perYear = (n) => `${rand(n)}/year`;
+const yearlyFree = `${12 - yearlyMonths} month${12 - yearlyMonths === 1 ? '' : 's'}`;
+effective['terms.yearlyPaysMonths'] = yearlyOn ? 'on' : '';
 
 const examples = (C.examples || []).filter((e) => {
   if (!isSet(e.name)) { warn('An example has no name, so it was skipped.'); return false; }
@@ -153,6 +162,9 @@ const tokens = {
   spotsTotal: F.spotsTotal,
   spotsLeft: F.spotsLeft,
   foundingDiscount: `${foundingPct}%`,
+  yearlyPaysMonths: yearlyOn ? yearlyMonths : '',
+  yearlyFree: yearlyOn ? yearlyFree : '',
+  fromYearly: yearlyOn ? `${rand(yearly(minMonthly))} a year` : '',
   siteName: site.name,
   domain: site.domain,
   email: contact.email,
@@ -230,8 +242,10 @@ function ctaRow(page, extras = []) {
   return parts.length ? `<div class="cta-row">${parts.join('')}</div>` : '';
 }
 
+// Items are strings, or { "text": ..., "requires": [...] } to hide them until a detail is filled in.
 function ticks(items, cls = 'ticks') {
-  return `<ul class="${cls}">${items.map((i) => (/:\s*$/.test(i)
+  const list = items.filter((i) => typeof i === 'string' || requiresMet(i)).map((i) => (typeof i === 'string' ? i : i.text));
+  return `<ul class="${cls}">${list.map((i) => (/:\s*$/.test(i)
     ? `<li class="plus">${t(i)}</li>`
     : `<li>${svg.icon('check')}<span>${t(i)}</span></li>`)).join('')}</ul>`;
 }
@@ -265,6 +279,7 @@ function planCard(p, page, opts = {}) {
   return `<article class="plan${p.featured ? ' plan-featured' : ''}" id="plan-${esc(p.id)}">
 <header>${opts.showNiche ? `<p class="plan-niche">${esc(p.niche.name)}</p>` : ''}<h3>${t(p.name)}</h3><p class="plan-summary">${t(p.summary)}</p></header>
 <p class="plan-price"><span class="plan-amount">${rand(p.monthly)}</span><span class="plan-per">/month</span></p>
+${yearlyOn ? `<p class="plan-yearly">or pay <strong>${rand(yearly(p.monthly))}</strong> once a year <span class="plan-save">${yearlyFree} free</span></p>` : ''}
 ${setup}
 ${ticks(p.includes)}
 <div class="plan-actions">${actions}</div>
@@ -272,7 +287,8 @@ ${ticks(p.includes)}
 }
 
 function termsLine() {
-  return `<p class="fine">${t(`{minimumMonths}-month minimum, then month-to-month with {noticeDays} days' notice. Setup fee paid upfront; monthly fee by card or debit order through PayFast.`)} <a href="/pricing#small-edits">What counts as a small edit?</a></p>`;
+  const yearlyNote = yearlyOn ? ' Or pay yearly: 12 months for the price of {yearlyPaysMonths}.' : '';
+  return `<p class="fine">${t(`{minimumMonths}-month minimum, then month-to-month with {noticeDays} days' notice. Setup fee paid upfront; monthly fee by card or debit order through PayFast.${yearlyNote}`)} <a href="/pricing#small-edits">What counts as a small edit?</a></p>`;
 }
 
 /* ---------- WebP size (for width/height, so images never shift the layout) ---------- */
@@ -646,7 +662,7 @@ ${n.openStatus ? openStatusSection(n) : ''}
 ${calculatorSection(n)}
 <section class="section" id="pricing" aria-labelledby="pricing-h">
 <div class="wrap">
-${sectionHead('pricing', n.plansHeading, 'A once-off setup fee, then one monthly fee that covers everything.')}
+${sectionHead('pricing', n.plansHeading, `A once-off setup fee, then one monthly fee that covers everything.${yearlyOn ? ' Pay yearly and get {yearlyFree} free.' : ''}`)}
 ${foundingOn ? foundingBanner(page, { compact: true }) : ''}
 <div class="plans plans-2">${n.packages.map((p) => planCard(p, page)).join('')}</div>
 ${termsLine()}
@@ -654,7 +670,7 @@ ${termsLine()}
 </section>
 ${exBlock}
 <section class="section section-sand" id="faq" aria-labelledby="faq-h">
-<div class="wrap narrow">${sectionHead('faq', `Questions from ${n.singular} owners`)}${faqList(n.faq.concat(generalFaq(['included', 'cancel', 'speed'])))}<p class="more-link"><a href="/faq">All questions and answers ${svg.icon('arrow')}</a></p></div>
+<div class="wrap narrow">${sectionHead('faq', `Questions from ${n.singular} owners`)}${faqList(n.faq.concat(generalFaq(['included', 'yearly', 'cancel', 'speed'])))}<p class="more-link"><a href="/faq">All questions and answers ${svg.icon('arrow')}</a></p></div>
 </section>
 ${mockupSection(page, { niche: n.id, heading: `Get a free mock-up of your ${n.singular} website`, lead: C.mockup.lead })}`;
   return page;
@@ -710,14 +726,18 @@ function startPage() {
   const S = C.startPage;
   const page = { url: '/start', out: 'start.html', title: S.seo.title, description: S.seo.description };
   const step = (id) => S.steps.find((s) => s.id === id) || {};
-  const pkgList = `<div class="pkg-list">${niches.map((n) => `<div class="pkg-group"><p class="pkg-niche">${nicheIcon(n)}${esc(n.name)}</p><ul>${n.packages.map((p) => `<li><span>${esc(p.name)}</span><span>${month(p.monthly)} <small>+ ${rand(p.setup)} setup</small></span></li>`).join('')}</ul></div>`).join('')}</div><p><a href="/pricing">Compare what’s in each package ${svg.icon('arrow')}</a></p>`;
-  const withLinks = allPackages.filter((p) => p.payfastUrl);
+  const pkgList = `<div class="pkg-list">${niches.map((n) => `<div class="pkg-group"><p class="pkg-niche">${nicheIcon(n)}${esc(n.name)}</p><ul>${n.packages.map((p) => `<li><span>${esc(p.name)}</span><span>${month(p.monthly)}${yearlyOn ? ` <small>or ${perYear(yearly(p.monthly))}</small>` : ''} <small>+ ${rand(p.setup)} setup</small></span></li>`).join('')}</ul></div>`).join('')}</div><p><a href="/pricing">Compare what’s in each package ${svg.icon('arrow')}</a></p>`;
+  const payOptions = allPackages.flatMap((p) => [
+    { url: p.payfastUrl, label: `${p.niche.navLabel} ${p.name}${yearlyOn ? ', monthly' : ''}`, price: `${rand(p.setup)} setup + ${month(p.monthly)}` },
+    ...(yearlyOn ? [{ url: p.payfastYearlyUrl, label: `${p.niche.navLabel} ${p.name}, yearly`, price: `${rand(p.setup)} setup + ${perYear(yearly(p.monthly))}` }] : [])
+  ]);
+  const withLinks = payOptions.filter((o) => o.url);
   const ask = [
     contact.wa ? `<a class="btn btn-navy" href="${esc(waLink('Hi {firstName}, I would like to sign up. Please send me a payment link.'))}">${svg.whatsapp()}WhatsApp me</a>` : '',
     contact.email ? `<a class="btn btn-ghost" href="mailto:${esc(contact.email)}?subject=${encodeURIComponent('Sign up')}">${svg.icon('mail')}Email me</a>` : ''
   ].filter(Boolean).join('');
   const payBlock = withLinks.length
-    ? `<div class="pay-buttons">${withLinks.map((p) => `<a class="btn btn-navy" href="${esc(p.payfastUrl)}">${svg.icon('card')}<span>Pay for ${esc(p.niche.navLabel)} ${esc(p.name)}<small>${rand(p.setup)} setup + ${month(p.monthly)}</small></span></a>`).join('')}</div>${withLinks.length < allPackages.length && ask ? `<p>Can’t see your package? Message me and I’ll send you the link.</p><div class="cta-row">${ask}</div>` : ''}`
+    ? `<div class="pay-buttons">${withLinks.map((o) => `<a class="btn btn-navy" href="${esc(o.url)}">${svg.icon('card')}<span>Pay for ${esc(o.label)}<small>${o.price}</small></span></a>`).join('')}</div>${withLinks.length < payOptions.length && ask ? `<p>Can’t see your package? Message me and I’ll send you the link.</p><div class="cta-row">${ask}</div>` : ''}`
     : (ask ? `<p>${t(step('pay').noLinksText)}</p><div class="cta-row">${ask}</div>` : '');
   const formBlock = onboardingForm
     ? `<p><a class="btn btn-gold" href="${esc(onboardingForm)}"${ext}>${svg.icon('form')}Open the onboarding form${newTab}</a></p>`
@@ -725,7 +745,7 @@ function startPage() {
   const live = step('live');
   const items = [
     ['choose', 'calendar', pkgList],
-    ['pay', 'card', payBlock],
+    ['pay', 'card', `${yearlyOn && step('pay').yearlyText ? `<p class="callout">${svg.icon('calendar')}<span>${t(step('pay').yearlyText)}</span></p>` : ''}${payBlock}`],
     ['content', 'form', formBlock],
     ['approve', 'eye', ''],
     ['live', 'rocket', requiresMet(live) && live.goLiveText ? `<p class="callout">${svg.icon('clock')}<span>${t(live.goLiveText)}</span></p>` : '']
@@ -872,7 +892,9 @@ function placeholderReport() {
     if (typeof o === 'string') { if (/^\s*TODO\b/i.test(o)) out.push(p); return; }
     if (o && typeof o === 'object') for (const k of Object.keys(o)) if (!k.startsWith('_')) scan(o[k], p ? `${p}.${k}` : k);
   })(C, '');
-  return out.map((p) => p.replace(/^niches\.(\d+)\.packages\.(\d+)\.payfast$/, (m, a, b) => `payfast (${niches[a].navLabel} ${niches[a].packages[b].name})`));
+  return out
+    .filter((p) => yearlyOn || !p.endsWith('.payfastYearly'))
+    .map((p) => p.replace(/^niches\.(\d+)\.packages\.(\d+)\.(payfast|payfastYearly)$/, (m, a, b, k) => `${k === 'payfastYearly' ? 'yearly payfast' : 'payfast'} (${niches[a].navLabel} ${niches[a].packages[b].name})`));
 }
 
 /* ---------- checks: internal links, anchors, empty links, leaked placeholders ---------- */
