@@ -16,7 +16,7 @@
   "contact": {
     "firstName": "John",
     "whatsapp": "27732426068",
-    "email": "TODO: business email, e.g. hello@frontdoorsites.co.za",
+    "email": "hello@frontdoorsites.co.za",
     "serviceArea": "KwaZulu-Natal",
     "replyHours": "within 24 hours",
     "googleBusinessProfile": "TODO: link to your Google Business Profile (optional)",
@@ -75,7 +75,7 @@
       "group": "websites",
       "name": "Business site",
       "from": 6500,
-      "scope": "4–8 pages, like services and prices, a gallery, about, FAQ and a contact form.",
+      "scope": "4–8 pages, like services and prices, a gallery, about, FAQ and a contact form. Can link to a booking tool you already use.",
       "buildTime": "2 weeks"
     },
     {
@@ -83,7 +83,7 @@
       "group": "websites",
       "name": "Bookings / online shop",
       "from": 12000,
-      "scope": "Live bookings, online payments or a product catalogue, connected to tools like NightsBridge, Fresha or PayFast.",
+      "scope": "Live bookings, online payments or a product catalogue, connected to tools like NightsBridge or PayFast.",
       "buildTime": "3–4 weeks"
     },
     {
@@ -661,7 +661,7 @@
         },
         {
           "kind": "website",
-          "band": "bookings-shop",
+          "band": "business-site",
           "title": "Online booking through Fresha or Booksy",
           "text": "Clients choose a time straight from your site, using the booking tool you already have."
         },
@@ -926,6 +926,12 @@
           "requires": [
             "process.paymentMethods"
           ]
+        },
+        {
+          "text": "Care plans are paid by EFT each month, using the bank details on your invoice.",
+          "requires": [
+            "care.payByEft"
+          ]
         }
       ]
     },
@@ -1049,7 +1055,15 @@
         "id": "care",
         "title": "Choose a care plan (optional)",
         "text": "If you'd like me to keep it online and up to date, pick a care plan. You can cancel with {noticeDays} days' notice.",
-        "noLinksText": "Tell me which plan you'd like and I'll send you a payment link."
+        "noLinksText": [
+          "Tell me which plan you'd like, and I'll send you an invoice. You pay by EFT each month.",
+          {
+            "text": "Or pay once a year and get 12 months for the price of {yearlyPaysMonths}.",
+            "requires": [
+              "terms.yearlyPaysMonths"
+            ]
+          }
+        ]
       }
     ],
     "timesHeading": "Typical build times",

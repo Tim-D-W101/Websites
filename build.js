@@ -118,6 +118,10 @@ const carePlans = (C.carePlans || []).map((p, i) => ({
   payfastYearlyUrl: link(`carePlans.${i}.payfastYearly`, `Yearly PayFast link for the ${p.name} plan`)
 }));
 const careById = Object.fromEntries(carePlans.map((p) => [p.id, p]));
+// Care plans are paid through PayFast once any link is filled in. Until then, by EFT.
+const payfastOn = carePlans.some((p) => p.payfastUrl || p.payfastYearlyUrl);
+effective['care.payfastOn'] = payfastOn ? 'on' : '';
+effective['care.payByEft'] = payfastOn ? '' : 'on';
 const careFrom = Math.min(...carePlans.map((p) => p.monthly));
 
 const depositPct = Number(T.depositPercent) || 50;
@@ -887,7 +891,7 @@ function startPage() {
   const S = C.startPage;
   const page = { url: '/start', out: 'start.html', title: S.seo.title, description: S.seo.description };
   const ask = [
-    contact.wa ? `<a class="btn btn-navy" href="${esc(waLink('Hi {firstName}, I would like to start a care plan. Please send me a payment link.'))}">${svg.whatsapp()}WhatsApp me</a>` : '',
+    contact.wa ? `<a class="btn btn-navy" href="${esc(waLink(`Hi {firstName}, I would like to start a care plan. Please send me ${payfastOn ? 'a payment link' : 'an invoice'}.`))}">${svg.whatsapp()}WhatsApp me</a>` : '',
     contact.email ? `<a class="btn btn-ghost" href="mailto:${esc(contact.email)}?subject=${encodeURIComponent('Care plan')}">${svg.icon('mail')}Email me</a>` : ''
   ].filter(Boolean).join('');
   const payOptions = carePlans.flatMap((p) => [
@@ -898,7 +902,7 @@ function startPage() {
   const careStep = S.steps.find((s) => s.id === 'care') || {};
   const careBlock = withLinks.length
     ? `<div class="pay-buttons">${withLinks.map((o) => `<a class="btn btn-navy" href="${esc(o.url)}">${svg.icon('card')}<span>Start the ${esc(o.label)}<small>${o.price}</small></span></a>`).join('')}</div>${withLinks.length < payOptions.length && ask ? `<p>Can’t see the option you want? Message me and I’ll send you the link.</p><div class="cta-row">${ask}</div>` : ''}`
-    : (ask ? `<p>${t(careStep.noLinksText)}</p><div class="cta-row">${ask}</div>` : '');
+    : (ask ? `<p>${shown(careStep.noLinksText).map(t).join(' ')}</p><div class="cta-row">${ask}</div>` : '');
   const careList = `<ul class="time-list">${carePlans.map((p) => `<li><span>${esc(p.name)}</span><span>${month(p.monthly)}${yearlyOn ? ` <small>or ${rand(yearly(p.monthly))}/year</small>` : ''}</span></li>`).join('')}</ul><p><a href="/pricing#care">What each plan includes ${svg.icon('arrow')}</a></p>`;
   const items = S.steps.map((s, i) => {
     let extra = shown(s.extra).map((x) => `<p class="callout">${svg.icon('clock')}<span>${t(x)}</span></p>`).join('');
@@ -1052,7 +1056,7 @@ function placeholderReport() {
   })(C, '');
   return out
     .filter((p) => yearlyOn || !p.endsWith('.payfastYearly'))
-    .map((p) => p.replace(/^carePlans\.(\d+)\.(payfast|payfastYearly)$/, (m, i, k) => `${k === 'payfastYearly' ? 'yearly ' : ''}payfast (${carePlans[i].name} plan)`));
+    .map((p) => p.replace(/^carePlans\.(\d+)\.(payfast|payfastYearly)$/, (m, i, k) => `${k === 'payfastYearly' ? 'yearly ' : ''}payfast (${carePlans[i].name} plan, optional)`));
 }
 
 /* ---------- checks: internal links, anchors, empty links, leaked placeholders ---------- */

@@ -63,6 +63,8 @@
 <h2>Care plans</h2>
 <ul>
   <li>Care plans are optional. They run month-to-month, and you can cancel with {noticeDays} days’ notice. There’s no minimum term.</li>
+  {{#if care.payByEft}}<li>You pay care plan fees by EFT, using the bank details on your invoice.</li>{{/if}}
+  {{#if care.payfastOn}}<li>You pay care plan fees through PayFast.</li>{{/if}}
   {{#if terms.yearlyPaysMonths}}<li>You can pay a care plan yearly instead: 12 months for the price of {yearlyPaysMonths}, paid upfront. A yearly plan renews for another year unless you tell me at least {noticeDays} days before the renewal date, and yearly fees aren’t refunded for unused months.</li>{{/if}}
   <li>Without a care plan, I hand over the files so you can host the website or tool anywhere. Hosting it is then up to you.</li>
 </ul>
@@ -74,8 +76,8 @@
   <li>Bigger changes, like new pages, new features or a redesign, and any work outside a care plan, are quoted per job, from {extraWorkFrom}. I only start once you’ve accepted the quote.</li>
 </ul>
 
-<h2>Failed care plan payments</h2>
-<p>If a care plan payment fails, you’ll get an automatic reminder. If it’s still unpaid {suspendAfterDays} days after the due date, your website shows a “temporarily unavailable” page until the payment comes through. It comes back as soon as you’ve paid.</p>
+<h2>Late care plan payments</h2>
+<p>{{#if care.payfastOn}}If a care plan payment fails, you’ll get an automatic reminder.{{/if}}{{#if care.payByEft}}Care plan fees are due by the date on your invoice. If a payment is late, I’ll send you a reminder.{{/if}} If it’s still unpaid {suspendAfterDays} days after the due date, your website shows a “temporarily unavailable” page until the payment comes through. It comes back as soon as you’ve paid.</p>
 
 <h2>What I can and can’t promise</h2>
 <p>I use reliable hosting and do my best to keep your website or tool online, fast and secure, but nothing online works 100% of the time. I can’t guarantee search rankings, bookings or sales.</p>

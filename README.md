@@ -46,14 +46,14 @@ Open `content.json`. Anything that's empty or starts with `TODO` counts as blank
 |---|---|
 | `contact.firstName` | The "Hi, I'm …" line on the home page, and the greeting in WhatsApp messages |
 | `contact.whatsapp` | International format, digits only, no `+` (e.g. `27821234567`). Turns on the WhatsApp buttons, the sticky phone bar and the enquiry form |
-| `contact.email` | Footer, FAQ page, and the "send by email instead" option on the form |
+| `contact.email` | Footer, FAQ page, Terms and Privacy, and the "send by email instead" option on the form. Set up the address before you launch (see [Set up hello@frontdoorsites.co.za](#set-up-hellofrontdoorsitescoza)) |
 | `contact.serviceArea` | "Based in …" in the footer, the About line and page descriptions (local SEO) |
 | `contact.replyHours` | Shown in the footer and next to the enquiry form |
 | `contact.googleBusinessProfile` | Optional footer link |
 | `process.quoteTime` | How soon a mock-up or plan reaches the client, e.g. `3 working days` |
 | `process.paymentMethods` | How deposits and balances are paid. Shown as "You pay by …" |
 | `bands[].buildTime` | Typical build time per band. Shown on the band cards, the FAQ and the Start page table. Leave one blank to hide that row |
-| `carePlans[].payfast` / `payfastYearly` | PayFast links for each care plan, monthly and yearly (Start page, last step) |
+| `carePlans[].payfast` / `payfastYearly` | Optional PayFast links for each care plan, monthly and yearly. Leave them blank to take care payments by EFT (see [Change a care plan](#change-a-care-plan)) |
 | `legal.*` | Your legal name, registration number and an address for legal notices (Terms and Privacy pages only) |
 
 If neither WhatsApp nor email is filled in, the enquiry form and every "Free quote" button stay hidden, because there would be nowhere to send them.
@@ -93,6 +93,8 @@ Care plans live in `carePlans`:
 - Change `monthly` to change the price. A line ending in `:` shows as a bold lead-in, not a tick.
 - `"featured": true` gives a plan the darker border.
 - The calculators use the plan named in each industry's `calculator.carePlan` (the Care plan by default).
+
+**How clients pay for care:** while every `payfast` link is blank, care plans are paid by EFT. The Start page asks clients to message you for an invoice, and the FAQ and Terms say EFT and "I'll send you a reminder". Fill in any PayFast link and the site switches over by itself: the Start page shows a PayFast button for each link, and the Terms and Privacy pages switch to PayFast wording (automatic reminders, card details handled by PayFast).
 
 **Yearly payment:** `terms.yearlyPaysMonths` (10) means clients can pay for 12 months upfront at the price of 10, so Care is R4 500 a year. It shows on the care cards, the FAQ, the Start page and the Terms. Set it to `0` to switch yearly payment off everywhere.
 
@@ -206,6 +208,20 @@ Pointing the root domain (frontdoorsites.co.za without www) at Cloudflare Pages 
 The `frontdoorsites.pages.dev` address keeps working too. Every page's canonical tag points to frontdoorsites.co.za, so search engines treat that as the real one.
 
 After launch, add the site to [Google Search Console](https://search.google.com/search-console) and submit `https://frontdoorsites.co.za/sitemap.xml`.
+
+## Set up hello@frontdoorsites.co.za
+
+The site shows `hello@frontdoorsites.co.za`, so set it up before launch. Cloudflare Email Routing forwards it to the inbox you already use, for free. It needs the domain's DNS on Cloudflare (steps 1–2 above).
+
+1. In the Cloudflare dashboard, open `frontdoorsites.co.za`, then **Email → Email Routing**, and choose **Get started**.
+2. Create the custom address `hello`, set the action to **Send to an email**, and enter the inbox you want it forwarded to.
+3. Cloudflare emails that inbox a link. Click it to confirm the address.
+4. Let Cloudflare **add the DNS records** it asks for (MX and TXT). If the domain already gets email somewhere else, don't do this: those records would replace your current email setup.
+5. Send a test email to `hello@frontdoorsites.co.za` and check it arrives.
+
+Email Routing only receives email. When you reply, the reply comes from your own address. To reply as hello@, you need a mail service that can send, such as Zoho Mail, Google Workspace, or Gmail's "Send mail as" with an SMTP provider.
+
+To use a different address, change `contact.email` in `content.json`. Leave it blank to hide email everywhere and use WhatsApp only.
 
 ## Share image and icons (optional)
 
