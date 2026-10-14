@@ -18,7 +18,7 @@
 </ul>
 
 <h2>Who I am</h2>
-<p>This website belongs to Front Door Sites{{#if legal.legalName}} ({legalName}){{/if}}. Under the Protection of Personal Information Act (POPIA), I’m the “responsible party” for the personal information described on this page, and I’m also the Information Officer.</p>
+<p>This website belongs to {{#if legal.legalName}}{legalName}{{/if}}{{#unless legal.legalName}}Front Door Sites{{/unless}}. Under the Protection of Personal Information Act (POPIA), I’m responsible for the personal information described on this page. I’m also the Information Officer.</p>
 <p>You can reach me about anything on this page:</p>
 <ul>
   {{#if contact.whatsapp}}<li>WhatsApp: {whatsapp}</li>{{/if}}
@@ -30,7 +30,14 @@
 
 <h2>The quote form</h2>
 <p>The form doesn’t store or send anything by itself. When you press the button, it opens WhatsApp (or your email app) on your own device with a message already filled in. Nothing reaches me unless you press send.</p>
-<p>The message contains what you typed: what you need, your business name, type of business and town, your description of what you need, and, if you filled them in, the link you added, your rough budget and when you need it. It also includes your name and how you’d like me to reply (plus your email address or number, if you added one). WhatsApp also shows me your phone number, and email shows me your email address.</p>
+<p>The message contains what you typed:</p>
+<ul>
+  <li>what you need, your business name, type of business and town;</li>
+  <li>your description of what you need;</li>
+  <li>the link, rough budget and timing, if you added them;</li>
+  <li>your name and how you’d like me to reply, with your email address or number if you added one.</li>
+</ul>
+<p>WhatsApp also shows me your phone number, and email shows me your email address.</p>
 <p>Your message goes only to my WhatsApp or email. I use it only to reply to you, to quote, and to build your free mock-up or plan from your business’s public information.</p>
 
 <h2>Hosting and server logs</h2>

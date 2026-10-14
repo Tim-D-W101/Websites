@@ -113,7 +113,7 @@
   ],
   "websiteIncludes": [
     "Design built for phones first",
-    "All the pages in your band",
+    "All the pages in your quote",
     "A WhatsApp button, so customers reach you in one tap",
     "Basic SEO setup, so Google can find and understand your site",
     "Your Google Business Profile set up",
@@ -130,7 +130,7 @@
       "id": "hosting",
       "name": "Hosting",
       "monthly": 250,
-      "summary": "Keeps your website online and safe.",
+      "summary": "The basics, handled for you.",
       "includes": [
         "Hosting with the HTTPS padlock",
         "Backups",
@@ -187,14 +187,14 @@
     },
     "services": {
       "heading": "Two things I build",
-      "lead": "Many businesses start with one and add the other later.",
+      "lead": "Start with one, and add the other later if you need it.",
       "cards": [
         {
           "group": "websites",
           "title": "Websites",
           "icon": "globe",
           "address": "yourbusiness.co.za",
-          "text": "From a simple three-page site to online bookings and payments. Built to bring in customers, not just to look nice.",
+          "text": "From a simple three-page site to online bookings and payments, built to bring in customers.",
           "more": "See website options"
         },
         {
@@ -260,19 +260,19 @@
     },
     "steps": {
       "heading": "How it works",
-      "lead": "Four steps. You always know the price before I start.",
+      "lead": "Four steps from first message to go-live.",
       "items": [
         {
           "title": "Tell me what you need",
           "text": "Send a WhatsApp, an email or a voice note. Tell me what's slowing you down, or what you'd like your customers to be able to do."
         },
         {
-          "title": "Get a free mock-up or plan, with a fixed quote",
+          "title": "Get a free mock-up or plan and a fixed quote",
           "text": "For a website, I build a sample from your public info. For a tool, I write a short plan of what it will do. Either way you get a fixed price, with no obligation."
         },
         {
-          "title": "Pay a {deposit} deposit. I build, you approve",
-          "text": "I build it and show you as I go. Ask for changes until it's right."
+          "title": "Pay a {deposit} deposit, then I build it",
+          "text": "I show you as I go. Ask for changes until it's right."
         },
         {
           "title": "It goes live",
@@ -283,11 +283,11 @@
     },
     "pricingTeaser": {
       "heading": "Clear starting prices",
-      "lead": "Every job gets a fixed quote. These are starting points, so you know roughly where you'll land."
+      "lead": "Starting prices, so you know roughly what to expect."
     },
     "industries": {
       "heading": "Built for your kind of business",
-      "lead": "I work with all kinds of South African businesses: trades, shops, farms, transport companies, professional services and more. Here are ideas for three industries.",
+      "lead": "Any South African business can use a website or a tool: trades, shops, farms, transport companies, professional services and more. Here are ideas for three industries.",
       "other": {
         "title": "Any other business",
         "text": "Tell me how your business works and what you'd like to fix. I'll suggest what would help most.",
@@ -297,7 +297,7 @@
     "about": {
       "heading": "Who you'll be dealing with",
       "text": "Hi, I'm {firstName}, the person behind Front Door Sites. I build and look after every website and tool myself, so you deal with me directly, on WhatsApp or email.",
-      "areaText": "I'm based in {serviceArea} and work with businesses all over South Africa."
+      "areaText": "I'm based in {serviceArea}. Because everything happens on WhatsApp and email, I can work with businesses anywhere in South Africa."
     },
     "examplesHeading": "Recent examples",
     "faqTeaser": {
@@ -325,8 +325,12 @@
       "lead": "Your services, your prices, your reviews and a way to reach you in one tap. I build a free mock-up first, so you see your site before you pay anything."
     },
     "includesHeading": "Every website includes",
+    "mockupCard": {
+      "heading": "Prefer to see it first?",
+      "text": "Send me a link to your Google Maps listing or Facebook page, and I'll build a sample of your website. It's free, and you only pay if you go ahead."
+    },
     "bandsHeading": "Three sizes of website",
-    "bandsLead": "Pick the size that fits. Your quote is fixed before I start.",
+    "bandsLead": "Pick the size that fits. Not sure which? Ask, and I'll tell you.",
     "steps": {
       "heading": "How a website project works",
       "items": [
@@ -418,7 +422,7 @@
         },
         {
           "title": "A working demo, early",
-          "text": "After the {deposit} deposit, you get a working demo early on, so you can try it with real examples."
+          "text": "After the {deposit} deposit, I build a working demo first, so you can try it with real examples."
         },
         {
           "title": "Built in stages",
@@ -437,9 +441,9 @@
         "text": "Works on phones and computers. No app store and nothing to install."
       },
       {
-        "icon": "eye",
-        "title": "You see it early",
-        "text": "A working demo early on, and progress you can try at every stage."
+        "icon": "grid",
+        "title": "Grows with you",
+        "text": "Start with one job done well, and add screens later when you need them."
       },
       {
         "icon": "lock",
@@ -521,8 +525,8 @@
       "argument": {
         "heading": "Every direct booking keeps the commission in your pocket",
         "paragraphs": [
-          "Booking sites are good at sending you new guests. But they take a cut of every booking: roughly 15–18%, depending on the site and the extras you pay for.",
-          "Lots of guests find you on a booking site, then look you up on Google before they book. Returning guests and referrals do the same. If they find your own website with your rooms, rates and a 'Book direct' button, many will book there instead.",
+          "Booking sites are good at sending you new guests, but you pay commission on every booking they send.",
+          "Guests often find you on a booking site, then look you up on Google before they book. Returning guests and referrals do the same. If they find your own website with your rooms, rates and a 'Book direct' button, they can book there instead.",
           "You don't have to leave the booking sites. Keep them for new guests, and let your website catch everyone who's already looking for you."
         ],
         "points": [
@@ -693,7 +697,7 @@
         },
         {
           "q": "Can I change my prices?",
-          "a": "Yes. With a Care plan, price changes are small edits, included every month. Without one, I quote small changes per job, from {extraWorkFrom}."
+          "a": "Yes. With the Care or Care+ plan, price changes are small edits, included every month. Without a plan, I quote small changes per job, from {extraWorkFrom}."
         },
         {
           "q": "Can you show my Google reviews on the site?",
@@ -701,7 +705,7 @@
         },
         {
           "q": "I work from home. Do you have to show my address?",
-          "a": "No. You choose what's shown. Many home-based studios show only their suburb and share the exact address once a booking is confirmed."
+          "a": "No. You choose what's shown. You can show just your suburb and share the exact address once a booking is confirmed."
         }
       ]
     },
@@ -830,7 +834,7 @@
       "faq": [
         {
           "q": "Can I change my menu prices?",
-          "a": "Yes. With a Care plan, menu and price updates are small edits, included every month. Edits sent by {editsDeadline} go live by {editsLive}."
+          "a": "Yes. With the Care or Care+ plan, menu and price updates are small edits, included every month. Edits sent by {editsDeadline} go live by {editsLive}."
         },
         {
           "q": "Can people order online for collection?",
@@ -842,7 +846,7 @@
         },
         {
           "q": "What about public holidays and special hours?",
-          "a": "Send me your holiday hours and I'll update the site. With a Care plan, that's a small edit. The open/closed sign follows whatever hours are on your site."
+          "a": "Send me your holiday hours and I'll update the site. With the Care or Care+ plan, that's a small edit. The open/closed sign follows whatever hours are on your site."
         }
       ]
     }
@@ -853,9 +857,15 @@
       "description": "Website design from {websitesFrom} and business tools from {toolsFrom}, with fixed quotes. Optional care plans from {careFrom}. Clear South African pricing."
     },
     "h1": "Clear prices, fixed quotes",
-    "lead": "Every job gets a fixed quote. The prices below are starting points, so you know roughly where you'll land before you ask.",
+    "lead": "Every job gets a fixed quote. These starting prices show roughly where you'll land.",
     "terms": [
       "{deposit} deposit to start, and the other {balance} when you approve it, before it goes live.",
+      {
+        "text": "You pay by {paymentMethods}.",
+        "requires": [
+          "process.paymentMethods"
+        ]
+      },
       "Quotes are valid for {quoteValidDays} days.",
       "The price is fixed for the agreed scope. Anything new is quoted before I do it.",
       "A small edit is a text, price, photo or hours change. Extra work outside a care plan is quoted per job, from {extraWorkFrom}.",
@@ -878,7 +888,7 @@
         "Swapping or adding photos",
         "Changing your opening hours or contact details"
       ],
-      "notIncluded": "New pages, new features and redesigns aren't small edits. I quote for those separately, from {extraWorkFrom}, and only start once you've said yes.",
+      "notIncluded": "New pages, new features and redesigns aren't small edits. I quote those first, and only start once you've said yes.",
       "timing": "Edits sent by {editsDeadline} go live by {editsLive}. Unused edits don't carry over to the next month."
     }
   },
@@ -888,7 +898,7 @@
       "description": "Answers about Front Door Sites websites and business tools: prices, the free mock-up and plan, paying, owning your site, care plans and build times."
     },
     "h1": "Questions & answers",
-    "lead": "What owners usually ask before they start. Can't find your question? Ask me on WhatsApp."
+    "lead": "Straight answers about prices, payment, ownership and care plans. Can't find your question? Ask me on WhatsApp."
   },
   "faq": [
     {
@@ -968,10 +978,10 @@
       "q": "What can a business tool do for me?",
       "a": "It takes a job you do by hand and makes it quicker. For example:",
       "list": [
-        "A builder sends a neat quote from a phone in two minutes, then turns it into an invoice.",
-        "A salon keeps every client's colour formulas and notes in one place, instead of on paper cards.",
-        "A farm stall takes orders for collection without fifty WhatsApp messages.",
-        "A transport company sees every job, driver and delivery on one screen."
+        "A builder could send a neat quote from a phone in two minutes, then turn it into an invoice.",
+        "A salon could keep every client's colour formulas and notes in one place, instead of on paper cards.",
+        "A farm stall could take orders for collection without fifty WhatsApp messages.",
+        "A transport company could see every job, driver and delivery on one screen."
       ]
     },
     {
@@ -987,7 +997,7 @@
     },
     "h1": "Examples",
     "lead": "Demos are made-up businesses, built to show what's possible. Client work is shown with the owner's permission.",
-    "empty": "The first demos are being finished now. Until then, the best example is your own business: ask for a free mock-up or plan, and see it before you decide."
+    "empty": "There are no examples here yet. The best example is your own business: ask for a free mock-up or plan, and see it before you decide."
   },
   "examples": [],
   "startPage": {

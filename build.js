@@ -270,27 +270,28 @@ function sectionHead(idBase, heading, lead, tag = 'h2') {
   return `<${tag} id="${idBase}-h">${t(heading)}</${tag}>${lead ? `<p class="section-lead">${t(lead)}</p>` : ''}`;
 }
 
-function buildTimesList() {
-  return `<ul class="time-list">${timedBands.map((b) => `<li><span>${esc(b.name)}</span><span>${esc(typo(b.buildTime))}</span></li>`).join('')}</ul>`;
+function buildTimesList(group) {
+  return `<ul class="time-list">${timedBands.filter((b) => !group || b.group === group).map((b) => `<li><span>${esc(b.name)}</span><span>${esc(typo(b.buildTime))}</span></li>`).join('')}</ul>`;
 }
 
-function faqAnswer(i) {
+function faqAnswer(i, group) {
   const parts = shown(i.a);
   let html = parts.length ? `<p>${parts.map(t).join(' ')}</p>` : '';
   if (i.list) html += `<ul>${i.list.map((x) => `<li>${t(x)}</li>`).join('')}</ul>`;
-  if (i.special === 'buildTimes' && timedBands.length) html += `<p>Typical build times, from when your deposit and content reach me:</p>${buildTimesList()}`;
+  if (i.special === 'buildTimes' && timedBands.some((b) => !group || b.group === group)) html += `<p>Typical build times, from when your deposit and content reach me:</p>${buildTimesList(group)}`;
   return html;
 }
 
-function faqList(items) {
+// group: show only that group's build times in "How long does it take?" (websites or tools pages).
+function faqList(items, group) {
   const visible = items.filter(requiresMet);
-  return `<div class="faq-list">${visible.map((i) => `<details class="faq-item"><summary><h3>${t(i.q)}</h3><span class="faq-sign" aria-hidden="true"></span></summary><div class="faq-a">${faqAnswer(i)}</div></details>`).join('')}</div>`;
+  return `<div class="faq-list">${visible.map((i) => `<details class="faq-item"><summary><h3>${t(i.q)}</h3><span class="faq-sign" aria-hidden="true"></span></summary><div class="faq-a">${faqAnswer(i, group)}</div></details>`).join('')}</div>`;
 }
 const generalFaq = (ids) => ids.map((id) => C.faq.find((f) => f.id === id)).filter(Boolean);
 
-function faqSection(page, heading, items) {
-  return `<section class="section section-sand" id="faq" aria-labelledby="faq-h">
-<div class="wrap narrow">${sectionHead('faq', heading)}${faqList(items)}<p class="more-link"><a href="/faq">All questions and answers ${svg.icon('arrow')}</a></p></div>
+function faqSection(page, heading, items, group, sand = true) {
+  return `<section class="section${sand ? ' section-sand' : ''}" id="faq" aria-labelledby="faq-h">
+<div class="wrap narrow">${sectionHead('faq', heading)}${faqList(items, group)}<p class="more-link"><a href="/faq">All questions and answers ${svg.icon('arrow')}</a></p></div>
 </section>`;
 }
 
@@ -346,7 +347,7 @@ function careSection(page, opts = {}) {
 ${sectionHead('care', CA.heading, opts.lead || CA.lead)}
 ${opts.founding && foundingOn ? foundingBanner(page, { compact: true }) : ''}
 <div class="plans plans-3">${carePlans.map((p) => careCard(p, opts)).join('')}</div>
-<p class="fine">${t(CA.noPlan)}${yearlyOn ? ` ${t('Pay any plan yearly and get {yearlyFree} free.')}` : ''}</p>
+<p class="fine">${t(CA.noPlan)}</p>
 </div>
 </section>`;
 }
@@ -397,9 +398,9 @@ ${isDemo ? '<p class="example-note">A made-up business, built to show what’s p
 </div></article>`;
 }
 
-function examplesBlock(list, heading) {
+function examplesBlock(list, heading, sand = false) {
   if (!list.length) return '';
-  return `<section class="section" aria-labelledby="ex-h"><div class="wrap">${sectionHead('ex', heading)}<div class="examples">${list.slice(0, 3).map(exampleCard).join('')}</div><p class="more-link"><a href="/examples">See all examples ${svg.icon('arrow')}</a></p></div></section>`;
+  return `<section class="section${sand ? ' section-sand' : ''}" aria-labelledby="ex-h"><div class="wrap">${sectionHead('ex', heading)}<div class="examples">${list.slice(0, 3).map(exampleCard).join('')}</div><p class="more-link"><a href="/examples">See all examples ${svg.icon('arrow')}</a></p></div></section>`;
 }
 
 /* ---------- enquiry form ---------- */
@@ -415,8 +416,10 @@ function enquirySection(page, opts = {}) {
   const secondary = contact.wa && contact.email ? '<button class="btn-text" type="submit" name="via" value="email">Or send it by email instead</button>' : '';
   const options = (list) => list.map((o) => `<option>${esc(o)}</option>`).join('');
   const max = Number(E.detailsMax) || 600;
+  // On the websites and tools pages, talk only about that page's free first step.
+  const free = { website: ['A free mock-up of your website', 'Mock-ups'], tool: ['A free written plan', 'Plans'] }[opts.need] || ['A free mock-up (websites) or plan (tools)', 'Mock-ups and plans'];
   const intro = [
-    `${svg.icon('check')}<span>A free mock-up (websites) or plan (tools)</span>`,
+    `${svg.icon('check')}<span>${free[0]}</span>`,
     `${svg.icon('check')}<span>A fixed quote before I start</span>`,
     `${svg.icon('check')}<span>You own it once it’s paid for</span>`
   ].map((x) => `<li>${x}</li>`).join('');
@@ -427,7 +430,7 @@ function enquirySection(page, opts = {}) {
 <p class="lead">${t(opts.lead || E.lead)}</p>
 <ul class="mockup-points">${intro}</ul>
 ${contact.hours ? `<p class="mockup-hours">${svg.icon('clock')}<span>I reply ${t(contact.hours)}</span></p>` : ''}
-${tokens.quoteTime ? `<p class="mockup-hours">${svg.icon('calendar')}<span>${t('Mock-ups and plans usually within {quoteTime}')}</span></p>` : ''}
+${tokens.quoteTime ? `<p class="mockup-hours">${svg.icon('calendar')}<span>${t(free[1] + ' usually within {quoteTime}')}</span></p>` : ''}
 </div>
 <form class="mockup-form" data-enquiry data-wa="${esc(contact.wa)}" data-email="${esc(contact.email)}" data-name="${esc(contact.firstName)}" novalidate>
 <fieldset class="field plan-toggle need-toggle"><legend>What do you need?</legend>${needs}</fieldset>
@@ -758,19 +761,21 @@ ${enquirySection(page, { heading: H.cta.heading, lead: H.cta.lead })}`;
 function websitesPage() {
   const W = C.websitesPage;
   const page = { url: '/websites', out: 'websites.html', hasForm: true, title: W.seo.title, description: W.seo.description, bodyClass: 'page-websites' };
+  // Sections alternate white and sand, so the FAQ's colour depends on whether examples show.
+  const webExamples = examples.filter((e) => e.kind === 'website');
   page.body = `${splitHero('hero-niche', `${svg.icon('globe')}${t(W.hero.eyebrow)}`, W.hero.h1, W.hero.lead, {
     cta: ctaRow(page, [{ href: '#prices', label: 'See prices' }], 'Get a free mock-up'),
     extra: `<p class="hero-from">Websites from <strong>${rand(websitesFrom)}</strong>. Free mock-up first.</p>`
   }, svg.phone('websites'))}
 <section class="section" aria-labelledby="inc-h"><div class="wrap two-col">
 <div>${sectionHead('inc', W.includesHeading)}${ticks(C.websiteIncludes)}</div>
-<div class="card points-card"><h3>Prefer to see it first?</h3><p>${t(C.faq.find((f) => f.id === 'mockup').a)}</p>${canEnquire ? `<p>${quoteButton(page, 'btn btn-gold', 'Get a free mock-up')}</p>` : ''}</div>
+<div class="card points-card"><h3>${t(W.mockupCard.heading)}</h3><p>${t(W.mockupCard.text)}</p>${canEnquire ? `<p>${quoteButton(page, 'btn btn-gold', 'Get a free mock-up')}</p>` : ''}</div>
 </div></section>
 <section class="section section-sand" id="prices" aria-labelledby="wb-h"><div class="wrap">${sectionHead('wb', W.bandsHeading, W.bandsLead)}${bandsGrid('websites', page)}<p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
 ${stepsSection('wsteps', W.steps.heading, '', W.steps.items, false)}
 ${careSection(page, { lead: W.careLead, sand: true, founding: true })}
-${examplesBlock(examples.filter((e) => e.kind === 'website'), 'Website examples')}
-${faqSection(page, 'Questions about websites', generalFaq(['cost', 'mockup', 'time', 'own', 'need-care', 'phones']))}
+${examplesBlock(webExamples, 'Website examples')}
+${faqSection(page, 'Questions about websites', generalFaq(['cost', 'time', 'own', 'need-care', 'small-edit', 'phones']), 'websites', webExamples.length > 0)}
 ${enquirySection(page, { need: 'website', heading: 'Get a free mock-up', lead: 'Tell me about your business and I’ll build a free sample of your website, with a fixed quote. No obligation, no calls.' })}`;
   return page;
 }
@@ -778,6 +783,7 @@ ${enquirySection(page, { need: 'website', heading: 'Get a free mock-up', lead: '
 function toolsPage() {
   const P = C.toolsPage;
   const page = { url: '/business-tools', out: 'business-tools.html', hasForm: true, title: P.seo.title, description: P.seo.description, bodyClass: 'page-tools' };
+  const toolExamples = examples.filter((e) => e.kind === 'tool');
   page.body = `${splitHero('hero-niche', `${svg.icon('grid')}${t(P.hero.eyebrow)}`, P.hero.h1, P.hero.lead, {
     cta: ctaRow(page, [{ href: '#prices', label: 'See prices' }], 'Get a free plan & quote'),
     extra: `<p class="hero-from">Business tools from <strong>${rand(toolsFrom)}</strong>. Free plan first.</p>`
@@ -788,8 +794,8 @@ ${stepsSection('tsteps', P.steps.heading, '', P.steps.items)}
 <section class="section" aria-labelledby="tp-h"><div class="wrap"><h2 id="tp-h" class="visually-hidden">Good to know</h2><ul class="point-cards">${P.points.map((p) => `<li class="card"><span class="inc-icon">${svg.icon(p.icon)}</span><h3>${t(p.title)}</h3><p>${t(p.text)}</p></li>`).join('')}</ul></div></section>
 <section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${bandsGrid('tools', page)}<p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
 ${careSection(page, { lead: P.careLead, highlight: 'care-plus', founding: true })}
-${examplesBlock(examples.filter((e) => e.kind === 'tool'), 'Tool examples')}
-${faqSection(page, 'Questions about business tools', generalFaq(['tool-what', 'plan', 'cost', 'other-costs', 'own', 'time']))}
+${examplesBlock(toolExamples, 'Tool examples', true)}
+${faqSection(page, 'Questions about business tools', generalFaq(['tool-what', 'plan', 'cost', 'other-costs', 'own', 'time']), 'tools', !toolExamples.length)}
 ${enquirySection(page, { need: 'tool', heading: 'Get a free plan & quote', lead: 'Tell me how things work now and what you’d like to fix. I’ll send a short plan and a fixed quote. No obligation, no calls.' })}`;
   return page;
 }
@@ -797,6 +803,7 @@ ${enquirySection(page, { need: 'tool', heading: 'Get a free plan & quote', lead:
 function nichePage(n) {
   const page = { url: `/${n.id}`, out: `${n.id}.html`, hasForm: true, title: n.seo.title, description: n.seo.description, bodyClass: `page-${n.id}` };
   const A = n.argument;
+  const nicheExamples = examples.filter((e) => e.niche === n.id);
   const ideas = `<ul class="ideas">${n.ideas.map((i) => {
     const b = i.band ? bandById[i.band] : null;
     if (i.band && !b) warn(`${n.id}: idea "${i.title}" uses unknown band "${i.band}"`);
@@ -815,9 +822,9 @@ function nichePage(n) {
 </section>
 ${n.openStatus ? openStatusSection(n) : ''}
 ${calculatorSection(n)}
-<section class="section" id="ideas" aria-labelledby="ideas-h"><div class="wrap">${sectionHead('ideas', 'What I can build for you', `Ideas for ${n.name.toLowerCase().replace('b&bs', 'B&Bs')}. Every job gets a fixed quote, and these are starting prices.`)}${ideas}<p class="more-link"><a href="/pricing">See all prices ${svg.icon('arrow')}</a></p></div></section>
-${examplesBlock(examples.filter((e) => e.niche === n.id), `${n.name}: examples`)}
-${faqSection(page, `Questions from ${n.singular} owners`, n.faq.concat(generalFaq(['cost', 'own', 'time'])))}
+<section class="section" id="ideas" aria-labelledby="ideas-h"><div class="wrap">${sectionHead('ideas', 'What I can build for you', `Ideas for ${n.name.toLowerCase().replace('b&bs', 'B&Bs')}, with starting prices.`)}${ideas}<p class="more-link"><a href="/pricing">See all prices ${svg.icon('arrow')}</a></p></div></section>
+${examplesBlock(nicheExamples, `${n.name}: examples`, true)}
+${faqSection(page, `Questions from ${n.singular} owners`, n.faq.concat(generalFaq(['cost', 'own', 'time'])), undefined, !nicheExamples.length)}
 ${enquirySection(page, { businessType: n.businessType, heading: `Get a free quote for your ${n.singular}`, lead: C.enquiry.lead })}`;
   return page;
 }
@@ -843,7 +850,7 @@ ${careSection(page, { sand: true, founding: true })}
 <div class="card" id="small-edits"><h2 class="h3">${t(S.heading)}</h2><p>${t(S.lead)}</p>${ticks(S.examples)}<p>${t(S.notIncluded)}</p><p class="callout">${svg.icon('calendar')}<span>${t(S.timing)}</span></p></div>
 </div>
 </div></section>
-<section class="section section-sand" aria-labelledby="next-h"><div class="wrap narrow center">${sectionHead('next', 'Want an exact price?', 'Tell me what you need. You get a free mock-up or plan, and a fixed quote before any work starts.')}${ctaRow(page, [{ href: '/start', label: 'How it works' }])}</div></section>`;
+<section class="section section-sand" aria-labelledby="next-h"><div class="wrap narrow center">${sectionHead('next', 'Want an exact price?', 'Tell me what you need, and I’ll send a fixed quote with a free mock-up or plan.')}${ctaRow(page, [{ href: '/start', label: 'How it works' }])}</div></section>`;
   return page;
 }
 

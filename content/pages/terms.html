@@ -15,7 +15,7 @@
   Edit this file (content/pages/terms.html), then run: node build.js
 -->
 <h2>Who I am</h2>
-<p>These terms are between you, the business owner, and Front Door Sites (“I” or “me”){{#if legal.legalName}}, run by {legalName}{{/if}}.</p>
+<p>These terms are between you, the business owner, and {{#if legal.legalName}}{legalName}{{/if}}{{#unless legal.legalName}}Front Door Sites{{/unless}} (“I” or “me”).</p>
 <ul>
   {{#if legal.registrationNumber}}<li>Registration number: {registrationNumber}</li>{{/if}}
   {{#if legal.noticeAddress}}<li>Address for legal notices: {noticeAddress}</li>{{/if}}
@@ -41,7 +41,8 @@
 </ul>
 
 <h2>Third-party costs</h2>
-<p>Some projects use services from other companies, like booking software subscriptions, payment gateway fees, SMS or email sending, or paid integrations. You pay for these directly, and I always list them in your quote. I’m not responsible for those companies’ prices, outages or changes, but I’ll help where I can.</p>
+<p>Some projects use services from other companies, like booking software subscriptions, payment gateway fees, SMS or email sending, or paid integrations. You pay for these directly, and I always list them in your quote.</p>
+<p>I’m not responsible for those companies’ prices, outages or changes, but I’ll help where I can.</p>
 
 <h2>Your content and your data</h2>
 <ul>
