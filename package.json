@@ -6,6 +6,6 @@
   "scripts": {
     "build": "node build.js",
     "serve": "node build.js --serve",
-    "deploy": "node build.js && npx wrangler pages deploy dist"
+    "deploy": "node build.js && npx wrangler deploy"
   }
 }

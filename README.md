@@ -6,7 +6,7 @@ It's a static site:
 
 - every word, price, band, care plan, question and contact detail lives in **`content.json`**;
 - **`node build.js`** turns that into a finished website in **`dist/`**;
-- it's hosted on **Cloudflare Pages**.
+- it's hosted on **Cloudflare**, which serves the files in `dist/` as they are (set up in `wrangler.toml`).
 
 It has no npm dependencies, no frameworks, no cookies and no trackers. You need Node 18 or newer.
 
@@ -175,43 +175,64 @@ Guides are hidden until the first one exists. Then a "Guides" link appears in th
 
 `content/pages/privacy.html` and `content/pages/terms.html` are **plain-English drafts, not legal advice**. Each starts with a "review before launch" comment that lists what to check, including stopping a project part-way, reusing general building blocks, yearly care plans, the Consumer Protection Act and the ECTA details for businesses that sell online. Read both and change anything that doesn't match how you work. Ideally, have an attorney look them over before you launch. Change `legal.lastUpdated` whenever you edit them.
 
-## Deploy to Cloudflare Pages
+## Deploy to Cloudflare
 
-First time only:
+### The easy way: connect GitHub (recommended)
+
+Done once, in the browser. After that, every change merged into `main` goes live by itself in about a minute.
+
+1. Sign up or log in at [dash.cloudflare.com](https://dash.cloudflare.com). The free plan is enough.
+2. Go to **Workers & Pages → Create**, and choose to import a repository from GitHub.
+3. Choose **Connect GitHub**. When GitHub asks, give Cloudflare access to **only the Websites repository**.
+4. Pick the **Websites** repository. Then fill in:
+
+   | Setting | Value |
+   |---|---|
+   | Project name | `frontdoorsites` (must match `name` in `wrangler.toml`) |
+   | Build command | `node build.js` |
+   | Deploy command | `npx wrangler deploy` |
+   | Production branch | `main` |
+
+5. Choose **Deploy**. When it finishes, the site is live at `https://frontdoorsites.<your-account>.workers.dev`. The exact link is on the project's page.
+
+If you use a different project name, change `name` in `wrangler.toml` to the same name, or the deploy step fails.
+
+Other branches, like a branch for a pull request, are built as preview versions and don't go live, so you can check changes before you merge them.
+
+### The other way: upload from your computer
+
+Use this if you'd rather not connect GitHub. You need [Node.js](https://nodejs.org) 18 or newer.
 
 ```bash
-npx wrangler login                                   # opens your browser to sign in to Cloudflare
-npx wrangler pages project create frontdoorsites --production-branch main
-```
-
-Every time you publish:
-
-```bash
+npx wrangler login     # first time only: opens your browser to sign in to Cloudflare
 node build.js
-npx wrangler pages deploy dist --branch main
+npx wrangler deploy    # publishes dist/ to your live site
 ```
 
-`--branch main` publishes to your live site. Without it, Wrangler uses your current git branch name, and any branch other than `main` gets a preview link instead (handy for checking changes first). The project name comes from `wrangler.toml`.
+The project name and settings come from `wrangler.toml`.
 
-The build also writes `dist/_headers`. Cloudflare reads it to set security headers (including a strict Content-Security-Policy) and long caching for fonts and assets. If you ever embed something from another website, like a map or a booking widget, add its domain to the Content-Security-Policy in `build.js`, or it will be blocked.
+### Security headers
+
+`wrangler.toml` tells Cloudflare to serve `dist/` as plain files, with clean addresses (`/websites` serves `websites.html`) and `404.html` for unknown pages. The build also writes `dist/_headers`. Cloudflare reads it to set security headers (including a strict Content-Security-Policy) and long caching for fonts and assets. If you ever embed something from another website, like a map or a booking widget, add its domain to the Content-Security-Policy in `build.js`, or it will be blocked.
 
 ## Connect frontdoorsites.co.za
 
-Pointing the root domain (frontdoorsites.co.za without www) at Cloudflare Pages requires the domain's DNS to be on Cloudflare.
+Pointing the root domain (frontdoorsites.co.za without www) at your Cloudflare site requires the domain's DNS to be on Cloudflare.
 
-1. **Add the domain to Cloudflare.** In the Cloudflare dashboard, choose **Add a domain**, enter `frontdoorsites.co.za` and pick the Free plan. Cloudflare gives you two nameservers.
-2. **Change the nameservers** at the company where you registered the .co.za domain, to the two Cloudflare nameservers. Moving existing DNS records (like email MX records) is covered in step 5. It usually takes a few hours, and at most 24–48 hours. Cloudflare emails you when it's active.
-3. **Attach the domain to the site.** Go to **Workers & Pages → frontdoorsites → Custom domains → Set up a custom domain**, enter `frontdoorsites.co.za` and confirm. Cloudflare creates the DNS record and the HTTPS certificate for you.
-4. **Add www too.** Repeat step 3 with `www.frontdoorsites.co.za`. Then, under the domain's **Rules → Redirect Rules**, use the "Redirect from WWW to root" template, so everyone ends up on `https://frontdoorsites.co.za`.
-5. **Keep your email working.** If your email uses this domain, check that its MX records (and any SPF/DKIM TXT records) were copied into Cloudflare's DNS before switching nameservers.
+1. **Buy the domain.** Cloudflare can't sell .co.za domains, so register `frontdoorsites.co.za` with any South African registrar (for example xneelo, Afrihost or Domains.co.za). You only need the domain itself, not their hosting or email.
+2. **Add the domain to Cloudflare.** In the Cloudflare dashboard, choose **Add a domain**, enter `frontdoorsites.co.za` and pick the Free plan. Cloudflare gives you two nameservers.
+3. **Change the nameservers** at the company where you registered the .co.za domain, to the two Cloudflare nameservers. Moving existing DNS records (like email MX records) is covered in step 6. It usually takes a few hours, and at most 24–48 hours. Cloudflare emails you when it's active.
+4. **Attach the domain to the site.** Go to **Workers & Pages → frontdoorsites → Settings → Domains & Routes → Add → Custom domain**, enter `frontdoorsites.co.za` and confirm. Cloudflare creates the DNS record and the HTTPS certificate for you.
+5. **Add www too.** Repeat step 4 with `www.frontdoorsites.co.za`. Then, under the domain's **Rules → Redirect Rules**, use the "Redirect from WWW to root" template, so everyone ends up on `https://frontdoorsites.co.za`.
+6. **Keep your email working.** If your email uses this domain, check that its MX records (and any SPF/DKIM TXT records) were copied into Cloudflare's DNS before switching nameservers.
 
-The `frontdoorsites.pages.dev` address keeps working too. Every page's canonical tag points to frontdoorsites.co.za, so search engines treat that as the real one.
+The `workers.dev` address keeps working too. Every page's canonical tag points to frontdoorsites.co.za, so search engines treat that as the real one.
 
 After launch, add the site to [Google Search Console](https://search.google.com/search-console) and submit `https://frontdoorsites.co.za/sitemap.xml`.
 
 ## Set up hello@frontdoorsites.co.za
 
-The site shows `hello@frontdoorsites.co.za`, so set it up before launch. Cloudflare Email Routing forwards it to the inbox you already use, for free. It needs the domain's DNS on Cloudflare (steps 1–2 above).
+The site shows `hello@frontdoorsites.co.za`, so set it up before launch. Cloudflare Email Routing forwards it to the inbox you already use, for free. It needs the domain on Cloudflare first (steps 1–3 of Connect frontdoorsites.co.za).
 
 1. In the Cloudflare dashboard, open `frontdoorsites.co.za`, then **Email → Email Routing**, and choose **Get started**.
 2. Create the custom address `hello`, set the action to **Send to an email**, and enter the inbox you want it forwarded to.

@@ -1,4 +1,11 @@
-# Cloudflare Pages project settings, used by: npx wrangler pages deploy dist
+# Cloudflare settings. Cloudflare runs `node build.js`, then `npx wrangler deploy`,
+# which publishes the finished site in dist/ as static files.
 name = "frontdoorsites"
-pages_build_output_dir = "dist"
 compatibility_date = "2026-10-01"
+
+[assets]
+directory = "./dist"
+# /websites serves websites.html, and /websites.html redirects to /websites.
+html_handling = "auto-trailing-slash"
+# Unknown addresses get dist/404.html with a 404 status.
+not_found_handling = "404-page"
