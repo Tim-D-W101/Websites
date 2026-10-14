@@ -2,22 +2,20 @@
   DRAFT: REVIEW BEFORE LAUNCH.
   These terms are a plain-English draft. They are not legal advice. Before the site goes live, check
   every point matches how you actually work, and ideally have an attorney look at them. In particular:
-  - Early cancellation (section "Minimum term and cancelling"). If a client counts as a "consumer"
-    under the Consumer Protection Act (for example a small business under the CPA turnover threshold),
-    section 14 lets them end a fixed-term agreement early with 20 business days' notice, subject to a
-    reasonable cancellation charge. The clause below is written with that in mind; have it checked.
-  - Founding clients: their early-cancellation charge includes the setup discount they received.
-  - Yearly plans: paid upfront, renew each year unless cancelled with notice before the renewal
-    date, and unused months aren't refunded. Check this against the CPA if clients count as consumers.
-  - Price increases (no increase in the first 12 months, then notice) and the liability cap
-    (fees paid in the last 3 months).
+  - Stopping a project part-way (section "If you stop a project"). This draft says the client pays
+    for work done, up to the deposit, and gets what has been built. Check this against the Consumer
+    Protection Act if a client counts as a "consumer" (e.g. a small business under the CPA threshold).
+  - Reusing general building blocks after handover (section "Who owns what").
+  - Yearly care plans: paid upfront, renew each year unless cancelled with notice, unused months
+    aren't refunded.
+  - The liability cap (fees paid in the 3 months before the problem).
   - ECTA section 43 asks businesses that sell online to show their full name, legal status,
     registration number (if any), a physical address for legal notices and contact details.
     Fill in the "legal" fields in content.json; they appear in "Who I am" below.
   Edit this file (content/pages/terms.html), then run: node build.js
 -->
 <h2>Who I am</h2>
-<p>These terms are between you, the business owner who signs up, and Front Door Sites (“I” or “me”){{#if legal.legalName}}, run by {legalName}{{/if}}.</p>
+<p>These terms are between you, the business owner, and Front Door Sites (“I” or “me”){{#if legal.legalName}}, run by {legalName}{{/if}}.</p>
 <ul>
   {{#if legal.registrationNumber}}<li>Registration number: {registrationNumber}</li>{{/if}}
   {{#if legal.noticeAddress}}<li>Address for legal notices: {noticeAddress}</li>{{/if}}
@@ -25,53 +23,61 @@
   {{#if contact.whatsapp}}<li>WhatsApp: {whatsapp}</li>{{/if}}
   <li>Website: {domain}</li>
 </ul>
-<p>By paying the setup fee, you agree to these terms.</p>
+<p>They cover website and business tool projects (“the work”) and the optional care plans. By paying a deposit or a care plan fee, you agree to them.</p>
 
-<h2>What you get</h2>
-<p>Your package includes what’s listed for it on the <a href="/pricing">pricing page</a> when you sign up. Every package includes the design and build of your website, hosting, registering and renewing your .co.za domain, setting up your Google Business Profile, and a number of small edits each month.</p>
-
-<h2>Fees and payment</h2>
+<h2>Quotes</h2>
 <ul>
-  <li>The setup fee is paid upfront, before I start building. Founding clients pay a discounted setup fee.</li>
-  <li>The monthly fee is paid by card or debit order through PayFast. It starts in the month your site goes live.</li>
-  {{#if terms.yearlyPaysMonths}}<li>You can pay yearly instead: 12 months for the price of {yearlyPaysMonths}, paid upfront through PayFast. Your first year starts when your site goes live.</li>{{/if}}
-  <li>All prices are in South African rand.</li>
-  <li>I won’t increase your monthly fee during your first {minimumMonths} months. After that, I’ll give you at least {noticeDays} days’ notice of any increase, and you can cancel instead.</li>
+  <li>Every project starts with a written quote, based on a mock-up (for websites) or a written plan (for tools). The quote says what’s included.</li>
+  <li>Quotes are valid for {quoteValidDays} days.</li>
+  <li>The price is fixed for the agreed scope. If you ask for something that isn’t in the quote, I tell you what it costs first and only do it once you’ve said yes.</li>
 </ul>
 
-<h2>Minimum term and cancelling</h2>
+<h2>Paying for the work</h2>
 <ul>
-  <li>There’s a {minimumMonths}-month minimum, counted from the day your site goes live.</li>
-  <li>After that, monthly plans run month-to-month. You can cancel any time with {noticeDays} days’ notice by WhatsApp or email.</li>
-  {{#if terms.yearlyPaysMonths}}<li>Yearly plans renew for another year unless you tell me at least {noticeDays} days before the renewal date. You can also switch to monthly payments at renewal. Yearly fees cover the whole year and aren’t refunded for unused months.</li>{{/if}}
-  <li>If you need to cancel during the first {minimumMonths} months, tell me in writing (WhatsApp or email is fine) and give at least 20 business days’ notice. A reasonable cancellation charge applies. It will never be more than the monthly fees left in your minimum term. For founding clients, it also includes the setup discount you received.</li>
+  <li>You pay a {deposit} deposit to start. I start once it has reached me.</li>
+  <li>You pay the other {balance} when you approve the finished work, before it goes live.</li>
+  {{#if process.paymentMethods}}<li>You pay by {paymentMethods}.</li>{{/if}}
+  <li>All prices are in South African rand.</li>
+</ul>
+
+<h2>Third-party costs</h2>
+<p>Some projects use services from other companies, like booking software subscriptions, payment gateway fees, SMS or email sending, or paid integrations. You pay for these directly, and I always list them in your quote. I’m not responsible for those companies’ prices, outages or changes, but I’ll help where I can.</p>
+
+<h2>Your content and your data</h2>
+<ul>
+  <li>You’re responsible for the text, photos, logos, prices and other content you send me, and for having the right to use it. I publish it as you send it, so please check your details.</li>
+  <li>Data in a business tool (like your clients, bookings or orders) belongs to you. You can export it at any time. I only look at it to build, support or fix the tool.</li>
+</ul>
+
+<h2>Who owns what</h2>
+<ul>
+  <li>Once the work is paid in full, the website or tool is yours, including its design and code.</li>
+  <li>I may reuse general building blocks that aren’t specific to you, like layout patterns or pieces of code, in other projects. I never reuse your content, your branding or your data.</li>
+  <li>Your domain is registered in your name. A website build includes the first year. After that, the renewal is covered by a care plan, or you pay it yourself.</li>
+</ul>
+
+<h2>If you stop a project</h2>
+<p>If you decide to stop before the work is finished, tell me in writing (WhatsApp or email is fine). You pay for the work done so far, up to the amount of the deposit, and I hand over what has been built.</p>
+
+<h2>Care plans</h2>
+<ul>
+  <li>Care plans are optional. They run month-to-month, and you can cancel with {noticeDays} days’ notice. There’s no minimum term.</li>
+  {{#if terms.yearlyPaysMonths}}<li>You can pay a care plan yearly instead: 12 months for the price of {yearlyPaysMonths}, paid upfront. A yearly plan renews for another year unless you tell me at least {noticeDays} days before the renewal date, and yearly fees aren’t refunded for unused months.</li>{{/if}}
+  <li>Without a care plan, I hand over the files so you can host the website or tool anywhere. Hosting it is then up to you.</li>
 </ul>
 
 <h2>Small edits</h2>
 <ul>
-  <li>A small edit is a quick change to something already on your site: text, prices, photos or opening hours. Your package says how many you get each month. Unused edits don’t carry over to the next month.</li>
+  <li>A small edit is a text, price, photo or hours change to something already there. Your care plan says how many you get each month. Unused edits don’t carry over.</li>
   <li>I do edits in a weekly batch. Edits sent by {editsDeadline} go live by {editsLive}.</li>
-  <li>Bigger changes, like new pages, new features or a redesign, aren’t small edits. I quote for them separately, from {extraWorkFrom}, and only start once you’ve accepted the quote.</li>
+  <li>Bigger changes, like new pages, new features or a redesign, and any work outside a care plan, are quoted per job, from {extraWorkFrom}. I only start once you’ve accepted the quote.</li>
 </ul>
 
-<h2>Your content</h2>
-<p>You’re responsible for the text, photos, logos, prices and other content you send me, and for having the right to use it. I publish your content as you send it, so please check your prices, hours and details. Your content always stays yours.</p>
-
-<h2>Who owns what</h2>
-<ul>
-  <li><strong>Your domain</strong> is registered in your name. It’s yours, and it stays yours if you leave. I’ll help you move it to whichever provider you choose.</li>
-  <li><strong>Your content</strong> (your words, photos and logo) is yours.</li>
-  <li><strong>The design and code</strong> of your website are licensed to you while you subscribe. When you leave, you can buy the site for {buyout}, and I’ll hand over the website files so you can host it elsewhere. Otherwise, the site is taken down at the end of your notice period.</li>
-</ul>
-
-<h2>Failed payments</h2>
-<p>If a payment fails, you’ll get an automatic reminder. If it’s still unpaid {suspendAfterDays} days after the due date, your site shows a “temporarily unavailable” page until the payment comes through. Your site comes back as soon as you’ve paid.</p>
-
-<h2>Other services</h2>
-<p>Your site may connect to services run by other companies, like your booking system (for example NightsBridge, Fresha or Booksy), Google, WhatsApp, PayFast and the hosting provider. Those services have their own terms and fees. I’m not responsible for their outages or changes, but I’ll help where I can.</p>
+<h2>Failed care plan payments</h2>
+<p>If a care plan payment fails, you’ll get an automatic reminder. If it’s still unpaid {suspendAfterDays} days after the due date, your website shows a “temporarily unavailable” page until the payment comes through. It comes back as soon as you’ve paid.</p>
 
 <h2>What I can and can’t promise</h2>
-<p>I use reliable hosting and do my best to keep your site online, fast and secure, but no website can be online 100% of the time. I can’t guarantee search rankings, bookings or sales.</p>
+<p>I use reliable hosting and do my best to keep your website or tool online, fast and secure, but nothing online works 100% of the time. I can’t guarantee search rankings, bookings or sales.</p>
 
 <h2>Liability</h2>
 <p>As far as the law allows, my total liability to you is limited to the fees you paid me in the 3 months before the problem happened. I’m not liable for indirect losses, like lost bookings or profit. Nothing in these terms takes away rights you have under the Consumer Protection Act, if it applies to you.</p>
@@ -80,7 +86,7 @@
 <p>How I handle personal information is explained in the <a href="/privacy">privacy policy</a>.</p>
 
 <h2>Changes to these terms</h2>
-<p>I may update these terms from time to time. If a change affects you, I’ll tell you at least {noticeDays} days before it applies.</p>
+<p>I may update these terms from time to time. If a change affects you, I’ll tell you at least {noticeDays} days before it applies. The quote you accepted stays as agreed.</p>
 
 <h2>Law</h2>
 <p>These terms are governed by the laws of South Africa.</p>

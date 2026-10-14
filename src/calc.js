@@ -8,23 +8,32 @@
     return Math.ceil(x - 1e-9);
   }
 
-  // Guesthouses: commission paid, and direct bookings needed to cover the monthly fee.
+  // Guesthouses: commission paid, and direct nights needed to pay back the build
+  // and to cover the care plan each month.
   function commission(o) {
-    var rate = Number(o.rate), nights = Number(o.nights), percent = Number(o.percent), monthly = Number(o.monthly);
-    if (!(rate > 0) || !(percent > 0) || !(nights >= 0) || !(monthly > 0)) return null;
-    var perBooking = rate * percent / 100;
+    var rate = Number(o.rate), nights = Number(o.nights), percent = Number(o.percent);
+    var build = Number(o.build), care = Number(o.care);
+    if (!(rate > 0) || !(percent > 0) || !(nights >= 0) || !(build > 0)) return null;
+    var perNight = rate * percent / 100;
+    var paid = rate * nights * percent / 100;
     return {
-      paid: rate * nights * percent / 100,
-      perBooking: perBooking,
-      needed: ceilCount(monthly / perBooking)
+      paid: paid,
+      perYear: paid * 12,
+      perNight: perNight,
+      payback: ceilCount(build / perNight),
+      care: care > 0 ? ceilCount(care / perNight) : null
     };
   }
 
-  // Salons and restaurants: extra bookings or customers needed to cover the monthly fee.
-  function breakEven(o) {
-    var price = Number(o.price), monthly = Number(o.monthly);
-    if (!(price > 0) || !(monthly > 0)) return null;
-    return { needed: ceilCount(monthly / price) };
+  // Salons and restaurants: bookings or customers needed to pay back the build,
+  // and to cover the care plan each month.
+  function payback(o) {
+    var price = Number(o.price), build = Number(o.build), care = Number(o.care);
+    if (!(price > 0) || !(build > 0)) return null;
+    return {
+      payback: ceilCount(build / price),
+      care: care > 0 ? ceilCount(care / price) : null
+    };
   }
 
   // "About" amounts: nearest R10 from R100 up, nearest rand below that.
@@ -38,7 +47,7 @@
     return 'R' + s.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   }
 
-  var api = { commission: commission, breakEven: breakEven, about: about, rand: rand, ceilCount: ceilCount };
+  var api = { commission: commission, payback: payback, about: about, rand: rand, ceilCount: ceilCount };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.FDSCalc = api;
 })(this);

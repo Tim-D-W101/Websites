@@ -40,13 +40,13 @@ h1 { margin-top: 56px; font: 600 60px/1.08 var(--head); color: #0A2A44; letter-s
 h1 em { font-style: normal; background: linear-gradient(transparent 60%, #FEC458 60%, #FEC458 90%, transparent 90%); }
 p { margin-top: 30px; font-size: 28px; font-weight: 700; color: #124B78; }
 .url { position: absolute; left: 72px; bottom: 56px; font-size: 26px; font-weight: 700; color: #0A2A44; background: #F0D1A2; padding: 8px 22px; border-radius: 999px; }
-.art { position: absolute; right: 40px; bottom: 20px; width: 470px; }
+.art { position: absolute; right: 24px; bottom: 20px; width: 500px; }
 </style></head><body>
 <div class="glow"></div>
 <div class="text">
   <div class="brand">${svg.logo('l')}<div>Front Door <span>Sites</span></div></div>
-  <h1>Websites for South African guesthouses, salons <em>&amp; restaurants</em></h1>
-  <p>Free mock-up · No calls · Built for phones</p>
+  <h1>Websites and <em>business tools</em> for South African businesses</h1>
+  <p>Free mock-up or plan · Fixed quotes · No calls</p>
 </div>
 <div class="url">frontdoorsites.co.za</div>
 <div class="art">${svg.hero()}</div>
