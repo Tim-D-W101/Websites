@@ -1,0 +1,73 @@
+<!--
+  DRAFT: REVIEW BEFORE LAUNCH.
+  This privacy policy is a plain-English draft that covers the basics of POPIA. It is not legal advice.
+  Before the site goes live:
+  - Check every statement matches how you actually work.
+  - Fill in legal.legalName, contact.email and contact.whatsapp in content.json.
+  - Confirm the retention period for enquiries (this draft says 12 months).
+  - Confirm whether you need to register your Information Officer with the Information Regulator.
+  - Ideally have it checked by an attorney or POPIA consultant.
+  Edit this file (content/pages/privacy.html), then run: node build.js
+-->
+<h2>The short version</h2>
+<ul>
+  <li>This website uses no cookies, no analytics and no tracking of any kind.</li>
+  <li>The quote form only opens WhatsApp or your email app. Nothing is sent unless you press send.</li>
+  <li>I use your details only to reply to you and quote. I don’t sell them, share them or add you to a mailing list.</li>
+  <li>You can ask me to delete your details at any time.</li>
+</ul>
+
+<h2>Who I am</h2>
+<p>This website belongs to {{#if legal.legalName}}{legalName}{{/if}}{{#unless legal.legalName}}Front Door Sites{{/unless}}. Under the Protection of Personal Information Act (POPIA), I’m responsible for the personal information described on this page. I’m also the Information Officer.</p>
+<p>You can reach me about anything on this page:</p>
+<ul>
+  {{#if contact.whatsapp}}<li>WhatsApp: {whatsapp}</li>{{/if}}
+  {{#if contact.email}}<li>Email: <a href="mailto:{email}">{email}</a></li>{{/if}}
+</ul>
+
+<h2>Cookies and tracking</h2>
+<p>This website doesn’t set cookies and doesn’t use analytics, advertising pixels or any other tracking. It doesn’t load fonts, scripts or images from other companies: everything comes from this site.</p>
+
+<h2>The quote form</h2>
+<p>The form doesn’t store or send anything by itself. When you press the button, it opens WhatsApp (or your email app) on your own device with a message already filled in. Nothing reaches me unless you press send.</p>
+<p>The message contains what you typed:</p>
+<ul>
+  <li>what you need, your business name, type of business and town;</li>
+  <li>your description of what you need;</li>
+  <li>the link, rough budget and timing, if you added them;</li>
+  <li>your name and how you’d like me to reply, with your email address or number if you added one.</li>
+</ul>
+<p>WhatsApp also shows me your phone number, and email shows me your email address.</p>
+<p>Your message goes only to my WhatsApp or email. I use it only to reply to you, to quote, and to build your free mock-up or plan from your business’s public information.</p>
+
+<h2>Hosting and server logs</h2>
+<p>This website is hosted by Cloudflare (Cloudflare Pages). Like every web host, Cloudflare’s servers automatically record basic technical information when you visit, such as your IP address, browser type, the page you asked for and the time. Cloudflare uses this to deliver the website and protect it from attacks. I don’t use it to identify you.</p>
+<p>Cloudflare may process this information outside South Africa. It is covered by <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare’s privacy policy</a> and its data protection commitments.</p>
+
+<h2>WhatsApp and email</h2>
+<p>When you message me, your message is also handled by WhatsApp (owned by Meta) or by the email providers involved, under their own privacy policies.</p>
+
+<h2>If you become a client</h2>
+<p>To build and run your website or tool, I keep your business details, your contact details, the content you send me (like your logo, photos, prices and hours) and records of your payments.</p>
+<p>If I build you a business tool, the data in it (like your clients, bookings or orders) belongs to you. I only access it to build, support or fix the tool, and I never use it for anything else. In POPIA terms, you are the responsible party for that data and I process it on your behalf.</p>
+{{#if care.payfastOn}}<p>If you pay by card through PayFast, PayFast processes the payment. I never see or store your full card details.</p>{{/if}}
+<p>I keep client records for as long as you’re a client, and afterwards only for as long as the law requires (for example, five years for tax records).</p>
+
+<h2>How long I keep enquiries</h2>
+<p>If you ask for a quote but don’t become a client, I delete your messages and any mock-up or plan within 12 months, or sooner if you ask.</p>
+
+<h2>Your rights</h2>
+<p>Under POPIA you can ask me:</p>
+<ul>
+  <li>what personal information I hold about you;</li>
+  <li>to correct it;</li>
+  <li>to delete it;</li>
+  <li>to stop using it.</li>
+</ul>
+<p>To ask, send me a message on WhatsApp or by email. I’ll confirm once it’s done. If the law says I must keep something (like an invoice), I’ll tell you what and why.</p>
+
+<h2>Complaints</h2>
+<p>If you’re unhappy with how I’ve handled your information, please tell me first so I can put it right. You also have the right to complain to the Information Regulator of South Africa. See <a href="https://inforegulator.org.za/complaints/">how to lodge a complaint</a> on their website, or email <a href="mailto:POPIAComplaints@inforegulator.org.za">POPIAComplaints@inforegulator.org.za</a>.</p>
+
+<h2>Changes to this policy</h2>
+<p>If this policy changes, I’ll update this page and the date at the top.</p>

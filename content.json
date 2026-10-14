@@ -1,0 +1,1107 @@
+{
+  "_readme": [
+    "Every price, band, care plan, question and contact detail on the site lives in this file.",
+    "Edit it, then run:  node build.js",
+    "Anything that is empty or starts with TODO counts as blank, and the matching button or section is hidden on the site.",
+    "Prices are plain numbers in rand: 3500 shows as R3 500. A band with \"from\": null shows as \"Quoted\".",
+    "Words in {curly brackets} are filled in for you, e.g. {websitesFrom} becomes R3 500. The full list is in README.md."
+  ],
+  "site": {
+    "name": "Front Door Sites",
+    "domain": "frontdoorsites.co.za",
+    "url": "https://frontdoorsites.co.za",
+    "language": "en-ZA",
+    "summary": "Front Door Sites builds websites and business tools for South African businesses, with a fixed quote before any work starts and optional care plans afterwards."
+  },
+  "contact": {
+    "firstName": "John",
+    "whatsapp": "27732426068",
+    "email": "hello@frontdoorsites.co.za",
+    "serviceArea": "KwaZulu-Natal",
+    "replyHours": "within 24 hours",
+    "googleBusinessProfile": "TODO: link to your Google Business Profile (optional)",
+    "whatsappGreeting": "Hi {firstName}, I have a question about a website or business tool."
+  },
+  "process": {
+    "quoteTime": "3 working days",
+    "paymentMethods": "EFT, with my bank details on your quote"
+  },
+  "terms": {
+    "depositPercent": 50,
+    "quoteValidDays": 30,
+    "noticeDays": 30,
+    "extraWorkFrom": 500,
+    "editsDeadline": "Thursday",
+    "editsLive": "Monday",
+    "suspendAfterDays": 14,
+    "yearlyPaysMonths": 10
+  },
+  "legal": {
+    "_note": "Shown on the Terms and Privacy pages only. ECTA asks online sellers to show these; check with your adviser.",
+    "legalName": "John Knot trading as Front Door Sites",
+    "registrationNumber": "",
+    "noticeAddress": "TODO: postal or physical address for legal notices (Terms page only)",
+    "lastUpdated": "2026-10-14"
+  },
+  "founding": {
+    "enabled": true,
+    "spotsTotal": 3,
+    "spotsLeft": 3,
+    "title": "Founding-client offer: first month of care free",
+    "text": "My first {spotsTotal} clients get their first month of any care plan free. No strings attached. If you're happy, I'd love an honest Google review.",
+    "startNote": "Founding client? Your first month of any care plan is free. I'll set that up when you choose your plan."
+  },
+  "groups": {
+    "websites": {
+      "name": "Websites",
+      "page": "/websites"
+    },
+    "tools": {
+      "name": "Business tools",
+      "page": "/business-tools"
+    }
+  },
+  "bands": [
+    {
+      "id": "starter-site",
+      "group": "websites",
+      "name": "Starter site",
+      "from": 3500,
+      "scope": "1–3 pages (home, services, contact), a WhatsApp button and your Google Business Profile set up.",
+      "buildTime": "1 week"
+    },
+    {
+      "id": "business-site",
+      "group": "websites",
+      "name": "Business site",
+      "from": 6500,
+      "scope": "4–8 pages, like services and prices, a gallery, about, FAQ and a contact form. Can link to a booking tool you already use.",
+      "buildTime": "2 weeks"
+    },
+    {
+      "id": "bookings-shop",
+      "group": "websites",
+      "name": "Bookings / online shop",
+      "from": 12000,
+      "scope": "Live bookings, online payments or a product catalogue, connected to tools like NightsBridge or PayFast.",
+      "buildTime": "3–4 weeks"
+    },
+    {
+      "id": "small-tool",
+      "group": "tools",
+      "name": "Small tool",
+      "from": 5000,
+      "scope": "One job done well: a quote builder, calculator, smart form or simple tracker.",
+      "buildTime": "2 weeks"
+    },
+    {
+      "id": "business-system",
+      "group": "tools",
+      "name": "Business system",
+      "from": 15000,
+      "scope": "Several screens and user logins: bookings, ordering, a client portal or job tracking.",
+      "buildTime": "4–6 weeks"
+    },
+    {
+      "id": "platform",
+      "group": "tools",
+      "name": "Bigger platform",
+      "from": null,
+      "scope": "Scoped in a written plan first, so you know exactly what you're getting and what it costs.",
+      "buildTime": "Agreed in the plan"
+    }
+  ],
+  "websiteIncludes": [
+    "Design built for phones first",
+    "All the pages in your quote",
+    "A WhatsApp button, so customers reach you in one tap",
+    "Basic SEO setup, so Google can find and understand your site",
+    "Your Google Business Profile set up",
+    "A .co.za domain registered in your name, first year included",
+    "Launch: I put it live and check it on phones and computers"
+  ],
+  "care": {
+    "heading": "Care plans",
+    "lead": "Optional. Fixed monthly prices, month-to-month with {noticeDays} days' notice and no minimum term.",
+    "noPlan": "Without a care plan, I hand over the files so you can host it anywhere."
+  },
+  "carePlans": [
+    {
+      "id": "hosting",
+      "name": "Hosting",
+      "monthly": 250,
+      "summary": "The basics, handled for you.",
+      "includes": [
+        "Hosting with the HTTPS padlock",
+        "Backups",
+        "Domain renewal",
+        "Kept online and secure"
+      ],
+      "payfast": "TODO: PayFast link for the Hosting plan, monthly",
+      "payfastYearly": "TODO: PayFast link for the Hosting plan, yearly"
+    },
+    {
+      "id": "care",
+      "name": "Care",
+      "monthly": 450,
+      "summary": "Hosting, plus small changes every month.",
+      "featured": true,
+      "includes": [
+        "Everything in Hosting, plus:",
+        "2 small edits a month",
+        "Google Business Profile kept up to date"
+      ],
+      "payfast": "TODO: PayFast link for the Care plan, monthly",
+      "payfastYearly": "TODO: PayFast link for the Care plan, yearly"
+    },
+    {
+      "id": "care-plus",
+      "name": "Care+",
+      "monthly": 950,
+      "summary": "For businesses running a tool or system.",
+      "includes": [
+        "Everything in Care, plus:",
+        "Hosting and upkeep for business tools: database, backups and user accounts",
+        "6 small edits a month",
+        "Priority replies"
+      ],
+      "payfast": "TODO: PayFast link for the Care+ plan, monthly",
+      "payfastYearly": "TODO: PayFast link for the Care+ plan, yearly"
+    }
+  ],
+  "home": {
+    "seo": {
+      "title": "Website Design & Business Tools in South Africa | Front Door Sites",
+      "description": "Websites from {websitesFrom} and business tools from {toolsFrom} for South African businesses. A free mock-up or plan, a fixed quote and no calls. Based in {serviceArea}."
+    },
+    "hero": {
+      "eyebrow": "Websites and business tools for South African businesses",
+      "h1": "Tell me what your business needs. I'll build it.",
+      "priceAnchor": "Websites from {websitesFrom} · Business tools from {toolsFrom}",
+      "lead": "A website, a booking system, a quote builder, or something to replace the spreadsheet. You get a free mock-up or plan and a fixed price before any work starts, and I look after it afterwards.",
+      "points": [
+        "Fixed quote before I start",
+        "You own it once it's paid for",
+        "No calls, voice notes welcome"
+      ]
+    },
+    "services": {
+      "heading": "Two things I build",
+      "lead": "Start with one, and add the other later if you need it.",
+      "cards": [
+        {
+          "group": "websites",
+          "title": "Websites",
+          "icon": "globe",
+          "address": "yourbusiness.co.za",
+          "text": "From a simple three-page site to online bookings and payments, built to bring in customers.",
+          "more": "See website options"
+        },
+        {
+          "group": "tools",
+          "title": "Business tools",
+          "icon": "grid",
+          "address": "app.yourbusiness.co.za",
+          "text": "Quote builders, booking systems, trackers and portals, built around the way you already work.",
+          "more": "See business tools"
+        }
+      ]
+    },
+    "canBuild": {
+      "heading": "What I can build",
+      "lead": "A few ideas. If something is slowing your business down, ask.",
+      "items": [
+        {
+          "kind": "website",
+          "icon": "globe",
+          "text": "A website that turns Google searches into enquiries"
+        },
+        {
+          "kind": "website",
+          "icon": "calendar",
+          "text": "Online bookings for appointments, rooms or tables"
+        },
+        {
+          "kind": "tool",
+          "icon": "form",
+          "text": "A quote and invoice builder you can use on your phone"
+        },
+        {
+          "kind": "tool",
+          "icon": "cart",
+          "text": "Online ordering for collection or delivery"
+        },
+        {
+          "kind": "tool",
+          "icon": "clipboard",
+          "text": "Job cards that follow every job from booking to paid"
+        },
+        {
+          "kind": "tool",
+          "icon": "users",
+          "text": "A client or member portal with its own logins"
+        },
+        {
+          "kind": "tool",
+          "icon": "clock",
+          "text": "Staff rosters and timesheets without the paper"
+        },
+        {
+          "kind": "tool",
+          "icon": "box",
+          "text": "A stock and order tracker that shows what's running low"
+        },
+        {
+          "kind": "tool",
+          "icon": "chart",
+          "text": "A dashboard that turns your numbers into a clear picture"
+        }
+      ]
+    },
+    "steps": {
+      "heading": "How it works",
+      "lead": "Four steps from first message to go-live.",
+      "items": [
+        {
+          "title": "Tell me what you need",
+          "text": "Send a WhatsApp, an email or a voice note. Tell me what's slowing you down, or what you'd like your customers to be able to do."
+        },
+        {
+          "title": "Get a free mock-up or plan and a fixed quote",
+          "text": "For a website, I build a sample from your public info. For a tool, I write a short plan of what it will do. Either way you get a fixed price, with no obligation."
+        },
+        {
+          "title": "Pay a {deposit} deposit, then I build it",
+          "text": "I show you as I go. Ask for changes until it's right."
+        },
+        {
+          "title": "It goes live",
+          "text": "Pay the balance and it goes live. It's yours. Add a care plan if you'd like me to look after it."
+        }
+      ],
+      "quoteTimeText": "Mock-ups and plans usually reach you within {quoteTime}."
+    },
+    "pricingTeaser": {
+      "heading": "Clear starting prices",
+      "lead": "Starting prices, so you know roughly what to expect."
+    },
+    "industries": {
+      "heading": "Built for your kind of business",
+      "lead": "Any South African business can use a website or a tool: trades, shops, farms, transport companies, professional services and more. Here are ideas for three industries.",
+      "other": {
+        "title": "Any other business",
+        "text": "Tell me how your business works and what you'd like to fix. I'll suggest what would help most.",
+        "more": "Tell me what you need"
+      }
+    },
+    "about": {
+      "heading": "Who you'll be dealing with",
+      "text": "Hi, I'm {firstName}, the person behind Front Door Sites. I build and look after every website and tool myself, so you deal with me directly, on WhatsApp or email.",
+      "areaText": "I'm based in {serviceArea}. Because everything happens on WhatsApp and email, I can work with businesses anywhere in South Africa."
+    },
+    "examplesHeading": "Recent examples",
+    "faqTeaser": {
+      "heading": "Common questions",
+      "ids": [
+        "cost",
+        "mockup",
+        "own",
+        "calls"
+      ]
+    },
+    "cta": {
+      "heading": "Tell me what you need",
+      "lead": "A few lines is enough. I'll reply with ideas, a free mock-up or plan, and a fixed quote."
+    }
+  },
+  "websitesPage": {
+    "seo": {
+      "title": "Website Design South Africa from {websitesFrom} | Front Door Sites",
+      "description": "Web design for South African small businesses, from {websitesFrom}. A free mock-up first, a fixed quote, and a .co.za domain in your name. Based in {serviceArea}."
+    },
+    "hero": {
+      "eyebrow": "Websites",
+      "h1": "A website that brings in customers",
+      "lead": "Your services, your prices, your reviews and a way to reach you in one tap. I build a free mock-up first, so you see your site before you pay anything."
+    },
+    "includesHeading": "Every website includes",
+    "mockupCard": {
+      "heading": "Prefer to see it first?",
+      "text": "Send me a link to your Google Maps listing or Facebook page, and I'll build a sample of your website. It's free, and you only pay if you go ahead."
+    },
+    "bandsHeading": "Three sizes of website",
+    "bandsLead": "Pick the size that fits. Not sure which? Ask, and I'll tell you.",
+    "steps": {
+      "heading": "How a website project works",
+      "items": [
+        {
+          "title": "Free mock-up",
+          "text": "Send me your business name and a link to your Google Maps listing, Facebook page or current site. I build a sample from your public info."
+        },
+        {
+          "title": "Fixed quote",
+          "text": "You get a fixed price for the pages and features you want. It's valid for {quoteValidDays} days."
+        },
+        {
+          "title": "Deposit and build",
+          "text": "Pay a {deposit} deposit, send your logo, photos and prices, and I build the full site."
+        },
+        {
+          "title": "Approve and go live",
+          "text": "Ask for changes until it's right. Pay the balance and it goes live on your own domain."
+        }
+      ]
+    },
+    "careLead": "Optional. Keep your site online and up to date for a fixed monthly price."
+  },
+  "toolsPage": {
+    "seo": {
+      "title": "Custom Business Software & Booking Systems SA | Front Door Sites",
+      "description": "Custom business tools for South African businesses: quote and invoice software, booking systems, job tracking and more. From {toolsFrom}, with a free plan and a fixed quote."
+    },
+    "hero": {
+      "eyebrow": "Business tools",
+      "h1": "Business tools built around how you work",
+      "lead": "Simple, reliable tools that save you time every week: quotes, bookings, orders, jobs, stock and staff. You get a free plan and a fixed quote before I start."
+    },
+    "listHeading": "What a business tool can do",
+    "list": [
+      {
+        "icon": "form",
+        "title": "Quote and invoice builders",
+        "text": "Make a neat quote on your phone in minutes, then turn it into an invoice."
+      },
+      {
+        "icon": "calendar",
+        "title": "Booking and scheduling",
+        "text": "Clients pick a time that suits you, and you see the whole week at a glance."
+      },
+      {
+        "icon": "cart",
+        "title": "Online ordering",
+        "text": "Customers order for collection or delivery, and every order lands in one list."
+      },
+      {
+        "icon": "users",
+        "title": "Client or member portals",
+        "text": "Clients log in to see their bookings, documents or account."
+      },
+      {
+        "icon": "clipboard",
+        "title": "Job cards and job tracking",
+        "text": "Every job from first call to paid, with notes and photos."
+      },
+      {
+        "icon": "box",
+        "title": "Stock and order trackers",
+        "text": "See what's in stock, what's running low and what's on order."
+      },
+      {
+        "icon": "clock",
+        "title": "Staff timesheets and rosters",
+        "text": "Staff clock in on their phones, and the roster is always up to date."
+      },
+      {
+        "icon": "chart",
+        "title": "Dashboards and reports",
+        "text": "Your own numbers, turned into a clear picture you can check any time."
+      },
+      {
+        "icon": "pencil",
+        "title": "Forms that replace paper",
+        "text": "Checklists, sign-offs and applications that file themselves."
+      }
+    ],
+    "callout": "If you run it on paper, in a spreadsheet or in a WhatsApp group, it can probably be a tool.",
+    "steps": {
+      "heading": "How a tool project works",
+      "items": [
+        {
+          "title": "A free plan",
+          "text": "Tell me how things work now. I send a short written plan: what the tool will do, the main screens, the price and how long it will take."
+        },
+        {
+          "title": "A working demo, early",
+          "text": "After the {deposit} deposit, I build a working demo first, so you can try it with real examples."
+        },
+        {
+          "title": "Built in stages",
+          "text": "I build it in small steps and show you each one, so changes are easy while it's taking shape."
+        },
+        {
+          "title": "Handover",
+          "text": "I set it up, show you and your staff how it works, and stay on hand while you settle in."
+        }
+      ]
+    },
+    "points": [
+      {
+        "icon": "phone",
+        "title": "Runs in the browser",
+        "text": "Works on phones and computers. No app store and nothing to install."
+      },
+      {
+        "icon": "grid",
+        "title": "Grows with you",
+        "text": "Start with one job done well, and add screens later when you need them."
+      },
+      {
+        "icon": "lock",
+        "title": "Your data stays yours",
+        "text": "Export it any time, for example as a spreadsheet."
+      }
+    ],
+    "bandsHeading": "Three sizes of tool",
+    "bandsLead": "Every tool gets a fixed quote, based on its plan.",
+    "careLead": "Tools need hosting, backups and someone to keep them running. Care+ covers all of that."
+  },
+  "enquiry": {
+    "heading": "Get a free quote",
+    "lead": "Tell me a bit about your business. I'll reply with ideas, a free mock-up or plan, and a fixed quote.",
+    "needs": [
+      {
+        "value": "A website",
+        "key": "website",
+        "button": "Get my free mock-up",
+        "intro": "I'd like a free website mock-up and quote."
+      },
+      {
+        "value": "A business tool or system",
+        "key": "tool",
+        "button": "Get my free plan & quote",
+        "intro": "I'd like a free plan and quote for a business tool."
+      },
+      {
+        "value": "Both",
+        "key": "both",
+        "button": "Get my free quote",
+        "intro": "I'd like a free quote for a website and a business tool."
+      },
+      {
+        "value": "Not sure yet",
+        "key": "unsure",
+        "button": "Get my free quote",
+        "intro": "I'd like a free quote."
+      }
+    ],
+    "detailsPlaceholder": "e.g. Clients book on WhatsApp and I lose track. I'd like them to book online and see my prices.",
+    "detailsMax": 600,
+    "budgets": [
+      "Under R5 000",
+      "R5 000–R15 000",
+      "R15 000–R30 000",
+      "Over R30 000",
+      "Not sure yet"
+    ],
+    "timings": [
+      "As soon as possible",
+      "Within a month",
+      "In 1–3 months",
+      "Just exploring"
+    ],
+    "note": "Your details go straight to me and are only used to reply to you and quote.",
+    "noCalls": "No calls needed. Voice notes welcome."
+  },
+  "niches": [
+    {
+      "id": "guesthouses",
+      "name": "Guesthouses & B&Bs",
+      "navLabel": "Guesthouses",
+      "singular": "guesthouse",
+      "businessType": "Guesthouse or B&B",
+      "card": {
+        "text": "Direct bookings, live availability and a digital guest info book.",
+        "address": "yourguesthouse.co.za"
+      },
+      "seo": {
+        "title": "Guesthouse Website Design South Africa | Front Door Sites",
+        "description": "Websites and booking tools for South African guesthouses and B&Bs. Bring in direct bookings and keep the 15–18% commission booking sites charge. Websites from {websitesFrom}."
+      },
+      "hero": {
+        "eyebrow": "For guesthouses & B&Bs",
+        "h1": "A guesthouse website that brings in direct bookings",
+        "lead": "Booking sites take roughly 15–18% commission on every booking. When guests book through your own website, that money stays with you."
+      },
+      "argument": {
+        "heading": "Every direct booking keeps the commission in your pocket",
+        "paragraphs": [
+          "Booking sites are good at sending you new guests, but you pay commission on every booking they send.",
+          "Guests often find you on a booking site, then look you up on Google before they book. Returning guests and referrals do the same. If they find your own website with your rooms, rates and a 'Book direct' button, they can book there instead.",
+          "You don't have to leave the booking sites. Keep them for new guests, and let your website catch everyone who's already looking for you."
+        ],
+        "points": [
+          "Rooms, rates and photos that make guests want to stay",
+          "Guests book direct, or send a WhatsApp enquiry in one tap",
+          "Live availability from NightsBridge or your booking system",
+          "Your Google Business Profile set up properly, so you show up on Maps"
+        ]
+      },
+      "calculator": {
+        "type": "commission",
+        "heading": "What is commission costing you?",
+        "intro": "Put in your own numbers. The figures below are only an example.",
+        "bands": [
+          "business-site",
+          "bookings-shop"
+        ],
+        "carePlan": "care",
+        "defaults": {
+          "rate": 1200,
+          "nights": 20,
+          "percent": 15,
+          "percentMin": 10,
+          "percentMax": 20
+        }
+      },
+      "ideas": [
+        {
+          "kind": "website",
+          "band": "business-site",
+          "title": "Direct-booking website",
+          "text": "Rooms, rates, photos and a 'Book direct' button, so returning guests skip the booking sites."
+        },
+        {
+          "kind": "website",
+          "band": "bookings-shop",
+          "title": "Live availability and online booking",
+          "text": "Guests check dates and book on your site, through NightsBridge or a similar booking system."
+        },
+        {
+          "kind": "tool",
+          "band": "small-tool",
+          "title": "Digital guest info book",
+          "text": "Wi-Fi, check-out times, house rules and local tips on guests' phones. Update it any time."
+        },
+        {
+          "kind": "tool",
+          "band": "small-tool",
+          "title": "Housekeeping and maintenance checklist",
+          "text": "Staff tick off rooms on their phones, and you see what's done and what needs fixing."
+        },
+        {
+          "kind": "website",
+          "note": "Added to any website build",
+          "title": "Review-request QR cards",
+          "text": "A print-ready card for each room, so happy guests can leave a Google review in seconds."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Does it work with NightsBridge?",
+          "a": "Yes. On a bookings website I connect your NightsBridge booking button and live availability, so guests can check dates and book without leaving your site. Using a different booking system? Tell me which one. Most have a booking link or widget I can connect."
+        },
+        {
+          "q": "Do I have to stop using Booking.com or Airbnb?",
+          "a": "No. Keep your listings for new guests. Your website gives returning guests, referrals and Google searchers a direct way to book, without the commission."
+        },
+        {
+          "q": "I don't have a booking system. Can I still take bookings?",
+          "a": "Yes. A business site lets guests send an enquiry through a form or on WhatsApp, and you confirm the booking yourself, the way you do now."
+        },
+        {
+          "q": "What's a digital guest info book?",
+          "a": "A simple page guests open on their phone, with the Wi-Fi password, check-in and check-out times, house rules and your local tips. You can change it any time, and you print less."
+        }
+      ]
+    },
+    {
+      "id": "salons",
+      "name": "Salons & beauty",
+      "navLabel": "Salons",
+      "singular": "salon",
+      "businessType": "Salon or beauty business",
+      "card": {
+        "text": "Price lists, online booking and client records in one place.",
+        "address": "yoursalon.co.za"
+      },
+      "seo": {
+        "title": "Salon & Beauty Website Design South Africa | Front Door Sites",
+        "description": "Websites and booking tools for South African hair salons, nail, lash and brow studios and beauty therapists. Show your prices and take bookings. Websites from {websitesFrom}."
+      },
+      "hero": {
+        "eyebrow": "For salons & beauty businesses",
+        "h1": "A salon website that turns Google searches into bookings",
+        "lead": "For hair salons, nail, lash and brow studios and beauty therapists. Clients find you on Google, check your prices and reviews, then book. Your website makes that easy."
+      },
+      "argument": {
+        "heading": "Be the easy choice when someone searches",
+        "paragraphs": [
+          "When someone needs a new nail tech, lash artist or hairdresser, they search on Google. They look at prices, photos and reviews, then pick the place that makes it easiest to book.",
+          "If all they find is an old Facebook post or a phone number, they keep scrolling. A simple website with your price list, your best work, your reviews and a 'Book now' or WhatsApp button turns that search into a booking."
+        ],
+        "points": [
+          "Your services and prices, clear and easy to update",
+          "A gallery of your work",
+          "Your reviews, shown on your site",
+          "Booking on WhatsApp in one tap, or online through Fresha, Booksy or a booking tool of your own"
+        ]
+      },
+      "calculator": {
+        "type": "payback",
+        "heading": "How many bookings pay for your website?",
+        "intro": "Enter your average service price.",
+        "inputLabel": "Your average service price",
+        "unit": "booking",
+        "units": "bookings",
+        "bands": [
+          "starter-site",
+          "business-site"
+        ],
+        "carePlan": "care",
+        "defaults": {
+          "price": 350
+        }
+      },
+      "ideas": [
+        {
+          "kind": "website",
+          "band": "starter-site",
+          "title": "Price list and booking site",
+          "text": "Your services, prices, best work and a WhatsApp booking button."
+        },
+        {
+          "kind": "website",
+          "band": "business-site",
+          "title": "Online booking through Fresha or Booksy",
+          "text": "Clients choose a time straight from your site, using the booking tool you already have."
+        },
+        {
+          "kind": "tool",
+          "band": "business-system",
+          "title": "A booking tool of your own",
+          "text": "Your rules, your deposits and your reminders, without a monthly booking-app fee."
+        },
+        {
+          "kind": "tool",
+          "band": "small-tool",
+          "title": "Client record cards",
+          "text": "Each client's treatments, colours, allergies and notes on your phone, not on paper cards."
+        },
+        {
+          "kind": "tool",
+          "band": "small-tool",
+          "title": "Loyalty or referral tracker",
+          "text": "Track visits and referrals, and reward your regulars."
+        },
+        {
+          "kind": "tool",
+          "band": "small-tool",
+          "title": "Retail stock tracker",
+          "text": "Know what's on the shelf, what's selling and when to reorder."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Can clients book online?",
+          "a": "Yes. I can connect the booking tool you already use, like Fresha or Booksy, so clients choose a time straight from your site. Or I can build you a booking tool of your own. On a simple site, clients book with you on WhatsApp in one tap."
+        },
+        {
+          "q": "Can I change my prices?",
+          "a": "Yes. With the Care or Care+ plan, price changes are small edits, included every month. Without a plan, I quote small changes per job, from {extraWorkFrom}."
+        },
+        {
+          "q": "Can you show my Google reviews on the site?",
+          "a": "Yes. I add a selection of your real reviews to your site and refresh them when you ask. I never write or make up reviews."
+        },
+        {
+          "q": "I work from home. Do you have to show my address?",
+          "a": "No. You choose what's shown. You can show just your suburb and share the exact address once a booking is confirmed."
+        }
+      ]
+    },
+    {
+      "id": "restaurants",
+      "name": "Restaurants & cafes",
+      "navLabel": "Restaurants",
+      "singular": "restaurant",
+      "businessType": "Restaurant or cafe",
+      "card": {
+        "text": "Menus, a live open/closed sign, online ordering and staff rosters.",
+        "address": "yourcafe.co.za"
+      },
+      "seo": {
+        "title": "Restaurant & Cafe Website Design South Africa | Front Door Sites",
+        "description": "Websites and ordering tools for South African restaurants and cafes: menus with prices, a live open/closed sign, table requests and online ordering. Websites from {websitesFrom}."
+      },
+      "hero": {
+        "eyebrow": "For restaurants & cafes",
+        "h1": "A restaurant website with your menu, hours and directions",
+        "lead": "People search “restaurants near me” and decide in seconds. They want your menu, your hours and how to get there. If they can't find them, they choose somewhere else."
+      },
+      "argument": {
+        "heading": "Answer the three questions every hungry person asks",
+        "paragraphs": [
+          "What's on the menu, and what does it cost? Are you open right now? How do I get there? If those answers are scattered across old Facebook posts, people give up and go somewhere that makes it easy.",
+          "Your website puts all three on one fast page, with buttons to call you, WhatsApp you or open directions in Google Maps."
+        ],
+        "points": [
+          "Your full menu with prices, easy to update",
+          "A live “open now / closed” sign based on your hours",
+          "Tap to call, WhatsApp and Google Maps directions",
+          "Table requests or online orders sent straight to you"
+        ]
+      },
+      "openStatus": {
+        "heading": "A live “open now” sign",
+        "text": "Your site shows whether you're open right now, and when you next open or close, using South African time. So nobody drives over to a locked door.",
+        "demoName": "Your Cafe",
+        "demoNote": "Live example using sample hours and the current time in South Africa.",
+        "hours": {
+          "mon": [
+            "07:00",
+            "17:00"
+          ],
+          "tue": [
+            "07:00",
+            "17:00"
+          ],
+          "wed": [
+            "07:00",
+            "17:00"
+          ],
+          "thu": [
+            "07:00",
+            "17:00"
+          ],
+          "fri": [
+            "07:00",
+            "21:00"
+          ],
+          "sat": [
+            "08:00",
+            "21:00"
+          ],
+          "sun": [
+            "08:00",
+            "14:00"
+          ]
+        }
+      },
+      "calculator": {
+        "type": "payback",
+        "heading": "How many customers pay for your website?",
+        "intro": "Enter what one customer usually spends with you.",
+        "inputLabel": "Average spend per person",
+        "unit": "customer",
+        "units": "customers",
+        "bands": [
+          "starter-site",
+          "business-site"
+        ],
+        "carePlan": "care",
+        "defaults": {
+          "price": 180
+        }
+      },
+      "ideas": [
+        {
+          "kind": "website",
+          "band": "starter-site",
+          "title": "Menu site with a live open/closed sign",
+          "text": "Your menu, hours and directions, with a sign that shows whether you're open right now."
+        },
+        {
+          "kind": "website",
+          "band": "starter-site",
+          "title": "QR menu",
+          "text": "Guests scan a code on the table and see your current menu and prices."
+        },
+        {
+          "kind": "website",
+          "band": "business-site",
+          "title": "Table requests",
+          "text": "Guests ask for a table, and the request comes to you on WhatsApp or email."
+        },
+        {
+          "kind": "website",
+          "band": "bookings-shop",
+          "title": "Online ordering for collection",
+          "text": "Customers order and pay online, and every order appears in one list."
+        },
+        {
+          "kind": "tool",
+          "band": "small-tool",
+          "title": "Supplier order sheet",
+          "text": "One list of what to order from each supplier, so nothing runs out on a Friday night."
+        },
+        {
+          "kind": "tool",
+          "band": "small-tool",
+          "title": "Staff roster",
+          "text": "Plan shifts, share them with staff and see who's on today."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Can I change my menu prices?",
+          "a": "Yes. With the Care or Care+ plan, menu and price updates are small edits, included every month. Edits sent by {editsDeadline} go live by {editsLive}."
+        },
+        {
+          "q": "Can people order online for collection?",
+          "a": "Yes. An ordering site lets customers choose from your menu and pay online or when they collect. Payment fees, like PayFast's, are paid by you and listed in your quote."
+        },
+        {
+          "q": "Can people book a table?",
+          "a": "Yes. A table request form sends each request straight to you on WhatsApp or email, and you confirm it with the guest."
+        },
+        {
+          "q": "What about public holidays and special hours?",
+          "a": "Send me your holiday hours and I'll update the site. With the Care or Care+ plan, that's a small edit. The open/closed sign follows whatever hours are on your site."
+        }
+      ]
+    }
+  ],
+  "pricing": {
+    "seo": {
+      "title": "Website & Business Tool Prices | Front Door Sites",
+      "description": "Website design from {websitesFrom} and business tools from {toolsFrom}, with fixed quotes. Optional care plans from {careFrom}. Clear South African pricing."
+    },
+    "h1": "Clear prices, fixed quotes",
+    "lead": "Every job gets a fixed quote. These starting prices show roughly where you'll land.",
+    "terms": [
+      "{deposit} deposit to start, and the other {balance} when you approve it, before it goes live.",
+      {
+        "text": "You pay by {paymentMethods}.",
+        "requires": [
+          "process.paymentMethods"
+        ]
+      },
+      "Quotes are valid for {quoteValidDays} days.",
+      "The price is fixed for the agreed scope. Anything new is quoted before I do it.",
+      "A small edit is a text, price, photo or hours change. Extra work outside a care plan is quoted per job, from {extraWorkFrom}.",
+      "Third-party costs, like booking software subscriptions, payment gateway fees, SMS or email sending and paid integrations, are paid by you and always listed in your quote."
+    ],
+    "factorsHeading": "What sets the price",
+    "factors": [
+      "The number of pages or screens",
+      "Features like bookings, payments, logins or an admin area",
+      "Connecting to other systems",
+      "Whether you supply the text and photos, or I write them",
+      "How soon you need it"
+    ],
+    "smallEdit": {
+      "heading": "What's a small edit?",
+      "lead": "A quick change to something that's already on your website or tool. For example:",
+      "examples": [
+        "Changing text, like a special or your About section",
+        "Updating prices or your menu",
+        "Swapping or adding photos",
+        "Changing your opening hours or contact details"
+      ],
+      "notIncluded": "New pages, new features and redesigns aren't small edits. I quote those first, and only start once you've said yes.",
+      "timing": "Edits sent by {editsDeadline} go live by {editsLive}. Unused edits don't carry over to the next month."
+    }
+  },
+  "faqPage": {
+    "seo": {
+      "title": "Questions: Prices, Quotes, Care Plans & More | Front Door Sites",
+      "description": "Answers about Front Door Sites websites and business tools: prices, the free mock-up and plan, paying, owning your site, care plans and build times."
+    },
+    "h1": "Questions & answers",
+    "lead": "Straight answers about prices, payment, ownership and care plans. Can't find your question? Ask me on WhatsApp."
+  },
+  "faq": [
+    {
+      "id": "cost",
+      "q": "How much will it cost?",
+      "a": "Websites from {websitesFrom} and business tools from {toolsFrom}. Tell me what you need and I'll send a fixed quote. The price only changes if you ask for something new, and I quote that first."
+    },
+    {
+      "id": "mockup",
+      "q": "What's the free mock-up?",
+      "a": "A sample of your website, built from your public info, like your Google Maps listing or Facebook page. It's free and there's no obligation."
+    },
+    {
+      "id": "plan",
+      "q": "What's the free plan?",
+      "a": "For business tools: a short written plan of what the tool will do, the main screens, the price and how long it will take. It's free and there's no obligation."
+    },
+    {
+      "id": "pay",
+      "q": "How do I pay?",
+      "a": [
+        "{deposit} deposit to start, and the other {balance} when you approve it, before it goes live.",
+        {
+          "text": "You pay by {paymentMethods}.",
+          "requires": [
+            "process.paymentMethods"
+          ]
+        },
+        {
+          "text": "Care plans are paid by EFT each month, using the bank details on your invoice.",
+          "requires": [
+            "care.payByEft"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "own",
+      "q": "Do I own it?",
+      "a": "Yes. Once it's paid in full, the website or tool is yours, and your domain is registered in your name."
+    },
+    {
+      "id": "need-care",
+      "q": "Do I have to take a care plan?",
+      "a": "No. Without one, I hand over the files so you can host it anywhere. Every website needs hosting somewhere, and a care plan is the easy way to have it handled."
+    },
+    {
+      "id": "cancel-care",
+      "q": "Can I cancel my care plan?",
+      "a": "Yes, with {noticeDays} days' notice. There's no minimum term."
+    },
+    {
+      "id": "care-yearly",
+      "q": "Can I pay for a care plan yearly?",
+      "a": "Yes. Pay for a year upfront and you get 12 months for the price of {yearlyPaysMonths}. For example, the Care plan costs {careYearly} a year.",
+      "requires": [
+        "terms.yearlyPaysMonths"
+      ]
+    },
+    {
+      "id": "small-edit",
+      "q": "What's a small edit?",
+      "a": "A text, price, photo or hours change. Bigger changes are quoted, from {extraWorkFrom}."
+    },
+    {
+      "id": "time",
+      "q": "How long does it take?",
+      "a": "It depends on the size of the job, and your quote includes a timeline.",
+      "special": "buildTimes"
+    },
+    {
+      "id": "calls",
+      "q": "Do I need to get on a call?",
+      "a": "No. Everything happens on WhatsApp and email. Voice notes are welcome."
+    },
+    {
+      "id": "phones",
+      "q": "Will it work on phones?",
+      "a": "Yes. Websites and tools are built for phones first, then checked on computers."
+    },
+    {
+      "id": "tool-what",
+      "q": "What can a business tool do for me?",
+      "a": "It takes a job you do by hand and makes it quicker. For example:",
+      "list": [
+        "A builder could send a neat quote from a phone in two minutes, then turn it into an invoice.",
+        "A salon could keep every client's colour formulas and notes in one place, instead of on paper cards.",
+        "A farm stall could take orders for collection without fifty WhatsApp messages.",
+        "A transport company could see every job, driver and delivery on one screen."
+      ]
+    },
+    {
+      "id": "other-costs",
+      "q": "Are there other costs?",
+      "a": "Things like booking software, payment fees or SMS sending are paid by you, and I list them in your quote. Hosting is covered by a care plan, or you can host it yourself."
+    }
+  ],
+  "examplesPage": {
+    "seo": {
+      "title": "Website & Business Tool Examples | Front Door Sites",
+      "description": "Example websites and business tools for South African businesses. Demos are clearly labelled, and client work is shown with permission."
+    },
+    "h1": "Examples",
+    "lead": "Demos are made-up businesses, built to show what's possible. Client work is shown with the owner's permission.",
+    "empty": "There are no examples here yet. The best example is your own business: ask for a free mock-up or plan, and see it before you decide."
+  },
+  "examples": [],
+  "startPage": {
+    "seo": {
+      "title": "How It Works: From Quote to Go-Live | Front Door Sites",
+      "description": "How a project with Front Door Sites works: tell me what you need, get a free mock-up or plan and a fixed quote, pay a {deposit} deposit, approve, and go live."
+    },
+    "h1": "From first message to go-live",
+    "lead": "Here's exactly what happens, step by step.",
+    "steps": [
+      {
+        "id": "tell",
+        "title": "Tell me what you need",
+        "text": "Use the form, or send a WhatsApp, an email or a voice note. A few lines is enough."
+      },
+      {
+        "id": "quote",
+        "title": "Get a free mock-up or plan, with a fixed quote",
+        "text": "For a website, a sample built from your public info. For a tool, a short written plan. Both come with a fixed price, valid for {quoteValidDays} days.",
+        "extra": {
+          "text": "Usually within {quoteTime}.",
+          "requires": [
+            "process.quoteTime"
+          ]
+        }
+      },
+      {
+        "id": "deposit",
+        "title": "Pay the {deposit} deposit",
+        "text": "That books your project in, and I start building.",
+        "extra": {
+          "text": "You pay by {paymentMethods}.",
+          "requires": [
+            "process.paymentMethods"
+          ]
+        }
+      },
+      {
+        "id": "build",
+        "title": "I build it, you approve it",
+        "text": "You see it as it takes shape and ask for changes until it's right. Send your logo, photos and prices when I ask for them."
+      },
+      {
+        "id": "live",
+        "title": "Pay the balance, and it goes live",
+        "text": "Pay the other {balance} once you've approved it. It goes live, and it's yours."
+      },
+      {
+        "id": "care",
+        "title": "Choose a care plan (optional)",
+        "text": "If you'd like me to keep it online and up to date, pick a care plan. You can cancel with {noticeDays} days' notice.",
+        "noLinksText": [
+          "Tell me which plan you'd like, and I'll send you an invoice. You pay by EFT each month.",
+          {
+            "text": "Or pay once a year and get 12 months for the price of {yearlyPaysMonths}.",
+            "requires": [
+              "terms.yearlyPaysMonths"
+            ]
+          }
+        ]
+      }
+    ],
+    "timesHeading": "Typical build times",
+    "timesNote": "Counted from when your deposit and content reach me. Your quote gives the exact timeline."
+  },
+  "legalPages": {
+    "privacy": {
+      "seo": {
+        "title": "Privacy Policy (POPIA) | Front Door Sites",
+        "description": "How Front Door Sites handles your personal information under POPIA: no cookies, no tracking, and your details used only to reply to you."
+      },
+      "h1": "Privacy policy",
+      "lead": "Short version: no cookies, no tracking, and your details are only used to reply to you and quote."
+    },
+    "terms": {
+      "seo": {
+        "title": "Terms of Service | Front Door Sites",
+        "description": "The terms for Front Door Sites projects: quotes, deposits, ownership, care plans, small edits, third-party costs and payments."
+      },
+      "h1": "Terms of service",
+      "lead": "The plain-English terms for website and business tool projects, and care plans."
+    }
+  },
+  "notFound": {
+    "seo": {
+      "title": "Page Not Found | Front Door Sites",
+      "description": "This page doesn't exist."
+    },
+    "h1": "This door's closed",
+    "lead": "The page you were looking for isn't here. It may have moved. Try one of these instead:"
+  },
+  "guidesPage": {
+    "seo": {
+      "title": "Guides for South African Business Owners | Front Door Sites",
+      "description": "Plain-English guides to getting more customers online and saving time with simple business tools, for South African businesses."
+    },
+    "h1": "Guides",
+    "lead": "Plain-English guides to getting more customers online and saving time with simple tools."
+  },
+  "guides": []
+}

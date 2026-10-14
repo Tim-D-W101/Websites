@@ -1,0 +1,11 @@
+{
+  "name": "frontdoorsites",
+  "private": true,
+  "description": "Marketing website for Front Door Sites (frontdoorsites.co.za). No dependencies.",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "node build.js",
+    "serve": "node build.js --serve",
+    "deploy": "node build.js && npx wrangler pages deploy dist"
+  }
+}
