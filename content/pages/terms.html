@@ -1,0 +1,83 @@
+<!--
+  DRAFT: REVIEW BEFORE LAUNCH.
+  These terms are a plain-English draft. They are not legal advice. Before the site goes live, check
+  every point matches how you actually work, and ideally have an attorney look at them. In particular:
+  - When the monthly fee starts. This draft says: from the month your site goes live.
+  - Early cancellation (section "Minimum term and cancelling"). If a client counts as a "consumer"
+    under the Consumer Protection Act (for example a small business under the CPA turnover threshold),
+    section 14 lets them end a fixed-term agreement early with 20 business days' notice, subject to a
+    reasonable cancellation charge. The clause below is written with that in mind; have it checked.
+  - Founding clients: the cancellation charge for founding clients is the waived setup fee.
+  - Price increases (no increase in the first 12 months, then notice), the liability cap
+    (fees paid in the last 3 months) and what happens to unused small edits (not covered yet).
+  - ECTA section 43 asks businesses that sell online to show their full name, legal status,
+    registration number (if any), a physical address for legal notices and contact details.
+    Fill in the "legal" fields in content.json; they appear in "Who I am" below.
+  Edit this file (content/pages/terms.html), then run: node build.js
+-->
+<h2>Who I am</h2>
+<p>These terms are between you, the business owner who signs up, and Front Door Sites (“I” or “me”){{#if legal.legalName}}, run by {legalName}{{/if}}.</p>
+<ul>
+  {{#if legal.registrationNumber}}<li>Registration number: {registrationNumber}</li>{{/if}}
+  {{#if legal.noticeAddress}}<li>Address for legal notices: {noticeAddress}</li>{{/if}}
+  {{#if contact.email}}<li>Email: <a href="mailto:{email}">{email}</a></li>{{/if}}
+  {{#if contact.whatsapp}}<li>WhatsApp: {whatsapp}</li>{{/if}}
+  <li>Website: {domain}</li>
+</ul>
+<p>By paying the setup fee (or, for founding clients, the first monthly fee), you agree to these terms.</p>
+
+<h2>What you get</h2>
+<p>Your package includes what’s listed for it on the <a href="/pricing">pricing page</a> when you sign up. Every package includes the design and build of your website, hosting, registering and renewing your .co.za domain, setting up your Google Business Profile, and a number of small edits each month.</p>
+
+<h2>Fees and payment</h2>
+<ul>
+  <li>The setup fee is paid upfront, before I start building. Founding clients don’t pay a setup fee.</li>
+  <li>The monthly fee is paid by card or debit order through PayFast. It starts in the month your site goes live.</li>
+  <li>All prices are in South African rand.</li>
+  <li>I won’t increase your monthly fee during your first {minimumMonths} months. After that, I’ll give you at least {noticeDays} days’ notice of any increase, and you can cancel instead.</li>
+</ul>
+
+<h2>Minimum term and cancelling</h2>
+<ul>
+  <li>There’s a {minimumMonths}-month minimum, counted from the day your site goes live.</li>
+  <li>After that, your subscription runs month-to-month. You can cancel any time with {noticeDays} days’ notice by WhatsApp or email.</li>
+  <li>If you need to cancel during the first {minimumMonths} months, tell me in writing (WhatsApp or email is fine) and give at least 20 business days’ notice. A reasonable cancellation charge applies. It will never be more than the monthly fees left in your minimum term. For founding clients, the charge is the setup fee that was waived.</li>
+</ul>
+
+<h2>Small edits</h2>
+<ul>
+  <li>A small edit is a quick change to something already on your site: text, prices, photos or opening hours. Your package says how many you get each month.</li>
+  <li>I do edits in a weekly batch. Edits sent by {editsDeadline} go live by {editsLive}.</li>
+  <li>Bigger changes, like new pages, new features or a redesign, aren’t small edits. I quote for them separately, from {extraWorkFrom}, and only start once you’ve accepted the quote.</li>
+</ul>
+
+<h2>Your content</h2>
+<p>You’re responsible for the text, photos, logos, prices and other content you send me, and for having the right to use it. I publish your content as you send it, so please check your prices, hours and details. Your content always stays yours.</p>
+
+<h2>Who owns what</h2>
+<ul>
+  <li><strong>Your domain</strong> is registered in your name. It’s yours, and it stays yours if you leave. I’ll help you move it to whichever provider you choose.</li>
+  <li><strong>Your content</strong> (your words, photos and logo) is yours.</li>
+  <li><strong>The design and code</strong> of your website are licensed to you while you subscribe. When you leave, you can buy the site for {buyout}, and I’ll hand over the website files so you can host it elsewhere. Otherwise, the site is taken down at the end of your notice period.</li>
+</ul>
+
+<h2>Failed payments</h2>
+<p>If a monthly payment fails, you’ll get an automatic reminder. If it’s still unpaid {suspendAfterDays} days after the due date, your site shows a “temporarily unavailable” page until the payment comes through. Your site comes back as soon as you’ve paid.</p>
+
+<h2>Other services</h2>
+<p>Your site may connect to services run by other companies, like your booking system (for example NightsBridge, Fresha or Booksy), Google, WhatsApp, PayFast and the hosting provider. Those services have their own terms and fees. I’m not responsible for their outages or changes, but I’ll help where I can.</p>
+
+<h2>What I can and can’t promise</h2>
+<p>I use reliable hosting and do my best to keep your site online, fast and secure, but no website can be online 100% of the time. I can’t guarantee search rankings, bookings or sales.</p>
+
+<h2>Liability</h2>
+<p>As far as the law allows, my total liability to you is limited to the fees you paid me in the 3 months before the problem happened. I’m not liable for indirect losses, like lost bookings or profit. Nothing in these terms takes away rights you have under the Consumer Protection Act, if it applies to you.</p>
+
+<h2>Privacy</h2>
+<p>How I handle personal information is explained in the <a href="/privacy">privacy policy</a>.</p>
+
+<h2>Changes to these terms</h2>
+<p>I may update these terms from time to time. If a change affects you, I’ll tell you at least {noticeDays} days before it applies.</p>
+
+<h2>Law</h2>
+<p>These terms are governed by the laws of South Africa.</p>

@@ -1,0 +1,663 @@
+{
+  "_readme": [
+    "Every price, package, question and contact detail on the site lives in this file.",
+    "Edit it, then run:  node build.js",
+    "Anything that is empty or starts with TODO counts as blank, and the matching button or section is hidden on the site.",
+    "Prices are plain numbers in rand: 1500 shows as R1 500.",
+    "Words in {curly brackets} are filled in for you, e.g. {buyout} becomes R3 500. The full list is in README.md."
+  ],
+  "site": {
+    "name": "Front Door Sites",
+    "domain": "frontdoorsites.co.za",
+    "url": "https://frontdoorsites.co.za",
+    "language": "en-ZA",
+    "summary": "Front Door Sites builds and looks after websites for South African guesthouses, salons and restaurants, on a simple monthly subscription."
+  },
+  "contact": {
+    "firstName": "TODO: your first name, e.g. Tim",
+    "whatsapp": "TODO: WhatsApp Business number, international format without +, e.g. 27821234567",
+    "email": "TODO: business email, e.g. hello@frontdoorsites.co.za",
+    "serviceArea": "TODO: base town or service area, e.g. Pretoria East",
+    "replyHours": "TODO: e.g. Weekdays 17:00–20:00, Sat 08:00–12:00",
+    "googleBusinessProfile": "TODO: link to your Google Business Profile (optional)",
+    "whatsappGreeting": "Hi {firstName}, I have a question about a website for my business."
+  },
+  "process": {
+    "goLive": "TODO: typical time from payment + content received to live, e.g. 7 days",
+    "onboardingForm": "TODO: link to your onboarding form (Tally or Google Form)"
+  },
+  "terms": {
+    "minimumMonths": 12,
+    "noticeDays": 30,
+    "buyout": 3500,
+    "extraWorkFrom": 500,
+    "editsDeadline": "Thursday",
+    "editsLive": "Monday",
+    "suspendAfterDays": 14
+  },
+  "legal": {
+    "_note": "Shown on the Terms and Privacy pages only. ECTA asks online sellers to show these; check with your adviser.",
+    "legalName": "TODO: your full legal name or company name, e.g. Tim Smith trading as Front Door Sites",
+    "registrationNumber": "TODO: company registration number (leave as TODO if you're a sole proprietor)",
+    "noticeAddress": "TODO: postal or physical address for legal notices (Terms page only)",
+    "lastUpdated": "2026-10-14"
+  },
+  "founding": {
+    "enabled": true,
+    "spotsTotal": 5,
+    "spotsLeft": 5,
+    "title": "Founding-client offer: no setup fee",
+    "text": "My first {spotsTotal} clients pay no setup fee. In return, you commit to {minimumMonths} months, leave a Google review once you're live, and let me show your site as an example.",
+    "startNote": "Founding client? Don't pay the setup fee. Message me first and I'll send you a payment link for the monthly fee only."
+  },
+  "home": {
+    "seo": {
+      "title": "Websites for SA Guesthouses, Salons & Restaurants | Front Door Sites",
+      "description": "Websites for South African guesthouses, salons and restaurants, from {fromPrice}. Hosting, your .co.za domain and monthly edits included. Free mock-up."
+    },
+    "hero": {
+      "eyebrow": "Done-for-you websites for local businesses",
+      "h1": "Websites for South African guesthouses, salons and restaurants.",
+      "price": "From {fromPrice}.",
+      "lead": "I design your site, host it, register your .co.za domain, set up your Google Business Profile and make your small changes every month. You get on with running your business.",
+      "points": [
+        "Free mock-up, no obligation",
+        "No calls: everything on WhatsApp and email",
+        "Built for phones first"
+      ]
+    },
+    "niches": {
+      "heading": "Made for three kinds of business",
+      "lead": "I only build for guesthouses, beauty businesses and places to eat. So your site comes with the pages and buttons your customers actually look for."
+    },
+    "steps": {
+      "heading": "How it works",
+      "lead": "Three steps. You don't need to know anything about websites.",
+      "items": [
+        {
+          "title": "Get a free mock-up",
+          "text": "Send me your business name and a link to your Google Maps, Facebook, Instagram or booking page. I build a sample of your website from your public info. It's free, with no obligation."
+        },
+        {
+          "title": "You approve it",
+          "text": "Like it? Choose a package and send your logo, photos, prices and hours. I make changes until you're happy. Nothing goes live without your OK."
+        },
+        {
+          "title": "It goes live, and I handle the updates",
+          "text": "Your site goes live on your own .co.za domain. I keep it online, fast and secure, and make your small edits every month."
+        }
+      ]
+    },
+    "includes": {
+      "heading": "Every plan includes",
+      "items": [
+        {
+          "icon": "phone",
+          "title": "Design, built for phones",
+          "text": "Most of your customers will see your site on a phone, so that's where I start."
+        },
+        {
+          "icon": "lock",
+          "title": "Hosting",
+          "text": "Fast, secure hosting with the padlock (HTTPS). No separate hosting bill."
+        },
+        {
+          "icon": "globe",
+          "title": "Your .co.za domain",
+          "text": "Registered in your name, so it's always yours."
+        },
+        {
+          "icon": "pin",
+          "title": "Google Business Profile",
+          "text": "Set up or tidied up, so you show up properly on Google Maps and Search."
+        },
+        {
+          "icon": "pencil",
+          "title": "Small edits every month",
+          "text": "New prices, photos, hours or text. Send them on WhatsApp and I'll do the rest."
+        },
+        {
+          "icon": "chat",
+          "title": "WhatsApp button",
+          "text": "Customers reach you in one tap, straight from your site."
+        }
+      ]
+    },
+    "about": {
+      "heading": "Who you'll be dealing with",
+      "text": "Hi, I'm {firstName}, the person behind Front Door Sites. I build and look after every site myself, so you deal with me directly, on WhatsApp or email.",
+      "areaText": "I'm based in {serviceArea} and work with businesses all over South Africa."
+    },
+    "examplesHeading": "Recent examples",
+    "faqTeaser": {
+      "heading": "Common questions",
+      "ids": [
+        "included",
+        "mockup",
+        "calls",
+        "cancel"
+      ]
+    },
+    "cta": {
+      "heading": "See your new website before you pay a cent",
+      "lead": "Tell me about your business and I'll build a free mock-up from your public info. No obligation, no calls."
+    }
+  },
+  "mockup": {
+    "heading": "Get a free mock-up",
+    "lead": "Takes a minute. I'll build a sample of your site and send it to you.",
+    "note": "Your details go straight to me and are only used to reply to you.",
+    "businessTypes": [
+      {
+        "value": "Guesthouse or B&B",
+        "niche": "guesthouses"
+      },
+      {
+        "value": "Salon or beauty business",
+        "niche": "salons"
+      },
+      {
+        "value": "Restaurant or cafe",
+        "niche": "restaurants"
+      },
+      {
+        "value": "Something else",
+        "niche": ""
+      }
+    ]
+  },
+  "niches": [
+    {
+      "id": "guesthouses",
+      "name": "Guesthouses & B&Bs",
+      "navLabel": "Guesthouses",
+      "singular": "guesthouse",
+      "plansHeading": "Guesthouse plans",
+      "card": {
+        "text": "Take bookings direct and keep the commission booking sites charge.",
+        "address": "yourguesthouse.co.za"
+      },
+      "seo": {
+        "title": "Guesthouse Website Design South Africa | Front Door Sites",
+        "description": "Websites for South African guesthouses and B&Bs that bring in direct bookings, so you keep the 15–18% commission booking sites charge. From {fromPrice}."
+      },
+      "hero": {
+        "eyebrow": "For guesthouses & B&Bs",
+        "h1": "A guesthouse website that brings in direct bookings",
+        "lead": "Booking sites take roughly 15–18% commission on every booking. When guests book through your own website, that money stays with you."
+      },
+      "argument": {
+        "heading": "Every direct booking keeps the commission in your pocket",
+        "paragraphs": [
+          "Booking sites are good at sending you new guests. But they take a cut of every booking: roughly 15–18%, depending on the site and the extras you pay for.",
+          "Lots of guests find you on a booking site, then look you up on Google before they book. Returning guests and referrals do the same. If they find your own website with your rooms, rates and a 'Book direct' button, many will book there instead.",
+          "You don't have to leave the booking sites. Keep them for new guests, and let your website catch everyone who's already looking for you."
+        ],
+        "points": [
+          "Rooms, rates and photos that make guests want to stay",
+          "Guests book direct, or send a WhatsApp enquiry in one tap",
+          "Live availability from NightsBridge or your booking system (Direct Bookings plan)",
+          "Your Google Business Profile set up properly, so you show up on Maps"
+        ]
+      },
+      "calculator": {
+        "type": "commission",
+        "heading": "What is commission costing you?",
+        "intro": "Put in your own numbers. The figures below are only an example.",
+        "defaults": {
+          "rate": 900,
+          "nights": 20,
+          "percent": 15,
+          "percentMin": 10,
+          "percentMax": 20
+        }
+      },
+      "packages": [
+        {
+          "id": "guesthouse-starter",
+          "name": "Starter",
+          "setup": 1500,
+          "monthly": 499,
+          "summary": "A good-looking site that turns lookers into enquiries.",
+          "includes": [
+            "Home, Rooms, Gallery, Location & things to do, and Contact pages",
+            "WhatsApp button and enquiry form",
+            "Google Business Profile set up",
+            "2 small edits a month"
+          ],
+          "payfast": "TODO: PayFast link for Guesthouse Starter"
+        },
+        {
+          "id": "guesthouse-direct",
+          "name": "Direct Bookings",
+          "setup": 2500,
+          "monthly": 799,
+          "summary": "Guests check dates and book on your site, commission-free.",
+          "featured": true,
+          "includes": [
+            "Everything in Starter, plus:",
+            "Rates & specials page",
+            "Live availability and booking through your booking system (e.g. NightsBridge)",
+            "Review link and print-ready QR card",
+            "4 small edits a month, plus your seasonal special updated for you"
+          ],
+          "payfast": "TODO: PayFast link for Guesthouse Direct Bookings"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Does it work with NightsBridge?",
+          "a": "Yes. On the Direct Bookings plan I connect your NightsBridge booking button and live availability to your site, so guests can check dates and book without leaving it. If you use a different booking system, tell me which one. Most have a booking link or widget I can connect."
+        },
+        {
+          "q": "Do I have to stop using Booking.com or Airbnb?",
+          "a": "No. Keep your listings for new guests. Your website gives returning guests, referrals and Google searchers a direct way to book, without the commission."
+        },
+        {
+          "q": "I don't have a booking system. Can I still take bookings?",
+          "a": "Yes. On the Starter plan, guests send an enquiry through your site or on WhatsApp, and you confirm the booking yourself, the way you do now."
+        },
+        {
+          "q": "Can you update my rates and seasonal specials?",
+          "a": "Yes. Rate changes are small edits. The Direct Bookings plan adds a rates and specials page, and I update your seasonal special for you."
+        }
+      ]
+    },
+    {
+      "id": "salons",
+      "name": "Salons & beauty",
+      "navLabel": "Salons",
+      "singular": "salon",
+      "plansHeading": "Salon & beauty plans",
+      "card": {
+        "text": "Hair, nails, lashes, brows and beauty therapy. Show your prices and reviews, and let clients book in a tap.",
+        "address": "yoursalon.co.za"
+      },
+      "seo": {
+        "title": "Salon & Beauty Website Design South Africa | Front Door Sites",
+        "description": "Websites for South African hair salons, nail, lash and brow studios and beauty therapists. Show your prices and reviews and take bookings. From {fromPrice}."
+      },
+      "hero": {
+        "eyebrow": "For salons & beauty businesses",
+        "h1": "A salon website that turns Google searches into bookings",
+        "lead": "For hair salons, nail, lash and brow studios and beauty therapists. Clients find you on Google, check your prices and reviews, then book. Your website makes that easy."
+      },
+      "argument": {
+        "heading": "Be the easy choice when someone searches",
+        "paragraphs": [
+          "When someone needs a new nail tech, lash artist or hairdresser, they search on Google. They look at prices, photos and reviews, then pick the place that makes it easiest to book.",
+          "If all they find is an old Facebook post or a phone number, they keep scrolling. A simple website with your price list, your best work, your reviews and a 'Book now' or WhatsApp button turns that search into a booking."
+        ],
+        "points": [
+          "Your services and prices, clear and easy to update",
+          "A gallery of your work",
+          "Your reviews, shown on your site",
+          "Booking on WhatsApp in one tap, or online through Fresha, Booksy or your own tool (Bookings plan)"
+        ]
+      },
+      "calculator": {
+        "type": "breakeven",
+        "heading": "How many bookings pay for your website?",
+        "intro": "Enter your average service price. It's a rough guide based on what clients pay, before your costs.",
+        "inputLabel": "Your average service price",
+        "unit": "booking",
+        "units": "bookings",
+        "defaults": {
+          "price": 350
+        }
+      },
+      "packages": [
+        {
+          "id": "beauty-starter",
+          "name": "Starter",
+          "setup": 1000,
+          "monthly": 399,
+          "summary": "Your prices, your work and your reviews, with booking by WhatsApp.",
+          "includes": [
+            "Home, Services & prices, Gallery, About and Contact pages",
+            "WhatsApp booking button",
+            "Google Business Profile set up",
+            "Your reviews shown on your site",
+            "2 small edits a month"
+          ],
+          "payfast": "TODO: PayFast link for Beauty Starter"
+        },
+        {
+          "id": "beauty-bookings",
+          "name": "Bookings",
+          "setup": 1500,
+          "monthly": 599,
+          "summary": "Clients choose a time and book online, straight from your site.",
+          "featured": true,
+          "includes": [
+            "Everything in Starter, plus:",
+            "Online booking connected (Fresha, Booksy or your own tool)",
+            "Review request QR card",
+            "4 small edits a month"
+          ],
+          "payfast": "TODO: PayFast link for Beauty Bookings"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Can clients book online?",
+          "a": "Yes. On the Bookings plan I connect the booking tool you already use, like Fresha or Booksy, so clients can choose a time straight from your site. On Starter, clients book with you on WhatsApp in one tap."
+        },
+        {
+          "q": "Can I change my prices?",
+          "a": "Yes. Send me your new prices on WhatsApp. Price changes are small edits, so they're included every month."
+        },
+        {
+          "q": "Can you show my Google reviews on the site?",
+          "a": "Yes. I add a selection of your real reviews to your site and refresh them when you ask. I never write or make up reviews."
+        },
+        {
+          "q": "I work from home. Do you have to show my address?",
+          "a": "No. You choose what's shown. Many home-based studios show only their suburb and share the exact address once a booking is confirmed."
+        }
+      ]
+    },
+    {
+      "id": "restaurants",
+      "name": "Restaurants & cafes",
+      "navLabel": "Restaurants",
+      "singular": "restaurant",
+      "plansHeading": "Restaurant & cafe plans",
+      "card": {
+        "text": "Your menu, hours, directions and a live 'open now' sign: exactly what hungry people search for.",
+        "address": "yourcafe.co.za"
+      },
+      "seo": {
+        "title": "Restaurant & Cafe Website Design South Africa | Front Door Sites",
+        "description": "Websites for South African restaurants and cafes with your menu and prices, hours, directions and a live open/closed sign. From {fromPrice}."
+      },
+      "hero": {
+        "eyebrow": "For restaurants & cafes",
+        "h1": "A restaurant website with your menu, hours and directions",
+        "lead": "People search “restaurants near me” and decide in seconds. They want your menu, your hours and how to get there. If they can't find them, they choose somewhere else."
+      },
+      "argument": {
+        "heading": "Answer the three questions every hungry person asks",
+        "paragraphs": [
+          "What's on the menu, and what does it cost? Are you open right now? How do I get there? If those answers are scattered across old Facebook posts, people give up and go somewhere that makes it easy.",
+          "Your website puts all three on one fast page, with buttons to call you, WhatsApp you or open directions in Google Maps."
+        ],
+        "points": [
+          "Your full menu with prices, easy to update",
+          "A live “open now / closed” sign based on your hours",
+          "Tap to call, WhatsApp and Google Maps directions",
+          "Table requests sent straight to you (Menu + table requests plan)"
+        ]
+      },
+      "openStatus": {
+        "heading": "A live “open now” sign",
+        "text": "Your site shows whether you're open right now, and when you next open or close, using South African time. So nobody drives over to a locked door.",
+        "demoName": "Your Cafe",
+        "demoNote": "Live example using sample hours and the current time in South Africa.",
+        "hours": {
+          "mon": [
+            "07:00",
+            "17:00"
+          ],
+          "tue": [
+            "07:00",
+            "17:00"
+          ],
+          "wed": [
+            "07:00",
+            "17:00"
+          ],
+          "thu": [
+            "07:00",
+            "17:00"
+          ],
+          "fri": [
+            "07:00",
+            "21:00"
+          ],
+          "sat": [
+            "08:00",
+            "21:00"
+          ],
+          "sun": [
+            "08:00",
+            "14:00"
+          ]
+        }
+      },
+      "calculator": {
+        "type": "breakeven",
+        "heading": "How many customers pay for your website?",
+        "intro": "Enter what one customer usually spends with you. It's a rough guide based on what customers pay, before your costs.",
+        "inputLabel": "Average spend per person",
+        "unit": "customer",
+        "units": "customers",
+        "defaults": {
+          "price": 180
+        }
+      },
+      "packages": [
+        {
+          "id": "restaurant-menu",
+          "name": "Menu site",
+          "setup": 1000,
+          "monthly": 399,
+          "summary": "Menu, hours and directions on one fast site.",
+          "includes": [
+            "Home, Menu & prices, Gallery, and Hours & directions pages",
+            "Tap to call, WhatsApp and Google Maps directions",
+            "Live “open now / closed” sign",
+            "Google Business Profile set up",
+            "2 small edits a month"
+          ],
+          "payfast": "TODO: PayFast link for Restaurant Menu site"
+        },
+        {
+          "id": "restaurant-tables",
+          "name": "Menu + table requests",
+          "setup": 1500,
+          "monthly": 499,
+          "summary": "Everything in Menu site, and guests can ask for a table.",
+          "featured": true,
+          "includes": [
+            "Everything in Menu site, plus:",
+            "Table request form, sent to you by WhatsApp or email"
+          ],
+          "payfast": "TODO: PayFast link for Restaurant Menu + table requests"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Can I change my menu prices?",
+          "a": "Yes. Send me the changes on WhatsApp. Menu and price updates are small edits, so they're included every month. Edits sent by {editsDeadline} go live by {editsLive}."
+        },
+        {
+          "q": "Can people book a table?",
+          "a": "On the Menu + table requests plan, guests fill in a short form and the request comes straight to you on WhatsApp or email. You confirm it with them."
+        },
+        {
+          "q": "What about public holidays and special hours?",
+          "a": "Send me your holiday hours and I'll update the site. That's a small edit. The open/closed sign follows whatever hours are on your site."
+        },
+        {
+          "q": "Do I need a PDF menu?",
+          "a": "No. I build your menu as a proper web page, which loads fast on phones and which Google can read. If you'd like a PDF download as well, I can add one."
+        }
+      ]
+    }
+  ],
+  "pricing": {
+    "seo": {
+      "title": "Website Pricing from {fromPrice} | Front Door Sites",
+      "description": "Simple website pricing for South African small businesses: a once-off setup fee, then one monthly fee for hosting, your domain, Google Business Profile and edits."
+    },
+    "h1": "Simple, honest pricing",
+    "lead": "A once-off setup fee, then one monthly fee that covers your hosting, your .co.za domain, Google Business Profile setup and small edits every month. No surprise bills.",
+    "termsSummary": [
+      "{minimumMonths}-month minimum, then month-to-month with {noticeDays} days' notice.",
+      "Setup fee paid upfront. Monthly fee by card or debit order through PayFast.",
+      "All prices are in South African rand."
+    ],
+    "smallEdit": {
+      "heading": "What's a small edit?",
+      "lead": "A quick change to something that's already on your site. For example:",
+      "examples": [
+        "Changing text, like a special or your About section",
+        "Updating prices or your menu",
+        "Swapping or adding photos",
+        "Changing your opening hours or contact details"
+      ],
+      "notIncluded": "New pages, new features and redesigns aren't small edits. I quote for those separately, from {extraWorkFrom}, and only start once you've said yes.",
+      "timing": "Edits sent by {editsDeadline} go live by {editsLive}."
+    }
+  },
+  "faqPage": {
+    "seo": {
+      "title": "Website FAQ: Hosting, Domains, Edits & Payments | Front Door Sites",
+      "description": "Answers to common questions about Front Door Sites: what's included, small edits, owning your domain, cancelling, payments and the free mock-up."
+    },
+    "h1": "Questions & answers",
+    "lead": "What owners usually ask before signing up. Can't find your question? Ask me on WhatsApp or email."
+  },
+  "faq": [
+    {
+      "id": "included",
+      "q": "What's included?",
+      "a": "Design, hosting, your .co.za domain, Google Business Profile setup, and small edits every month. Each package also lists the pages and buttons you get."
+    },
+    {
+      "id": "small-edit",
+      "q": "What's a small edit?",
+      "a": "A text, price, photo or hours change. New pages or redesigns are quoted separately, from {extraWorkFrom}. Edits sent by {editsDeadline} go live by {editsLive}."
+    },
+    {
+      "id": "domain",
+      "q": "Do I own the domain?",
+      "a": "Yes, it's registered in your name."
+    },
+    {
+      "id": "cancel",
+      "q": "What if I cancel?",
+      "a": "There's a {minimumMonths}-month minimum, then {noticeDays} days' notice. The design is licensed to you while you subscribe. When you leave, you can buy the site for {buyout}, or it's taken down. The domain stays yours."
+    },
+    {
+      "id": "changes",
+      "q": "How do I ask for changes?",
+      "a": "WhatsApp or email. Send the change, a photo or a screenshot, and I'll take it from there."
+    },
+    {
+      "id": "phones",
+      "q": "Will it work on phones?",
+      "a": "Yes. It's built for phones first, then checked on tablets and computers."
+    },
+    {
+      "id": "pay",
+      "q": "How do I pay?",
+      "a": "The setup fee is paid upfront. After that, the monthly fee is paid by card or debit order through PayFast, a South African payment provider."
+    },
+    {
+      "id": "speed",
+      "q": "How fast will it be live?",
+      "a": "Usually within {goLive} of your payment and your content (logo, photos, prices and hours) reaching me.",
+      "requires": [
+        "process.goLive"
+      ]
+    },
+    {
+      "id": "calls",
+      "q": "Do I need to get on a call?",
+      "a": "No. Everything happens on WhatsApp and email, so you can reply when it suits you."
+    },
+    {
+      "id": "mockup",
+      "q": "What's the free mock-up?",
+      "a": "A sample of your site, built from your public info, like your Google Maps listing or Facebook page. It's free and there's no obligation."
+    }
+  ],
+  "examplesPage": {
+    "seo": {
+      "title": "Guesthouse, Salon & Restaurant Website Examples | Front Door Sites",
+      "description": "Example websites for South African guesthouses, salons and restaurants. Demo sites are clearly labelled. Client sites are shown with permission."
+    },
+    "h1": "Examples",
+    "lead": "Demo sites are made-up businesses, built to show what's possible. Client sites are real businesses, shown with their permission.",
+    "empty": "The first demo sites are being finished now. Until then, the best example is your own business: ask for a free mock-up and see your site before you decide."
+  },
+  "examples": [],
+  "startPage": {
+    "seo": {
+      "title": "Get Started: Sign Up for Your Website | Front Door Sites",
+      "description": "How to sign up with Front Door Sites: choose a package, pay through PayFast, send your content, approve your site and go live."
+    },
+    "h1": "Ready to start?",
+    "lead": "Here's exactly what happens, step by step.",
+    "steps": [
+      {
+        "id": "choose",
+        "title": "Choose your package",
+        "text": "Pick the plan that suits your business. Not sure which one? Ask me, or start with a free mock-up."
+      },
+      {
+        "id": "pay",
+        "title": "Pay the setup fee and set up your monthly payment",
+        "text": "Both go through PayFast, a South African payment provider, by card or debit order. I never see your card details.",
+        "noLinksText": "Message me and I'll send you a secure PayFast payment link for your package."
+      },
+      {
+        "id": "content",
+        "title": "Fill in the onboarding form",
+        "text": "Send your logo, photos, prices, opening hours and your booking link, if you have one.",
+        "noFormText": "I'll send you a short checklist on WhatsApp or email."
+      },
+      {
+        "id": "approve",
+        "title": "Approve your site",
+        "text": "I send you a preview link. Ask for changes until you're happy. Nothing goes live without your OK."
+      },
+      {
+        "id": "live",
+        "title": "You're live",
+        "text": "Your site goes live on your own .co.za domain. After that, send me small edits whenever you need them.",
+        "goLiveText": "Usually within {goLive} of your payment and content reaching me.",
+        "requires": [
+          "process.goLive"
+        ]
+      }
+    ]
+  },
+  "legalPages": {
+    "privacy": {
+      "seo": {
+        "title": "Privacy Policy (POPIA) | Front Door Sites",
+        "description": "How Front Door Sites handles your personal information under POPIA: no cookies, no tracking, and your details used only to reply to you."
+      },
+      "h1": "Privacy policy",
+      "lead": "Short version: no cookies, no tracking, and your details are only used to reply to you."
+    },
+    "terms": {
+      "seo": {
+        "title": "Terms of Service | Front Door Sites",
+        "description": "The terms for Front Door Sites website subscriptions: minimum term, notice, small edits, ownership of your site and domain, and payments."
+      },
+      "h1": "Terms of service",
+      "lead": "The plain-English terms for your website subscription."
+    }
+  },
+  "notFound": {
+    "seo": {
+      "title": "Page Not Found | Front Door Sites",
+      "description": "This page doesn't exist."
+    },
+    "h1": "This door's closed",
+    "lead": "The page you were looking for isn't here. It may have moved. Try one of these instead:"
+  },
+  "guidesPage": {
+    "seo": {
+      "title": "Guides for Guesthouse, Salon & Restaurant Owners | Front Door Sites",
+      "description": "Plain-English guides to getting more bookings and customers online, for South African guesthouses, salons and restaurants."
+    },
+    "h1": "Guides",
+    "lead": "Plain-English guides to getting more bookings and customers online."
+  },
+  "guides": []
+}
