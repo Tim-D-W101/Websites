@@ -59,6 +59,65 @@ function hero() {
 </svg>`;
 }
 
+// Home page front door, drawn in two layers with the same viewBox (0 0 560 600). The 3D door
+// leaf sits between them (build.js), over the doorway at x 211–349, y 203.5–516.
+// Back layer: the browser window, the page on the wall, lantern, plant, step, mat and light spill.
+function doorBack(o) {
+  const fan = id('df'), spill = id('dp'), lamp = id('dl'), aura = id('da');
+  const btn = String(o.bookButton || 'Book now');
+  const btnW = Math.max(96, Math.round(btn.length * 8.2 + 32));
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  return `<svg class="door-art door-back" viewBox="0 0 560 600" aria-hidden="true" focusable="false">
+<defs>
+<linearGradient id="${fan}" x1="0" y1="1" x2="0" y2="0">${lightStops}</linearGradient>
+<linearGradient id="${spill}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE58E" stop-opacity=".95"/><stop offset="1" stop-color="#FEC458" stop-opacity="0"/></linearGradient>
+<radialGradient id="${lamp}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE58E" stop-opacity=".9"/><stop offset="1" stop-color="#FFE58E" stop-opacity="0"/></radialGradient>
+<radialGradient id="${aura}" cx=".5" cy=".55" r=".5"><stop offset="0" stop-color="#FFE58E" stop-opacity=".75"/><stop offset=".6" stop-color="#FFE58E" stop-opacity=".25"/><stop offset="1" stop-color="#FFE58E" stop-opacity="0"/></radialGradient>
+</defs>
+<rect x="20" y="20" width="520" height="560" rx="36" fill="#FFFBF3"/>
+<ellipse class="door-aura" cx="280" cy="372" rx="215" ry="235" fill="url(#${aura})"/>
+<rect x="62" y="132" width="110" height="15" rx="7.5" fill="#124B78"/>
+<rect x="62" y="160" width="96" height="9" rx="4.5" fill="#E4CFA9"/>
+<rect x="62" y="178" width="78" height="9" rx="4.5" fill="#E4CFA9"/>
+<rect x="62" y="202" width="${btnW}" height="32" rx="16" fill="#FEC458"/>
+<text x="${62 + btnW / 2}" y="223" class="art-btn" text-anchor="middle">${esc(btn)}</text>
+<rect x="396" y="130" width="108" height="30" rx="15" fill="#E3F1E6"/>
+<circle cx="414" cy="145" r="5.5" fill="#1E6B3A"/>
+<text x="426" y="150" class="art-small art-open">${esc(o.openSign || 'Open now')}</text>
+<circle class="door-lamp" cx="410" cy="298" r="58" fill="url(#${lamp})"/>
+<path d="M384 262h26v9" fill="none" stroke="#124B78" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M398 277h24l-4 44h-16z" fill="#FFE58E" stroke="#124B78" stroke-width="5" stroke-linejoin="round"/>
+<path d="M410 286v26" stroke="#FEC458" stroke-width="4" stroke-linecap="round"/>
+<path d="M394 274h32M401 325h18" stroke="#124B78" stroke-width="6" stroke-linecap="round"/>
+<path class="door-fan" d="M211 200a69 69 0 0 1 138 0z" fill="url(#${fan})"/>
+<rect x="188" y="516" width="184" height="15" rx="4" fill="#E2C998"/>
+<rect x="230" y="541" width="100" height="22" rx="5" fill="#D6AE78"/>
+<text x="280" y="556" class="art-mat" text-anchor="middle">${esc(o.mat || 'WELCOME')}</text>
+<path class="door-spill" d="M213 517h134l58 58H155z" fill="url(#${spill})"/>
+<g transform="translate(40 123)">
+<path d="M58 402l-8-62 14 40 2-58 12 58 12-46-4 64" fill="#5E8C61"/>
+<path d="M66 402l-22-40 30 28M78 402l26-46-18 48" fill="none" stroke="#4C7A50" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M36 400h68l-7 52H43z" fill="#C46A3A"/><path d="M33 396h74v10H33z" fill="#A9552B"/>
+</g>
+<rect x="20" y="20" width="520" height="560" rx="36" fill="none" stroke="#124B78" stroke-width="10"/>
+<path d="M20 90h520" stroke="#124B78" stroke-width="8"/>
+<g fill="#316A97"><circle cx="62" cy="55" r="9"/><circle cx="90" cy="55" r="9"/><circle cx="118" cy="55" r="9"/></g>
+<rect x="148" y="37" width="352" height="36" rx="18" fill="#F0D1A2"/>
+<path d="M170 54v-4a6 6 0 0 1 12 0v4" fill="none" stroke="#0D436F" stroke-width="2.6"/><rect x="166" y="53" width="20" height="13" rx="3" fill="#0D436F"/>
+<text x="196" y="61" class="art-url">${esc(o.address || 'yourbusiness.co.za')}</text>
+</svg>`;
+}
+
+// Front layer: the door frame, the transom and the fanlight bars, drawn over the door leaf.
+function doorFront() {
+  return `<svg class="door-art door-front" viewBox="0 0 560 600" aria-hidden="true" focusable="false">
+<path d="M206 521V200a74 74 0 0 1 148 0v321" fill="none" stroke="#124B78" stroke-width="10" stroke-linejoin="round"/>
+<path d="M206 200h148" stroke="#124B78" stroke-width="7"/>
+<path d="M280 200l-48.8-48.8M280 200v-69M280 200l48.8-48.8" stroke="#124B78" stroke-width="4"/>
+<path d="M266 200a14 14 0 0 1 28 0z" fill="#124B78"/>
+</svg>`;
+}
+
 // "How it works" doors: 1 closed, 2 ajar, 3 wide open with light, 4 open and done (tick).
 function stepDoor(n) {
   const l = id('sd');
@@ -99,6 +158,10 @@ const ICONS = {
   chart: '<path d="M3 3v18h18"/><path d="M8 17v-5M13 17V8M18 17v-9"/>',
   form: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
   eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+  search: '<circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4.2-4.2"/>',
+  chevron: '<path d="m6 9 6 6 6-6"/>',
+  down: '<path d="M12 5v14M19 12l-7 7-7-7"/>',
+  key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/>',
   rocket: '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09zM12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>'
 };
 
@@ -183,4 +246,4 @@ ${rows}
 </svg>`;
 }
 
-module.exports = { logo, hero, stepDoor, icon, whatsapp, phone, app };
+module.exports = { logo, hero, doorBack, doorFront, stepDoor, icon, whatsapp, phone, app };
