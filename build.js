@@ -103,40 +103,67 @@ Object.assign(effective, {
 });
 const canEnquire = Boolean(contact.wa || contact.email);
 
-/* ---------- prices: build bands and care plans ---------- */
+/* ---------- prices: the website options, build bands and monthly plans ---------- */
 
 const bandById = Object.fromEntries(bands.map((b) => [b.id, b]));
 const hasPrice = (b) => b.from !== null && b.from !== undefined && b.from !== '' && Number(b.from) > 0;
 const minFrom = (group) => Math.min(...bands.filter((b) => b.group === group && hasPrice(b)).map((b) => Number(b.from)));
-const websitesFrom = minFrom('websites');
-const toolsFrom = minFrom('tools');
-const timedBands = bands.filter((b) => isSet(b.buildTime));
+const WEB = C.website;
+const BG = C.bigger || {};
+const camel = (id) => String(id).replace(/-(\w)/g, (m, c) => c.toUpperCase());
 
-const carePlans = (C.carePlans || []).map((p, i) => ({
-  ...p,
-  payfastUrl: link(`carePlans.${i}.payfast`, `PayFast link for the ${p.name} plan`),
-  payfastYearlyUrl: link(`carePlans.${i}.payfastYearly`, `Yearly PayFast link for the ${p.name} plan`)
-}));
-const careById = Object.fromEntries(carePlans.map((p) => [p.id, p]));
-// Care plans are paid through PayFast once any link is filled in. Until then, by EFT.
-const payfastOn = carePlans.some((p) => p.payfastUrl || p.payfastYearlyUrl);
-effective['care.payfastOn'] = payfastOn ? 'on' : '';
-effective['care.payByEft'] = payfastOn ? '' : 'on';
-const careFrom = Math.min(...carePlans.map((p) => p.monthly));
+// A business website is bought one of three ways (Once-off, Build + Care, Build + Care Plus).
+// An option with a monthly fee is a plan; the one without is once-off.
+const options = (WEB.options || []).map((o, i) => {
+  if (!(Number(o.build) > 0)) warn(`website.options: "${o.name}" needs a build price.`);
+  return {
+    ...o,
+    build: Number(o.build),
+    monthly: Number(o.monthly) > 0 ? Number(o.monthly) : 0,
+    payfastUrl: link(`website.options.${i}.payfast`, `PayFast link for ${o.name}`),
+    payfastYearlyUrl: link(`website.options.${i}.payfastYearly`, `Yearly PayFast link for ${o.name}`)
+  };
+});
+const optionById = Object.fromEntries(options.map((o) => [o.id, o]));
+const plans = options.filter((o) => o.monthly);
+const onceOff = options.find((o) => !o.monthly);
+if (!onceOff || !plans.length) warn('website.options needs one option without a monthly fee (once-off) and at least one with one.');
+const cheapestPlan = plans.slice().sort((a, b) => a.build - b.build)[0];
+const planName = (o) => o.plan || o.name;
+
+const websitesFrom = Math.min(...options.map((o) => o.build), minFrom('websites'));
+const toolsFrom = minFrom('tools');
+// The business website and each band, for the "Typical build time" lists.
+const timedJobs = [
+  ...(isSet(WEB.buildTime) ? [{ name: WEB.name, group: 'websites', buildTime: WEB.buildTime, website: true }] : []),
+  ...bands.filter((b) => isSet(b.buildTime))
+];
+
+// Plans are paid through PayFast once any plan link is filled in, and the once-off
+// renewal once its link is. Until then, both are paid by EFT.
+const plansPayfast = plans.some((o) => o.payfastUrl || o.payfastYearlyUrl);
+const renewalPayfast = Boolean(onceOff && onceOff.payfastUrl);
+Object.assign(effective, {
+  'plans.payfastOn': plansPayfast ? 'on' : '',
+  'plans.payByEft': plansPayfast ? '' : 'on',
+  'renewal.payfastOn': renewalPayfast ? 'on' : '',
+  'renewal.payByEft': renewalPayfast ? '' : 'on',
+  'payfast.on': plansPayfast || renewalPayfast ? 'on' : ''
+});
+const careFrom = Math.min(...plans.map((o) => o.monthly));
 
 const depositPct = Number(T.depositPercent) || 50;
 
-// Yearly care plans: pay for this many months and get 12. Blank, 0 or 12+ turns it off.
+// Yearly plans: pay for this many months and get 12. Blank, 0 or 12+ turns it off.
 const yearlyMonths = Number(T.yearlyPaysMonths) || 0;
 const yearlyOn = yearlyMonths > 0 && yearlyMonths < 12;
 const yearly = (monthlyFee) => monthlyFee * yearlyMonths;
 const yearlyFree = `${12 - yearlyMonths} month${12 - yearlyMonths === 1 ? '' : 's'}`;
 effective['terms.yearlyPaysMonths'] = yearlyOn ? 'on' : '';
 
+// Founding clients get their first month of a plan free.
 const F = C.founding || {};
 const foundingOn = F.enabled === true && Number(F.spotsLeft) > 0;
-// Founding clients get this much off the build price (not the care plans).
-const foundingPct = Number(F.discountPercent) || 50;
 
 const examples = (C.examples || []).filter((e) => {
   if (!isSet(e.name)) { warn('An example has no name, so it was skipped.'); return false; }
@@ -170,19 +197,20 @@ const tokens = {
   websitesFrom: rand(websitesFrom),
   toolsFrom: rand(toolsFrom),
   careFrom: month(careFrom),
+  renewalFee: rand(T.renewalYearly),
+  changeFee: rand(T.changeFee),
+  minMonths: T.minimumTermMonths,
+  graceDays: T.renewalGraceDays,
   deposit: `${depositPct}%`,
   balance: `${100 - depositPct}%`,
   quoteValidDays: T.quoteValidDays,
   noticeDays: T.noticeDays,
-  extraWorkFrom: rand(T.extraWorkFrom),
   editsDeadline: T.editsDeadline,
   editsLive: T.editsLive,
   suspendAfterDays: T.suspendAfterDays,
   yearlyPaysMonths: yearlyOn ? yearlyMonths : '',
   yearlyFree: yearlyOn ? yearlyFree : '',
-  careYearly: yearlyOn && careById.care ? rand(yearly(careById.care.monthly)) : '',
   spotsTotal: F.spotsTotal,
-  foundingDiscount: `${foundingPct}%`,
   spotsLeft: F.spotsLeft,
   siteName: site.name,
   domain: site.domain,
@@ -193,6 +221,9 @@ const tokens = {
   noticeAddress: val('legal.noticeAddress'),
   lastUpdated: longDate(val('legal.lastUpdated') || new Date().toISOString().slice(0, 10))
 };
+for (const k of ['renewalYearly', 'changeFee', 'minimumTermMonths', 'renewalGraceDays']) {
+  if (!(Number(T[k]) > 0)) warn(`terms.${k} should be a number above 0.`);
+}
 const softTokens = new Set(['firstName']);
 
 /* ---------- text helpers ---------- */
@@ -225,6 +256,20 @@ function typo(s) {
 }
 
 const t = (s) => esc(typo(fill(s)));
+// Like t(), with every rand amount in bold: "from R3 999" -> "from <strong>R3 999</strong>".
+const tMoney = (s) => t(s).replace(/R\d{1,3}(?: \d{3})*/g, '<strong>$&</strong>');
+
+// Per option, e.g. {onceOffBuild}, {careMonthly}, {carePlusChanges}, {careYearly}.
+// Filled after the other words, because an option's text can use them ({changeFee} per change).
+for (const o of options) {
+  const k = camel(o.id);
+  tokens[`${k}Build`] = rand(o.build);
+  tokens[`${k}Changes`] = isSet(o.changes) ? fill(o.changes) : '';
+  if (o.monthly) {
+    tokens[`${k}Monthly`] = month(o.monthly);
+    tokens[`${k}Yearly`] = yearlyOn ? rand(yearly(o.monthly)) : '';
+  }
+}
 
 // Text that may be a string, or { "text": ..., "requires": [...] } hidden until a detail is filled in.
 const shown = (items) => [].concat(items || []).filter((i) => typeof i === 'string' || requiresMet(i)).map((i) => (typeof i === 'string' ? i : i.text));
@@ -278,14 +323,14 @@ function sectionHead(idBase, heading, lead, tag = 'h2') {
 }
 
 function buildTimesList(group) {
-  return `<ul class="time-list">${timedBands.filter((b) => !group || b.group === group).map((b) => `<li><span>${esc(b.name)}</span><span>${esc(typo(b.buildTime))}</span></li>`).join('')}</ul>`;
+  return `<ul class="time-list">${timedJobs.filter((b) => !group || b.group === group).map((b) => `<li><span>${esc(b.name)}</span><span>${esc(typo(b.buildTime))}</span></li>`).join('')}</ul>`;
 }
 
 function faqAnswer(i, group) {
   const parts = shown(i.a);
   let html = parts.length ? `<p>${parts.map(t).join(' ')}</p>` : '';
   if (i.list) html += `<ul>${i.list.map((x) => `<li>${t(x)}</li>`).join('')}</ul>`;
-  if (i.special === 'buildTimes' && timedBands.some((b) => !group || b.group === group)) html += `<p>Typical build times, from when your deposit and content reach me:</p>${buildTimesList(group)}`;
+  if (i.special === 'buildTimes' && timedJobs.some((b) => !group || b.group === group)) html += `<p>Typical build times, from when your deposit and content reach me:</p>${buildTimesList(group)}`;
   return html;
 }
 
@@ -315,20 +360,31 @@ ${action}
 
 /* ---------- price cards ---------- */
 
+// Bands are once-off "from" prices ("from R12 000 once-off"), or "Quoted".
 function bandPrice(b) {
   return hasPrice(b)
-    ? `<p class="plan-price"><span class="plan-from">from</span><span class="plan-amount">${rand(b.from)}</span></p>`
+    ? `<p class="plan-price"><span class="plan-from">from</span><span class="plan-amount">${rand(b.from)}</span>${isSet(BG.priceNote) ? `<span class="plan-per">${t(BG.priceNote)}</span>` : ''}</p>`
     : '<p class="plan-price"><span class="plan-amount plan-quoted">Quoted</span></p>';
 }
+
+const bandButton = (b, page) => quoteButton(page, 'btn btn-gold', hasPrice(b) ? 'Get a free quote' : 'Ask for a free plan');
 
 function bandCard(b, page) {
   return `<article class="plan band" id="band-${esc(b.id)}">
 <h3>${t(b.name)}</h3>
 ${bandPrice(b)}
-${foundingOn ? `<p class="plan-setup"><strong>${foundingPct}% off</strong> for founding clients</p>` : ''}
 <p class="plan-summary">${t(b.scope)}</p>
 ${isSet(b.buildTime) ? `<p class="band-time">${svg.icon('clock')}<span>Typical build: ${esc(typo(b.buildTime))}</span></p>` : ''}
-${canEnquire ? `<div class="plan-actions">${quoteButton(page, 'btn btn-gold', hasPrice(b) ? 'Get a free quote' : 'Ask for a free plan')}</div>` : ''}
+${canEnquire ? `<div class="plan-actions">${bandButton(b, page)}</div>` : ''}
+</article>`;
+}
+
+// One band across the full width, e.g. Bookings / online shop under the website options.
+function bandWide(b, page) {
+  return `<article class="plan band band-wide" id="band-${esc(b.id)}">
+<div><h3>${t(b.name)}</h3><p class="plan-summary">${t(b.scope)}</p>
+${isSet(b.buildTime) ? `<p class="band-time">${svg.icon('clock')}<span>Typical build: ${esc(typo(b.buildTime))}</span></p>` : ''}</div>
+<div class="band-wide-side">${bandPrice(b)}${canEnquire ? bandButton(b, page) : ''}</div>
 </article>`;
 }
 
@@ -336,26 +392,45 @@ function bandsGrid(group, page) {
   return `<div class="plans plans-3">${bands.filter((b) => b.group === group).map((b) => bandCard(b, page)).join('')}</div>`;
 }
 
-function careCard(p, opts = {}) {
-  const featured = opts.highlight ? opts.highlight === p.id : p.featured;
-  return `<article class="plan care${featured ? ' plan-featured' : ''}" id="care-${esc(p.id)}">
-<header><h3>${t(p.name)}</h3><p class="plan-summary">${t(p.summary)}</p></header>
-<p class="plan-price"><span class="plan-amount">${rand(p.monthly)}</span><span class="plan-per">/month</span></p>
-${yearlyOn ? `<p class="plan-yearly">or pay <strong>${rand(yearly(p.monthly))}</strong> once a year <span class="plan-save">${yearlyFree} free</span></p>` : ''}
-${ticks(p.includes)}
-<div class="plan-actions"><a class="btn btn-ghost" href="/start#step-care">How to sign up</a></div>
+// A row on an option card: blank shows a dash, "Yes" a tick.
+function optionValue(v) {
+  const s = isSet(v) ? fill(v).trim() : '';
+  if (!s) return '<span class="none" aria-hidden="true">–</span><span class="visually-hidden">None</span>';
+  if (/^yes$/i.test(s)) return `<span class="yes">${svg.icon('check')}<span>${esc(s)}</span></span>`;
+  return esc(typo(s));
+}
+
+function optionCard(o, page) {
+  const featured = o.featured === true;
+  const monthly = o.monthly
+    ? `<p class="option-monthly"><strong>+ ${rand(o.monthly)}</strong>/month</p>${yearlyOn ? `<p class="plan-yearly">or pay <strong>${rand(yearly(o.monthly))}</strong> once a year <span class="plan-save">${yearlyFree} free</span></p>` : ''}`
+    : `<p class="option-monthly">${t(WEB.noMonthly)}</p>`;
+  const founding = foundingOn && o.monthly && isSet(F.cardNote) ? `<p class="option-note">${t(F.cardNote)}</p>` : '';
+  const rows = (WEB.rows || []).map((r) => `<div><dt>${t(r.label)}</dt><dd>${optionValue(o[r.key])}</dd></div>`).join('');
+  return `<article class="plan option${featured ? ' plan-featured' : ''}" id="option-${esc(o.id)}">
+${featured && isSet(WEB.badge) ? `<p class="option-badge">${t(WEB.badge)}</p>` : ''}
+<header class="option-head"><h3>${t(o.name)}</h3><p class="plan-summary">${t(o.summary)}</p></header>
+<div class="option-price"><p class="option-label">${t(WEB.priceLabel)}</p><p class="plan-price"><span class="plan-amount">${rand(o.build)}</span></p>${monthly}${founding}</div>
+<dl class="option-rows">${rows}</dl>
+<div class="plan-actions">${quoteButton(page, featured ? 'btn btn-gold' : 'btn btn-ghost')}</div>
 </article>`;
 }
 
-function careSection(page, opts = {}) {
-  const CA = C.care;
-  return `<section class="section${opts.sand ? ' section-sand' : ''}" id="care" aria-labelledby="care-h">
-<div class="wrap">
-${sectionHead('care', CA.heading, opts.lead || CA.lead)}
-<div class="plans plans-3">${carePlans.map((p) => careCard(p, opts)).join('')}</div>
-<p class="fine">${t(CA.noPlan)}</p>
-</div>
-</section>`;
+// The three ways to buy a website, side by side (stacked on phones).
+function optionsGrid(page) {
+  return `<div class="plans options">${options.map((o) => optionCard(o, page)).join('')}</div>`;
+}
+
+// On wide screens each card's rows line up with its neighbours' (CSS subgrid). The spans
+// depend on how many rows there are, so this part of the CSS is written here.
+function optionsCss() {
+  const n = (WEB.rows || []).length;
+  return `@media (min-width:1000px){@supports (grid-template-rows:subgrid){.options>.option{display:grid;grid-template-rows:subgrid;grid-row:span ${n + 3}}.option-rows{display:grid;grid-template-rows:subgrid;grid-row:span ${n}}}}`;
+}
+
+// "Websites from R3 999 with Care Plus, or R7 500 once-off · Business tools from R5 000"
+function priceAnchor(s, cls = '') {
+  return `<p class="price-anchor${cls}">${s.split(' · ').map((part) => `<span><span>${t(part)}</span></span>`).join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
 }
 
 function stepsSection(id, heading, lead, items, sand = true) {
@@ -467,45 +542,60 @@ ${tokens.quoteTime ? `<p class="mockup-hours">${svg.icon('calendar')}<span>${t(f
 
 /* ---------- calculators ---------- */
 
-function buildToggle(c) {
-  const list = c.bands.map((id) => bandById[id]).filter((b) => b && hasPrice(b));
-  return `<fieldset class="plan-toggle"><legend>Your website</legend>${list.map((b, i) => `<label><input type="radio" name="build" value="${Number(b.from)}" data-band-name="${esc(b.name)}"${i === 0 ? ' checked' : ''}><span><b>${esc(b.name)}</b> from ${rand(b.from)}</span></label>`).join('')}</fieldset>`;
+// The build prices a calculator compares: a website option (by its once-off price) or a band.
+function calcBuilds(n) {
+  return (n.calculator.builds || []).map((x) => {
+    const o = optionById[x.id];
+    const b = bandById[x.id];
+    const price = o ? o.build : b && hasPrice(b) ? Number(b.from) : 0;
+    if (!price) warn(`${n.id}: calculator build "${x.id}" isn't a website option or a band with a price.`);
+    return { label: x.label || (o ? WEB.name : b ? b.name : x.id), price };
+  }).filter((x) => x.price > 0);
+}
+
+// Two or more builds get a toggle. With one, the price sits on the calculator itself.
+function buildToggle(list) {
+  if (list.length < 2) return '';
+  return `<fieldset class="plan-toggle"><legend>Your website</legend>${list.map((b, i) => `<label><input type="radio" name="build" value="${b.price}" data-band-name="${esc(b.label)}"${i === 0 ? ' checked' : ''}><span><b>${esc(b.label)}</b> from ${rand(b.price)}</span></label>`).join('')}</fieldset>`;
 }
 
 function calculatorSection(n) {
   const c = n.calculator;
   const d = c.defaults;
-  const first = bandById[c.bands[0]];
-  const care = careById[c.carePlan] || carePlans[0];
-  const bandLabel = `${esc(first.name)} (${rand(first.from)})`;
-  const careNote = `the ${esc(care.name)} plan at ${month(care.monthly)}`;
+  const builds = calcBuilds(n);
+  const first = builds[0];
+  const care = optionById[c.carePlan] || plans[0];
+  const careName = esc(planName(care));
+  const bandLabel = `${esc(first.label)} (${rand(first.price)})`;
+  const priceNote = `Uses the ${t(BG.priceNote)} starting price of a <span data-out="bandLabel">${bandLabel}</span> and the ${careName} fee of ${month(care.monthly)}, so your own quote may differ.`;
+  const careLine = (r, one, many) => `On the ${careName} plan, <strong data-out="care">${plural(r.care, one, many)}</strong> a month <span data-out="careVerb">${r.care === 1 ? 'covers' : 'cover'}</span> the fee.`;
   let fields;
   let result;
   if (c.type === 'commission') {
-    const r = calc.commission({ rate: d.rate, nights: d.nights, percent: d.percent, build: first.from, care: care.monthly });
+    const r = calc.commission({ rate: d.rate, nights: d.nights, percent: d.percent, build: first.price, care: care.monthly });
     fields = `<div class="field"><label for="calc-rate">Your nightly rate</label><div class="rand-input"><span aria-hidden="true">R</span><input id="calc-rate" name="rate" type="text" inputmode="decimal" autocomplete="off" value="${d.rate}"></div></div>
 <div class="field"><label for="calc-nights">Nights booked through booking sites each month</label><input id="calc-nights" name="nights" type="text" inputmode="numeric" autocomplete="off" value="${d.nights}"></div>
 <div class="field"><p class="label-row"><label for="calc-percent">Commission they charge:</label> <output for="calc-percent" data-out="percent">${d.percent}%</output></p><input id="calc-percent" name="percent" type="range" min="${d.percentMin}" max="${d.percentMax}" step="1" value="${d.percent}"><div class="range-ends" aria-hidden="true"><span>${d.percentMin}%</span><span>${d.percentMax}%</span></div></div>`;
     result = `<div data-ok>
 <p class="calc-line">You pay about <strong data-out="paid">${rand(calc.about(r.paid))}</strong> a month (<span data-out="perYear">${rand(calc.about(r.perYear))}</span> a year) in commission.</p>
-<p class="calc-line calc-main">About <strong data-out="payback">${plural(r.payback, 'direct night', 'direct nights')}</strong> <span data-out="paybackVerb">${r.payback === 1 ? 'pays' : 'pay'}</span> back the website, and <strong data-out="care">${r.care}</strong> a month <span data-out="careVerb">${r.care === 1 ? 'covers' : 'cover'}</span> the ${esc(care.name)} plan after that.</p>
-<p class="calc-small">Each direct night saves about <span data-out="perNight">${rand(r.perNight)}</span> in commission. Uses the starting price of a <span data-out="bandLabel">${bandLabel}</span> and ${careNote}, so your own quote may differ.</p>
+<p class="calc-line calc-main">About <strong data-out="payback">${plural(r.payback, 'direct night', 'direct nights')}</strong> <span data-out="paybackVerb">${r.payback === 1 ? 'pays' : 'pay'}</span> for the website ${t(BG.priceNote)}. ${careLine(r, 'direct night', 'direct nights')}</p>
+<p class="calc-small">Each direct night saves about <span data-out="perNight">${rand(r.perNight)}</span> in commission. ${priceNote}</p>
 </div>
 <p data-err hidden>Enter your nightly rate and nights booked to see your numbers.</p>`;
   } else {
-    const r = calc.payback({ price: d.price, build: first.from, care: care.monthly });
+    const r = calc.payback({ price: d.price, build: first.price, care: care.monthly });
     fields = `<div class="field"><label for="calc-price">${t(c.inputLabel)}</label><div class="rand-input"><span aria-hidden="true">R</span><input id="calc-price" name="price" type="text" inputmode="decimal" autocomplete="off" value="${d.price}"></div></div>`;
     result = `<div data-ok>
-<p class="calc-line calc-main">About <strong data-out="payback">${plural(r.payback, c.unit, c.units)}</strong> <span data-out="paybackVerb">${r.payback === 1 ? 'pays' : 'pay'}</span> back the website, and <strong data-out="care">${r.care}</strong> a month <span data-out="careVerb">${r.care === 1 ? 'covers' : 'cover'}</span> the ${esc(care.name)} plan after that.</p>
-<p class="calc-small">Based on takings, not profit. Uses the starting price of a <span data-out="bandLabel">${bandLabel}</span> and ${careNote}, so your own quote may differ.</p>
+<p class="calc-line calc-main">About <strong data-out="payback">${plural(r.payback, c.unit, c.units)}</strong> <span data-out="paybackVerb">${r.payback === 1 ? 'pays' : 'pay'}</span> for the website ${t(BG.priceNote)}. ${careLine(r, c.unit, c.units)}</p>
+<p class="calc-small">Based on takings, not profit. ${priceNote}</p>
 </div>
 <p data-err hidden>Enter an amount to see your numbers.</p>`;
   }
   return `<section class="section section-sand" id="calculator" aria-labelledby="calc-h">
 <div class="wrap calc-grid">
 <div class="calc-intro">${sectionHead('calc', c.heading, c.intro)}</div>
-<div class="calc card" role="group" aria-labelledby="calc-h" data-calc="${esc(c.type)}" data-care="${care.monthly}" data-unit="${esc(c.unit || '')}" data-units="${esc(c.units || '')}">
-${buildToggle(c)}
+<div class="calc card" role="group" aria-labelledby="calc-h" data-calc="${esc(c.type)}" data-build="${first.price}" data-build-name="${esc(first.label)}" data-care="${care.monthly}" data-unit="${esc(c.unit || '')}" data-units="${esc(c.units || '')}">
+${buildToggle(builds)}
 ${fields}
 <div class="calc-result" aria-live="polite">${result}</div>
 </div>
@@ -613,11 +703,22 @@ function jsonLd() {
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'Websites and business tools',
-      itemListElement: bands.map((b) => {
-        const offer = { '@type': 'Offer', name: `${groups[b.group].name}: ${b.name}`, description: fill(b.scope), url: `${site.url}/pricing#band-${b.id}` };
-        if (hasPrice(b)) offer.priceSpecification = { '@type': 'PriceSpecification', minPrice: Number(b.from), priceCurrency: 'ZAR' };
-        return offer;
-      })
+      itemListElement: [
+        // The website options: a build price, plus a monthly plan or (once-off) a yearly renewal.
+        ...options.map((o) => {
+          const build = { '@type': 'PriceSpecification', name: 'Build', minPrice: o.build, priceCurrency: 'ZAR' };
+          const after = o.monthly
+            ? { '@type': 'UnitPriceSpecification', name: `${planName(o)} plan`, price: o.monthly, priceCurrency: 'ZAR', unitCode: 'MON', unitText: 'month' }
+            : { '@type': 'UnitPriceSpecification', name: 'Hosting and domain renewal, from the second year', price: Number(T.renewalYearly), priceCurrency: 'ZAR', unitCode: 'ANN', unitText: 'year' };
+          const term = o.monthly ? ` ${T.minimumTermMonths}-month minimum term.` : '';
+          return { '@type': 'Offer', name: `${WEB.name}: ${o.name}`, description: `${fill(o.summary)}${term}`, url: `${site.url}/pricing#option-${o.id}`, priceSpecification: [build, after] };
+        }),
+        ...bands.map((b) => {
+          const offer = { '@type': 'Offer', name: `${groups[b.group].name}: ${b.name}`, description: fill(b.scope), url: `${site.url}/pricing#band-${b.id}` };
+          if (hasPrice(b)) offer.priceSpecification = { '@type': 'PriceSpecification', name: 'Once-off build', minPrice: Number(b.from), priceCurrency: 'ZAR' };
+          return offer;
+        })
+      ]
     }
   };
   if (contact.wa) data.telephone = `+${contact.wa}`;
@@ -700,10 +801,10 @@ function iconGrid(items, cls = 'includes') {
 }
 
 function priceTeaser() {
-  const col = (title, href, rows) => `<div class="pt-col"><h3><a href="${href}">${esc(title)}</a></h3><ul>${rows}</ul></div>`;
-  const bandRows = (group) => bands.filter((b) => b.group === group).map((b) => `<li><span>${esc(b.name)}</span><span>${hasPrice(b) ? `from <strong>${rand(b.from)}</strong>` : 'Quoted'}</span></li>`).join('');
-  const careRows = carePlans.map((p) => `<li><span>${esc(p.name)}</span><span><strong>${rand(p.monthly)}</strong>/month</span></li>`).join('');
-  return `<div class="price-teaser">${col(groups.websites.name, '/websites', bandRows('websites'))}${col(groups.tools.name, '/business-tools', bandRows('tools'))}${col(C.care.heading, '/pricing#care', careRows)}</div>`;
+  const col = (title, href, rows, note) => `<div class="pt-col"><h3><a href="${href}">${esc(title)}</a></h3><ul>${rows}</ul>${note ? `<p class="pt-note">${note}</p>` : ''}</div>`;
+  const optionRows = options.map((o) => `<li><span>${esc(o.name)}</span><span><strong>${rand(o.build)}</strong>${o.monthly ? ` + ${month(o.monthly)}` : ''}</span></li>`).join('');
+  const bandRows = bands.map((b) => `<li><span>${esc(b.name)}</span><span>${hasPrice(b) ? `from <strong>${rand(b.from)}</strong>` : 'Quoted'}</span></li>`).join('');
+  return `<div class="price-teaser price-teaser-2">${col(WEB.name, '/pricing#websites-prices', optionRows, t(C.home.pricingTeaser.websiteNote))}${col(BG.heading, '/pricing#tools-prices', bandRows, `${t(BG.intro)} ${t(BG.lead)}`)}</div>`;
 }
 
 function homePage() {
@@ -718,7 +819,7 @@ function homePage() {
 <span class="niche-icon">${svg.icon(c.icon)}</span>
 <h3><a class="stretched" href="${groups[c.group].page}">${t(c.title)}</a></h3>
 <p>${t(c.text)}</p>
-<p class="niche-price">From <strong>${rand(from)}</strong></p>
+<p class="niche-price">From <strong>${rand(from)}</strong>${isSet(c.priceNote) ? ` <span class="niche-price-note">${t(c.priceNote)}</span>` : ''}</p>
 <span class="niche-more" aria-hidden="true">${t(c.more)} ${svg.icon('arrow')}</span>
 </div>
 </article>`;
@@ -747,14 +848,14 @@ function homePage() {
     : '';
   const st = H.steps;
   page.body = `${splitHero('hero-home', t(H.hero.eyebrow), H.hero.h1, H.hero.lead, {
-    anchor: `<p class="price-anchor">${H.hero.priceAnchor.split(' · ').map((part) => `<span>${t(part)}</span>`).join('<span class="sep" aria-hidden="true">·</span>')}</p>`,
+    anchor: priceAnchor(H.hero.priceAnchor),
     cta: ctaRow(page, [{ href: '/pricing', label: 'See prices' }]),
     extra: `<ul class="hero-points">${H.hero.points.map((p) => `<li>${svg.icon('check')}<span>${t(p)}</span></li>`).join('')}</ul>`
   }, svg.hero())}
 <section class="section section-tight-top" aria-labelledby="services-h"><div class="wrap">${sectionHead('services', S.heading, S.lead)}<div class="niche-cards service-cards">${serviceCards}</div></div></section>
 <section class="section" aria-labelledby="build-h"><div class="wrap">${sectionHead('build', H.canBuild.heading, H.canBuild.lead)}${canBuild}</div></section>
 ${stepsSection('how', st.heading, `${st.lead}${tokens.quoteTime && st.quoteTimeText ? ` ${st.quoteTimeText}` : ''}`, st.items)}
-<section class="section" aria-labelledby="prices-h"><div class="wrap">${sectionHead('prices', H.pricingTeaser.heading, H.pricingTeaser.lead)}${priceTeaser()}<p class="more-link"><a href="/pricing">See full pricing and what’s included ${svg.icon('arrow')}</a></p></div></section>
+<section class="section" aria-labelledby="prices-h"><div class="wrap">${sectionHead('prices', H.pricingTeaser.heading)}${priceAnchor(H.hero.priceAnchor, ' price-anchor-inline')}<p class="section-lead">${t(H.pricingTeaser.lead)}</p>${priceTeaser()}<p class="more-link"><a href="/pricing">See full pricing and what’s included ${svg.icon('arrow')}</a></p></div></section>
 <section class="section section-sand" aria-labelledby="ind-h"><div class="wrap">${sectionHead('ind', I.heading, I.lead)}<div class="niche-cards industry-cards">${industryCards}</div></div></section>
 ${foundingOn ? `<div class="section section-tight-top"><div class="wrap">${foundingBanner(page)}</div></div>` : ''}
 ${examplesBlock(examples, H.examplesHeading)}
@@ -769,19 +870,21 @@ function websitesPage() {
   const page = { url: '/websites', out: 'websites.html', hasForm: true, title: W.seo.title, description: W.seo.description, bodyClass: 'page-websites' };
   // Sections alternate white and sand, so the FAQ's colour depends on whether examples show.
   const webExamples = examples.filter((e) => e.kind === 'website');
+  const bigger = bands.filter((b) => b.group === 'websites');
   page.body = `${splitHero('hero-niche', `${svg.icon('globe')}${t(W.hero.eyebrow)}`, W.hero.h1, W.hero.lead, {
     cta: ctaRow(page, [{ href: '#prices', label: 'See prices' }], 'Get a free mock-up'),
-    extra: `<p class="hero-from">Websites from <strong>${rand(websitesFrom)}</strong>. Free mock-up first.</p>`
+    extra: `<p class="hero-from">${tMoney(W.hero.from)}</p>`
   }, svg.phone('websites'))}
 <section class="section" aria-labelledby="inc-h"><div class="wrap two-col">
 <div>${sectionHead('inc', W.includesHeading)}${ticks(C.websiteIncludes)}</div>
 <div class="card points-card"><h3>${t(W.mockupCard.heading)}</h3><p>${t(W.mockupCard.text)}</p>${canEnquire ? `<p>${quoteButton(page, 'btn btn-gold', 'Get a free mock-up')}</p>` : ''}</div>
 </div></section>
-<section class="section section-sand" id="prices" aria-labelledby="wb-h"><div class="wrap">${sectionHead('wb', W.bandsHeading, W.bandsLead)}${foundingBanner(page, { compact: true })}${bandsGrid('websites', page)}<p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
+<section class="section section-sand" id="prices" aria-labelledby="wb-h"><div class="wrap">${sectionHead('wb', WEB.heading, WEB.lead)}${foundingBanner(page, { compact: true })}${optionsGrid(page)}
+${bigger.length ? `<div class="bigger-web"><h3>${t(W.biggerHeading)}</h3>${bigger.map((b) => bandWide(b, page)).join('')}<p class="fine">${t(BG.lead)}</p></div>` : ''}
+<p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
 ${stepsSection('wsteps', W.steps.heading, '', W.steps.items, false)}
-${careSection(page, { lead: W.careLead, sand: true })}
-${examplesBlock(webExamples, 'Website examples')}
-${faqSection(page, 'Questions about websites', generalFaq(['cost', 'time', 'own', 'need-care', 'small-edit', 'phones']), 'websites', webExamples.length > 0)}
+${examplesBlock(webExamples, 'Website examples', true)}
+${faqSection(page, 'Questions about websites', generalFaq(['cost', 'need-plan', 'plan-cheaper', 'cancel-plan', 'hosting', 'email', 'changes', 'own', 'time']), 'websites', !webExamples.length)}
 ${enquirySection(page, { need: 'website', heading: 'Get a free mock-up', lead: 'Tell me about your business and I’ll build a free sample of your website, with a fixed quote. No obligation, no calls.' })}`;
   return page;
 }
@@ -792,16 +895,15 @@ function toolsPage() {
   const toolExamples = examples.filter((e) => e.kind === 'tool');
   page.body = `${splitHero('hero-niche', `${svg.icon('grid')}${t(P.hero.eyebrow)}`, P.hero.h1, P.hero.lead, {
     cta: ctaRow(page, [{ href: '#prices', label: 'See prices' }], 'Get a free plan & quote'),
-    extra: `<p class="hero-from">Business tools from <strong>${rand(toolsFrom)}</strong>. Free plan first.</p>`
+    extra: `<p class="hero-from">${tMoney(P.hero.from)}</p>`
   }, svg.app())}
 <section class="section" aria-labelledby="tl-h"><div class="wrap">${sectionHead('tl', P.listHeading)}${iconGrid(P.list)}
 <p class="big-callout">${t(P.callout)}</p></div></section>
 ${stepsSection('tsteps', P.steps.heading, '', P.steps.items)}
 <section class="section" aria-labelledby="tp-h"><div class="wrap"><h2 id="tp-h" class="visually-hidden">Good to know</h2><ul class="point-cards">${P.points.map((p) => `<li class="card"><span class="inc-icon">${svg.icon(p.icon)}</span><h3>${t(p.title)}</h3><p>${t(p.text)}</p></li>`).join('')}</ul></div></section>
-<section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${foundingBanner(page, { compact: true })}${bandsGrid('tools', page)}<p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
-${careSection(page, { lead: P.careLead, highlight: 'care-plus' })}
-${examplesBlock(toolExamples, 'Tool examples', true)}
-${faqSection(page, 'Questions about business tools', generalFaq(['tool-what', 'plan', 'cost', 'other-costs', 'own', 'time']), 'tools', !toolExamples.length)}
+<section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${foundingBanner(page, { compact: true })}${bandsGrid('tools', page)}<p class="fine">${t(BG.lead)} ${t(BG.toolsHosting)}</p><p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
+${examplesBlock(toolExamples, 'Tool examples')}
+${faqSection(page, 'Questions about business tools', generalFaq(['tool-what', 'plan', 'cost', 'other-costs', 'own', 'time']), 'tools', toolExamples.length > 0)}
 ${enquirySection(page, { need: 'tool', heading: 'Get a free plan & quote', lead: 'Tell me how things work now and what you’d like to fix. I’ll send a short plan and a fixed quote. No obligation, no calls.' })}`;
   return page;
 }
@@ -810,15 +912,23 @@ function nichePage(n) {
   const page = { url: `/${n.id}`, out: `${n.id}.html`, hasForm: true, title: n.seo.title, description: n.seo.description, bodyClass: `page-${n.id}` };
   const A = n.argument;
   const nicheExamples = examples.filter((e) => e.niche === n.id);
+  // "band" is a band id or a website option id ("once-off": the business website's once-off price).
+  const ideaPrice = (i) => {
+    if (!i.band) return isSet(i.note) ? t(i.note) : '';
+    const o = optionById[i.band];
+    if (o) return `From <strong>${rand(o.build)}</strong>${o.monthly ? ` + ${month(o.monthly)}` : ` ${t(BG.priceNote)}`} · ${esc(WEB.name)}`;
+    const b = bandById[i.band];
+    if (!b) { warn(`${n.id}: idea "${i.title}" uses unknown band "${i.band}"`); return ''; }
+    return hasPrice(b) ? `From <strong>${rand(b.from)}</strong> ${t(BG.priceNote)} · ${esc(b.name)}` : `Quoted · ${esc(b.name)}`;
+  };
   const ideas = `<ul class="ideas">${n.ideas.map((i) => {
-    const b = i.band ? bandById[i.band] : null;
-    if (i.band && !b) warn(`${n.id}: idea "${i.title}" uses unknown band "${i.band}"`);
-    const price = b ? (hasPrice(b) ? `From <strong>${rand(b.from)}</strong> · ${esc(b.name)}` : `Quoted · ${esc(b.name)}`) : (isSet(i.note) ? t(i.note) : '');
+    const price = ideaPrice(i);
     return `<li class="idea">${kindTag(i.kind)}<h3>${t(i.title)}</h3><p>${t(i.text)}</p>${price ? `<p class="idea-price">${price}</p>` : ''}</li>`;
   }).join('')}</ul>`;
+  const ideasLead = `Ideas for ${n.name.toLowerCase().replace('b&bs', 'B&Bs')}, with ${BG.priceNote} starting prices. ${BG.lead}`;
   page.body = `${splitHero('hero-niche', `${nicheIcon(n)}${t(n.hero.eyebrow)}`, n.hero.h1, n.hero.lead, {
     cta: ctaRow(page, [{ href: '#ideas', label: 'See ideas and prices' }]),
-    extra: `<p class="hero-from">Websites from <strong>${rand(websitesFrom)}</strong> · Business tools from <strong>${rand(toolsFrom)}</strong></p>`
+    extra: `<p class="hero-from">${tMoney(C.home.hero.priceAnchor)}</p>`
   }, svg.phone(n.id))}
 <section class="section" aria-labelledby="why-h">
 <div class="wrap two-col">
@@ -828,9 +938,9 @@ function nichePage(n) {
 </section>
 ${n.openStatus ? openStatusSection(n) : ''}
 ${calculatorSection(n)}
-<section class="section" id="ideas" aria-labelledby="ideas-h"><div class="wrap">${sectionHead('ideas', 'What I can build for you', `Ideas for ${n.name.toLowerCase().replace('b&bs', 'B&Bs')}, with starting prices.`)}${ideas}<p class="more-link"><a href="/pricing">See all prices ${svg.icon('arrow')}</a></p></div></section>
+<section class="section" id="ideas" aria-labelledby="ideas-h"><div class="wrap">${sectionHead('ideas', 'What I can build for you', ideasLead)}${ideas}<p class="more-link"><a href="/pricing">See all prices ${svg.icon('arrow')}</a></p></div></section>
 ${examplesBlock(nicheExamples, `${n.name}: examples`, true)}
-${faqSection(page, `Questions from ${n.singular} owners`, n.faq.concat(generalFaq(['cost', 'own', 'time'])), undefined, !nicheExamples.length)}
+${faqSection(page, `Questions from ${n.singular} owners`, n.faq.concat(generalFaq(['cost', 'need-plan', 'own', 'time'])), undefined, !nicheExamples.length)}
 ${enquirySection(page, { businessType: n.businessType, heading: `Get a free quote for your ${n.singular}`, lead: C.enquiry.lead })}`;
   return page;
 }
@@ -838,26 +948,27 @@ ${enquirySection(page, { businessType: n.businessType, heading: `Get a free quot
 function pricingPage() {
   const P = C.pricing;
   const page = { url: '/pricing', out: 'pricing.html', title: P.seo.title, description: P.seo.description };
-  const group = (key, extra = '') => `<section class="price-group" id="${key}-prices" aria-labelledby="${key}-prices-h">
-<div class="price-group-head"><span class="niche-icon">${svg.icon(GROUP_ICON[key])}</span><h2 id="${key}-prices-h">${esc(groups[key].name)}</h2><a href="${groups[key].page}">More about ${esc(groups[key].name.toLowerCase())} ${svg.icon('arrow')}</a></div>
-${bandsGrid(key, page)}${extra}
+  const group = (key, title, lead, body) => `<section class="price-group" id="${key}-prices" aria-labelledby="${key}-prices-h">
+<div class="price-group-head"><span class="niche-icon">${svg.icon(GROUP_ICON[key])}</span><h2 id="${key}-prices-h">${t(title)}</h2><a href="${groups[key].page}">More about ${esc(groups[key].name.toLowerCase())} ${svg.icon('arrow')}</a></div>
+<p class="section-lead">${lead}</p>
+${body}
 </section>`;
-  const S = P.smallEdit;
+  const S = P.changes;
+  const allowance = `<ul class="time-list">${options.map((o) => `<li><span>${esc(planName(o))}</span><span>${t(o.changes)}</span></li>`).join('')}</ul>`;
   page.body = `${pageHero(P.h1, P.lead)}
 <div class="section section-tight"><div class="wrap">
 ${foundingBanner(page, { compact: true })}
-${group('websites', `<div class="card includes-card"><h3>Every website includes</h3>${ticks(C.websiteIncludes, 'ticks ticks-2col')}</div>`)}
-${group('tools')}
+${group('websites', WEB.name, t(WEB.lead), `${optionsGrid(page)}<div class="card includes-card"><h3>Every website includes</h3>${ticks(C.websiteIncludes, 'ticks ticks-2col')}</div>`)}
+${group('tools', BG.heading, `${t(BG.intro)} ${t(BG.lead)} ${t(BG.toolsHosting)}`, `<div class="plans plans-4">${bands.map((b) => bandCard(b, page)).join('')}</div>`)}
 </div></div>
-${careSection(page, { sand: true })}
-<section class="section" aria-labelledby="terms-h"><div class="wrap two-col">
-<div>${sectionHead('terms', 'How quotes and payment work')}${ticks(P.terms)}<p><a href="/terms">Read the full terms</a></p></div>
+<section class="section section-sand" aria-labelledby="terms-h"><div class="wrap two-col">
+<div>${sectionHead('terms', P.termsHeading)}${ticks(P.terms)}<h2 class="h3 terms-sub">${t(P.planTermsHeading)}</h2>${ticks(P.planTerms)}<p><a href="/terms">Read the full terms</a></p></div>
 <div class="stack">
 <div class="card"><h2 class="h3">${t(P.factorsHeading)}</h2>${ticks(P.factors)}</div>
-<div class="card" id="small-edits"><h2 class="h3">${t(S.heading)}</h2><p>${t(S.lead)}</p>${ticks(S.examples)}<p>${t(S.notIncluded)}</p><p class="callout">${svg.icon('calendar')}<span>${t(S.timing)}</span></p></div>
+<div class="card" id="changes"><h2 class="h3">${t(S.heading)}</h2><p>${t(S.lead)}</p>${ticks(S.examples)}<p>${t(S.notIncluded)}</p><p class="list-head">${t(S.allowanceHeading)}</p>${allowance}<p class="callout">${svg.icon('calendar')}<span>${t(S.timing)}</span></p></div>
 </div>
 </div></section>
-<section class="section section-sand" aria-labelledby="next-h"><div class="wrap narrow center">${sectionHead('next', 'Want an exact price?', 'Tell me what you need, and I’ll send a fixed quote with a free mock-up or plan.')}${ctaRow(page, [{ href: '/start', label: 'How it works' }])}</div></section>`;
+<section class="section" aria-labelledby="next-h"><div class="wrap narrow center">${sectionHead('next', 'Want an exact price?', 'Tell me what you need, and I’ll send a fixed quote with a free mock-up or plan.')}${ctaRow(page, [{ href: '/start', label: 'How it works' }])}</div></section>`;
   return page;
 }
 
@@ -894,27 +1005,35 @@ function startPage() {
   const S = C.startPage;
   const page = { url: '/start', out: 'start.html', title: S.seo.title, description: S.seo.description };
   const ask = [
-    contact.wa ? `<a class="btn btn-navy" href="${esc(waLink(`Hi {firstName}, I would like to start a care plan. Please send me ${payfastOn ? 'a payment link' : 'an invoice'}.`))}">${svg.whatsapp()}WhatsApp me</a>` : '',
-    contact.email ? `<a class="btn btn-ghost" href="mailto:${esc(contact.email)}?subject=${encodeURIComponent('Care plan')}">${svg.icon('mail')}Email me</a>` : ''
+    contact.wa ? `<a class="btn btn-navy" href="${esc(waLink('Hi {firstName}, please send me the payment link for my plan or renewal.'))}">${svg.whatsapp()}WhatsApp me</a>` : '',
+    contact.email ? `<a class="btn btn-ghost" href="mailto:${esc(contact.email)}?subject=${encodeURIComponent('Payment link')}">${svg.icon('mail')}Email me</a>` : ''
   ].filter(Boolean).join('');
-  const payOptions = carePlans.flatMap((p) => [
-    { url: p.payfastUrl, label: `${p.name} plan${yearlyOn ? ', monthly' : ''}`, price: month(p.monthly) },
-    ...(yearlyOn ? [{ url: p.payfastYearlyUrl, label: `${p.name} plan, yearly`, price: `${rand(yearly(p.monthly))}/year` }] : [])
-  ]);
+  // PayFast buttons: one per plan (monthly, and yearly if that's on) and one for the once-off renewal.
+  const payOptions = options.flatMap((o) => (o.monthly
+    ? [
+      { url: o.payfastUrl, label: `${o.payLabel || planName(o)}${yearlyOn ? ', monthly' : ''}`, price: month(o.monthly) },
+      ...(yearlyOn ? [{ url: o.payfastYearlyUrl, label: `${o.payLabel || planName(o)}, yearly`, price: `${rand(yearly(o.monthly))}/year` }] : [])
+    ]
+    : [{ url: o.payfastUrl, label: o.payLabel || o.name, price: `${rand(T.renewalYearly)}/year` }]));
   const withLinks = payOptions.filter((o) => o.url);
-  const careStep = S.steps.find((s) => s.id === 'care') || {};
-  const careBlock = withLinks.length
-    ? `<div class="pay-buttons">${withLinks.map((o) => `<a class="btn btn-navy" href="${esc(o.url)}">${svg.icon('card')}<span>Start the ${esc(o.label)}<small>${o.price}</small></span></a>`).join('')}</div>${withLinks.length < payOptions.length && ask ? `<p>Can’t see the option you want? Message me and I’ll send you the link.</p><div class="cta-row">${ask}</div>` : ''}`
-    : (ask ? `<p>${shown(careStep.noLinksText).map(t).join(' ')}</p><div class="cta-row">${ask}</div>` : '');
-  const careList = `<ul class="time-list">${carePlans.map((p) => `<li><span>${esc(p.name)}</span><span>${month(p.monthly)}${yearlyOn ? ` <small>or ${rand(yearly(p.monthly))}/year</small>` : ''}</span></li>`).join('')}</ul><p><a href="/pricing#care">What each plan includes ${svg.icon('arrow')}</a></p>`;
+  const afterStep = S.steps.find((s) => s.id === 'after') || {};
+  const payBlock = withLinks.length
+    ? `<div class="pay-buttons">${withLinks.map((o) => `<a class="btn btn-navy" href="${esc(o.url)}">${svg.icon('card')}<span>${esc(o.label)}<small>${o.price}</small></span></a>`).join('')}</div>${withLinks.length < payOptions.length && ask ? `<p>Can’t see the option you want? Message me and I’ll send you the link.</p><div class="cta-row">${ask}</div>` : ''}`
+    : `<p>${shown(afterStep.noLinksText).map(t).join(' ')}</p>`;
+  const afterList = `<ul class="time-list">${options.map((o) => `<li><span>${esc(o.name)}</span><span>${o.monthly ? month(o.monthly) : t(o.hosting)}${yearlyOn && o.monthly ? ` <small>or ${rand(yearly(o.monthly))}/year</small>` : ''}</span></li>`).join('')}</ul><p><a href="/pricing#websites-prices">Compare the options ${svg.icon('arrow')}</a></p>`;
   const items = S.steps.map((s, i) => {
     let extra = shown(s.extra).map((x) => `<p class="callout">${svg.icon('clock')}<span>${t(x)}</span></p>`).join('');
     if (s.id === 'tell' && canEnquire) extra += `<p>${quoteButton(page, 'btn btn-gold', 'Tell me what you need')}</p>`;
-    if (s.id === 'care') extra += `${careList}${careBlock}`;
+    if (s.id === 'after') extra += `${afterList}${payBlock}`;
     return `<li class="start-step" id="step-${esc(s.id)}"><div class="start-num" aria-hidden="true">${i + 1}</div><div class="start-body"><h2>${t(s.title)}</h2><p>${t(s.text)}</p>${extra}</div></li>`;
   }).join('');
-  const times = timedBands.length
-    ? `<section class="section section-sand" aria-labelledby="times-h"><div class="wrap narrow">${sectionHead('times', S.timesHeading, S.timesNote)}<div class="table-wrap"><table class="times-table"><thead><tr><th scope="col">Job</th><th scope="col">Starts from</th><th scope="col">Typical build time</th></tr></thead><tbody>${timedBands.map((b) => `<tr><th scope="row">${esc(b.name)} <small>${esc(groups[b.group].name)}</small></th><td>${hasPrice(b) ? rand(b.from) : 'Quoted'}</td><td>${esc(typo(b.buildTime))}</td></tr>`).join('')}</tbody></table></div></div></section>`
+  // The website row shows the once-off price and the lowest build price with a plan.
+  const jobPrice = (j) => {
+    if (j.website) return `${rand(onceOff.build)} ${t(BG.priceNote)}${cheapestPlan ? `<small>or ${rand(cheapestPlan.build)} with ${esc(planName(cheapestPlan))}</small>` : ''}`;
+    return hasPrice(j) ? `${rand(j.from)} ${t(BG.priceNote)}` : 'Quoted';
+  };
+  const times = timedJobs.length
+    ? `<section class="section section-sand" aria-labelledby="times-h"><div class="wrap narrow">${sectionHead('times', S.timesHeading, S.timesNote)}<div class="table-wrap"><table class="times-table"><thead><tr><th scope="col">Job</th><th scope="col">Starts from</th><th scope="col">Typical build time</th></tr></thead><tbody>${timedJobs.map((j) => `<tr><th scope="row">${esc(j.name)} <small>${esc(groups[j.group].name)}</small></th><td>${jobPrice(j)}</td><td>${esc(typo(j.buildTime))}</td></tr>`).join('')}</tbody></table></div></div></section>`
     : '';
   page.body = `<section class="hero hero-simple"><div class="wrap narrow"><h1>${t(S.h1)}</h1><p class="lead">${t(S.lead)}</p></div></section>
 ${foundingOn ? `<div class="wrap narrow"><p class="founding-note">${svg.icon('check')}<span>${t(F.startNote)}</span></p></div>` : ''}
@@ -991,7 +1110,7 @@ function build() {
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
 
-  const css = minifyCss(fs.readFileSync(path.join(ROOT, 'src/styles.css'), 'utf8'));
+  const css = `${minifyCss(fs.readFileSync(path.join(ROOT, 'src/styles.css'), 'utf8'))}\n${optionsCss()}`;
   const js = `${fs.readFileSync(path.join(ROOT, 'src/calc.js'), 'utf8')}\n${fs.readFileSync(path.join(ROOT, 'src/site.js'), 'utf8')}`;
   assets = { css: `/assets/styles.${hash(css)}.css`, js: `/assets/site.${hash(js)}.js` };
   write(assets.css, css);
@@ -1059,7 +1178,7 @@ function placeholderReport() {
   })(C, '');
   return out
     .filter((p) => yearlyOn || !p.endsWith('.payfastYearly'))
-    .map((p) => p.replace(/^carePlans\.(\d+)\.(payfast|payfastYearly)$/, (m, i, k) => `${k === 'payfastYearly' ? 'yearly ' : ''}payfast (${carePlans[i].name} plan, optional)`));
+    .map((p) => p.replace(/^website\.options\.(\d+)\.(payfast|payfastYearly)$/, (m, i, k) => `${k === 'payfastYearly' ? 'yearly ' : ''}payfast (${options[i].monthly ? `${planName(options[i])}, monthly` : 'the yearly renewal'}, optional)`));
 }
 
 /* ---------- checks: internal links, anchors, empty links, leaked placeholders ---------- */

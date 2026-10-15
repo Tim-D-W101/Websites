@@ -44,9 +44,13 @@
       for (var i = 0; i < els.length; i++) els[i].textContent = text;
     }
 
+    // With a toggle, the checked build; with a single build, the price on the calculator.
     function update() {
       var band = box.querySelector('input[name="build"]:checked');
-      var build = Number(band.value);
+      var build = Number(band ? band.value : box.getAttribute('data-build'));
+      var buildName = band ? band.getAttribute('data-band-name') : box.getAttribute('data-build-name');
+      var one = type === 'commission' ? 'direct night' : unit;
+      var many = type === 'commission' ? 'direct nights' : units;
       var r;
       if (type === 'commission') {
         var percent = Number(field('percent').value);
@@ -56,18 +60,17 @@
           out('paid', Calc.rand(Calc.about(r.paid)));
           out('perYear', Calc.rand(Calc.about(r.perYear)));
           out('perNight', Calc.rand(r.perNight));
-          out('payback', plural(r.payback, 'direct night', 'direct nights'));
         }
       } else {
         r = Calc.payback({ price: number(field('price')), build: build, care: care });
-        if (r) out('payback', plural(r.payback, unit, units));
       }
       if (r) {
+        out('payback', plural(r.payback, one, many));
         out('paybackVerb', r.payback === 1 ? 'pays' : 'pay');
-        out('care', String(r.care));
+        out('care', plural(r.care, one, many));
         out('careVerb', r.care === 1 ? 'covers' : 'cover');
       }
-      out('bandLabel', band.getAttribute('data-band-name') + ' (' + Calc.rand(build) + ')');
+      out('bandLabel', buildName + ' (' + Calc.rand(build) + ')');
       ok.hidden = !r;
       err.hidden = !!r;
     }

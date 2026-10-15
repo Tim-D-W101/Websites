@@ -9,7 +9,7 @@
   }
 
   // Guesthouses: commission paid, and direct nights needed to pay back the build
-  // and to cover the care plan each month.
+  // and to cover a monthly plan's fee.
   function commission(o) {
     var rate = Number(o.rate), nights = Number(o.nights), percent = Number(o.percent);
     var build = Number(o.build), care = Number(o.care);
@@ -26,7 +26,7 @@
   }
 
   // Salons and restaurants: bookings or customers needed to pay back the build,
-  // and to cover the care plan each month.
+  // and to cover a monthly plan's fee.
   function payback(o) {
     var price = Number(o.price), build = Number(o.build), care = Number(o.care);
     if (!(price > 0) || !(build > 0)) return null;
