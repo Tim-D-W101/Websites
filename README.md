@@ -1,17 +1,17 @@
 # Front Door Sites website
 
-The marketing site for **frontdoorsites.co.za**: websites and business tools for South African businesses, sold with a free mock-up or plan, a fixed quote, a 50% deposit and an optional monthly care plan.
+The marketing site for **frontdoorsites.co.za**: websites and business tools for South African businesses, sold with a free mock-up or plan, a fixed quote and a 50% deposit. A website can be bought three ways: once-off, or for less upfront with the Care or Care Plus monthly plan.
 
 It's a static site:
 
-- every word, price, band, care plan, question and contact detail lives in **`content.json`**;
+- every word, price, website option, band, question and contact detail lives in **`content.json`**;
 - **`node build.js`** turns that into a finished website in **`dist/`**;
 - it's hosted on **Cloudflare**, which serves the files in `dist/` as they are (set up in `wrangler.toml`).
 
 It has no npm dependencies, no frameworks, no cookies and no trackers. You need Node 18 or newer.
 
 ```
-content.json            ← edit this: prices, care plans, FAQ, industry ideas, examples, contact details
+content.json            ← edit this: prices, website options, terms, FAQ, industry ideas, examples, contact details
 content/pages/          ← privacy.html and terms.html (drafts: review before launch)
 content/guides/         ← guide articles (none yet)
 src/styles.css          ← all styles
@@ -52,8 +52,8 @@ Open `content.json`. Anything that's empty or starts with `TODO` counts as blank
 | `contact.googleBusinessProfile` | Optional footer link |
 | `process.quoteTime` | How soon a mock-up or plan reaches the client, e.g. `3 working days` |
 | `process.paymentMethods` | How deposits and balances are paid. Shown as "You pay by …" |
-| `bands[].buildTime` | Typical build time per band. Shown on the band cards, the FAQ and the Start page table. Leave one blank to hide that row |
-| `carePlans[].payfast` / `payfastYearly` | Optional PayFast links for each care plan, monthly and yearly. Leave them blank to take care payments by EFT (see [Change a care plan](#change-a-care-plan)) |
+| `website.buildTime`, `bands[].buildTime` | Typical build time for the business website and each band. Shown on the band cards, the FAQ and the Start page table. Leave one blank to hide that row |
+| `website.options[].payfast` | Optional PayFast links: the yearly renewal (on Once-off) and the monthly fee (on Build + Care and Build + Care Plus). Leave them blank to take these payments by EFT (see [How clients pay](#how-clients-pay-plans-and-the-renewal)) |
 | `legal.*` | Your legal name, registration number and an address for legal notices (Terms and Privacy pages only) |
 
 If neither WhatsApp nor email is filled in, the enquiry form and every "Free quote" button stay hidden, because there would be nowhere to send them.
@@ -62,41 +62,66 @@ If neither WhatsApp nor email is filled in, the enquiry form and every "Free quo
 
 You can use these in any text in `content.json`, and in the privacy, terms and guide pages:
 
-`{websitesFrom}` (lowest website band, e.g. R3 500) · `{toolsFrom}` · `{careFrom}` (cheapest care plan, e.g. R250/month) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{quoteTime}` · `{paymentMethods}` · `{noticeDays}` · `{extraWorkFrom}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}` · `{yearlyPaysMonths}` · `{yearlyFree}` · `{careYearly}` · `{spotsTotal}` · `{spotsLeft}` · `{foundingDiscount}` (50%) · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
+- **Prices:** `{onceOffBuild}` (R7 500) · `{careBuild}` (R4 999) · `{careMonthly}` (R399/month) · `{carePlusBuild}` (R3 999) · `{carePlusMonthly}` (R699/month) · `{websitesFrom}` (the lowest website build price, R3 999) · `{toolsFrom}` (R5 000) · `{careFrom}` (the cheapest monthly fee, R399/month)
+- **Terms:** `{renewalFee}` (R999) · `{changeFee}` (R250) · `{minMonths}` (6) · `{graceDays}` (30) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}`
+- **Changes per option:** `{onceOffChanges}` (R250 per change) · `{careChanges}` (1 hour of changes a month) · `{carePlusChanges}` (3 hours of changes a month)
+- **Yearly payment** (only while it's switched on): `{yearlyPaysMonths}` · `{yearlyFree}` · `{careYearly}` · `{carePlusYearly}`
+- **Everything else:** `{quoteTime}` · `{paymentMethods}` · `{spotsTotal}` · `{spotsLeft}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
+
+The option words come from each option's `id`: `once-off` gives `{onceOffBuild}`, `care-plus` gives `{carePlusBuild}`, and so on.
 
 A FAQ item, or one part of an answer, that needs a blank detail can be hidden until it's filled in: add `"requires": ["process.quoteTime"]`. In the HTML pages, wrap the text in `{{#if contact.email}} … {{/if}}`.
 
-## Change a band price
+## Change the website prices
 
-The six "from" prices live in `bands`:
+A business website can be bought three ways. They live in `website.options`, and show as three cards side by side on `/pricing` and `/websites` (stacked on phones):
 
 ```json
-{ "id": "business-site", "group": "websites", "name": "Business site", "from": 6500,
-  "scope": "4–8 pages, like services and prices, a gallery, about, FAQ and a contact form.",
+{ "id": "care", "name": "Build + Care", "plan": "Care", "featured": true,
+  "summary": "Pay less upfront. I keep your site online and make your changes every month.",
+  "build": 4999, "monthly": 399,
+  "term": "{minMonths} months", "hosting": "Included", "changes": "1 hour of changes a month",
+  "replies": "Standard", "report": "", "backups": "Yes",
+  "payLabel": "Start Care", "payfast": "" }
+```
+
+- **Option prices:** change `build` (the "from" price for the build) and `monthly` (the monthly fee; `null` for once-off). Run `node build.js` and everything updates: the option cards, the price line in the hero ("Websites from R3 999 with Care Plus, or R7 500 once-off"), the home price teaser, the industry ideas, the calculators, the Start page, the FAQ, the Terms, page descriptions and the search-engine data.
+- **The card rows** (Minimum term, Hosting & domain, Changes, Replies, Monthly report, Backups & security) are listed in `website.rows`. Each row shows the option's field with the same `key`. Leave a field blank to show a dash, or write `Yes` to show a tick.
+- `"featured": true` gives an option the darker border and the "Most popular" badge (`website.badge`).
+- `website.buildTime` is the typical build time for the business website.
+
+### The renewal fee, the change fee and the minimum term
+
+These live in `terms`, and every page that mentions them updates when you rebuild:
+
+| Field | What it does |
+|---|---|
+| `terms.renewalYearly` | The yearly hosting and domain renewal for once-off websites, from the second year, and for plans after they're cancelled (999 shows as R999) |
+| `terms.renewalGraceDays` | How long an unpaid renewal has before the site goes offline (30) |
+| `terms.changeFee` | The price of one change on a once-off website (250) |
+| `terms.minimumTermMonths` | The minimum term for Care and Care Plus (6) |
+| `terms.depositPercent` | The deposit (50) |
+| `terms.quoteValidDays` | How long quotes are valid |
+| `terms.suspendAfterDays` | How long an unpaid monthly plan fee has before the site shows "temporarily unavailable" |
+| `terms.noticeDays` | How much notice you give before changing the terms |
+
+### Bigger jobs and business tools
+
+Bookings / online shop and the three tool sizes live in `bands`. They're once-off "from" prices:
+
+```json
+{ "id": "small-tool", "group": "tools", "name": "Small tool", "from": 5000,
+  "scope": "One job done well: a quote builder, calculator, smart form or simple tracker.",
   "buildTime": "2 weeks" }
 ```
 
-Change `from` and run `node build.js`. Everything updates: the band cards, "Websites from R3 500 · Business tools from R5 000" in the hero, the price teaser, the industry ideas, the calculators, the Start page table, page descriptions and the search-engine data. Set `"from": null` to show a band as **Quoted** (like Bigger platform). `group` is `websites` or `tools`.
+Change `from` and run `node build.js`. Set `"from": null` to show a band as **Quoted** (like Bigger platform). `group` is `websites` (shown under the options on `/websites`) or `tools`. The "once-off" label and the lines "Take Care or Care Plus and the build costs less. Your quote shows both." and "Hosting and upkeep for business tools is quoted with the tool." are in `bigger`.
 
-Other money amounts are under `terms`: the deposit (`depositPercent`), how long quotes are valid (`quoteValidDays`), the starting price for extra work (`extraWorkFrom`) and the care-plan notice period (`noticeDays`).
+## How clients pay plans and the renewal
 
-## Change a care plan
+While every `payfast` link in `website.options` is blank, the monthly plan fees and the yearly renewal are paid by EFT: the Start page says you send an invoice, and the FAQ and Terms say EFT. Fill in a PayFast link and the site switches over by itself: the Start page shows a button for each link (labelled with the option's `payLabel`), and the Terms, FAQ and Privacy pages switch to PayFast wording. The renewal link (on Once-off) and the plan links (on Care and Care Plus) switch separately.
 
-Care plans live in `carePlans`:
-
-```json
-{ "id": "care", "name": "Care", "monthly": 450, "summary": "Hosting, plus small changes every month.",
-  "includes": ["Everything in Hosting, plus:", "2 small edits a month", "Google Business Profile kept up to date"],
-  "payfast": "TODO: …", "payfastYearly": "TODO: …" }
-```
-
-- Change `monthly` to change the price. A line ending in `:` shows as a bold lead-in, not a tick.
-- `"featured": true` gives a plan the darker border.
-- The calculators use the plan named in each industry's `calculator.carePlan` (the Care plan by default).
-
-**How clients pay for care:** while every `payfast` link is blank, care plans are paid by EFT. The Start page asks clients to message you for an invoice, and the FAQ and Terms say EFT and "I'll send you a reminder". Fill in any PayFast link and the site switches over by itself: the Start page shows a PayFast button for each link, and the Terms and Privacy pages switch to PayFast wording (automatic reminders, card details handled by PayFast).
-
-**Yearly payment:** `terms.yearlyPaysMonths` (10) means clients can pay for 12 months upfront at the price of 10, so Care is R4 500 a year. It shows on the care cards, the FAQ, the Start page and the Terms. Set it to `0` to switch yearly payment off everywhere.
+**Yearly payment** is switched off (`terms.yearlyPaysMonths` is `0`). Set it to, say, `10` to let clients pay for 12 months of a plan at the price of 10: it then shows on the option cards, the FAQ, the Start page and the Terms, and each plan can take a `payfastYearly` link.
 
 ## Turn the founding-client offer on or off
 
@@ -104,17 +129,17 @@ Care plans live in `carePlans`:
 "founding": { "enabled": true, "spotsTotal": 3, "spotsLeft": 3, ... }
 ```
 
-- The offer: `discountPercent` (50) off the build price of any website or tool. Care plans stay the normal price. The wording is in `founding.title`, `founding.text` and `founding.startNote`, where `{foundingDiscount}` shows as "50%".
+- The offer: the first month of Care or Care Plus free. The wording is in `founding.title`, `founding.text`, `founding.cardNote` (the note on the Care and Care Plus cards) and `founding.startNote`.
 - Each time someone signs up as a founding client, lower `spotsLeft` and rebuild.
-- When `spotsLeft` reaches `0`, or `enabled` is `false`, the banner and the "50% off for founding clients" notes on the price cards disappear everywhere.
+- When `spotsLeft` reaches `0`, or `enabled` is `false`, the banner and the notes on the option cards disappear everywhere.
 
 ## Edit the industry pages
 
 `/guesthouses`, `/salons` and `/restaurants` come from `niches` in `content.json`. For each one you can change:
 
 - `hero`, `argument` and `faq`: the page's words.
-- `ideas`: the "What I can build for you" cards. Each has a `kind` (`website` or `tool`), a `title`, a `text`, and either a `band` id (to show "From R6 500 · Business site") or a `note` (any short text, for example "Added to any website build").
-- `calculator`: which two bands the toggle offers (`bands`), the care plan it uses (`carePlan`) and the example figures (`defaults`).
+- `ideas`: the "What I can build for you" cards. Each has a `kind` (`website` or `tool`), a `title`, a `text`, and either a `band` (a band id, or `once-off` for the business website: "From R7 500 once-off · Business website") or a `note` (any short text, for example "Added to any website build").
+- `calculator`: the build prices it uses (`builds`: a website option or band id, with a `label`; two or more show as a toggle), the plan whose monthly fee it uses (`carePlan`) and the example figures (`defaults`).
 - `businessType`: what the enquiry form's "Type of business" is prefilled with on that page.
 
 To add an idea:
@@ -173,7 +198,7 @@ Guides are hidden until the first one exists. Then a "Guides" link appears in th
 
 ## Privacy and terms
 
-`content/pages/privacy.html` and `content/pages/terms.html` are **plain-English drafts, not legal advice**. Each starts with a "review before launch" comment that lists what to check, including stopping a project part-way, reusing general building blocks, yearly care plans, the Consumer Protection Act and the ECTA details for businesses that sell online. Read both and change anything that doesn't match how you work. Ideally, have an attorney look them over before you launch. Change `legal.lastUpdated` whenever you edit them.
+`content/pages/privacy.html` and `content/pages/terms.html` are **plain-English drafts, not legal advice**. Each starts with a "review before launch" comment that lists what to check, including stopping a project part-way, reusing general building blocks, the 6-month minimum on Care and Care Plus, the yearly renewal, the Consumer Protection Act and the ECTA details for businesses that sell online. Read both and change anything that doesn't match how you work. Ideally, have an attorney look them over before you launch. Change `legal.lastUpdated` whenever you edit them.
 
 ## Deploy to Cloudflare
 

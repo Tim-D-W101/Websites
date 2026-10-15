@@ -6,8 +6,11 @@
     for work done, up to the deposit, and gets what has been built. Check this against the Consumer
     Protection Act if a client counts as a "consumer" (e.g. a small business under the CPA threshold).
   - Reusing general building blocks after handover (section "Who owns what").
-  - Yearly care plans: paid upfront, renew each year unless cancelled with notice, unused months
-    aren't refunded.
+  - The 6-month minimum on Care and Care Plus, and paying the remaining months on early cancellation.
+    The CPA limits early-cancellation charges on fixed-term agreements with consumers (section 14 and
+    regulation 5), so check this applies only to clients the CPA doesn't cover, or cap the charge.
+  - When a plan starts: this draft says the monthly fee starts when the website goes live.
+  - The yearly renewal for once-off websites, the 30-day grace period and taking the site offline.
   - The liability cap (fees paid in the 3 months before the problem).
   - ECTA section 43 asks businesses that sell online to show their full name, legal status,
     registration number (if any), a physical address for legal notices and contact details.
@@ -23,11 +26,12 @@
   {{#if contact.whatsapp}}<li>WhatsApp: {whatsapp}</li>{{/if}}
   <li>Website: {domain}</li>
 </ul>
-<p>They cover website and business tool projects (“the work”) and the optional care plans. By paying a deposit or a care plan fee, you agree to them.</p>
+<p>They cover website and business tool projects (“the work”), hosting, and the Care and Care Plus plans. By paying a deposit, you agree to them.</p>
 
 <h2>Quotes</h2>
 <ul>
   <li>Every project starts with a written quote, based on a mock-up (for websites) or a written plan (for tools). The quote says what’s included.</li>
+  <li>A website quote shows the once-off price and the price with Care or Care Plus. You choose one before you pay the deposit.</li>
   <li>Quotes are valid for {quoteValidDays} days.</li>
   <li>The price is fixed for the agreed scope. If you ask for something that isn’t in the quote, I tell you what it costs first and only do it once you’ve said yes.</li>
 </ul>
@@ -41,7 +45,7 @@
 </ul>
 
 <h2>Third-party costs</h2>
-<p>Some projects use services from other companies, like booking software subscriptions, payment gateway fees, SMS or email sending, or paid integrations. You pay for these directly, and I always list them in your quote.</p>
+<p>Some projects use services from other companies, like booking software subscriptions, payment fees, SMS or email sending, or paid integrations. You pay for these, and I always list them in your quote.</p>
 <p>I’m not responsible for those companies’ prices, outages or changes, but I’ll help where I can.</p>
 
 <h2>Your content and your data</h2>
@@ -54,30 +58,46 @@
 <ul>
   <li>Once the work is paid in full, the website or tool is yours, including its design and code.</li>
   <li>I may reuse general building blocks that aren’t specific to you, like layout patterns or pieces of code, in other projects. I never reuse your content, your branding or your data.</li>
-  <li>Your domain is registered in your name. A website build includes the first year. After that, the renewal is covered by a care plan, or you pay it yourself.</li>
+  <li>Your domain is registered in your name.</li>
 </ul>
 
 <h2>If you stop a project</h2>
 <p>If you decide to stop before the work is finished, tell me in writing (WhatsApp or email is fine). You pay for the work done so far, up to the amount of the deposit, and I hand over what has been built.</p>
 
-<h2>Care plans</h2>
+<h2>Hosting</h2>
 <ul>
-  <li>Care plans are optional. They run month-to-month, and you can cancel with {noticeDays} days’ notice. There’s no minimum term.</li>
-  {{#if care.payByEft}}<li>You pay care plan fees by EFT, using the bank details on your invoice.</li>{{/if}}
-  {{#if care.payfastOn}}<li>You pay care plan fees through PayFast.</li>{{/if}}
-  {{#if terms.yearlyPaysMonths}}<li>You can pay a care plan yearly instead: 12 months for the price of {yearlyPaysMonths}, paid upfront. A yearly plan renews for another year unless you tell me at least {noticeDays} days before the renewal date, and yearly fees aren’t refunded for unused months.</li>{{/if}}
-  <li>Without a care plan, I hand over the files so you can host the website or tool anywhere. Hosting it is then up to you.</li>
+  <li>Hosting keeps your site online and secure, with the HTTPS padlock, and includes your .co.za domain renewal.</li>
+  <li>Email hosting isn’t included. I can set up email in your name, or add it for a fee. Either way, it’s listed in your quote.</li>
+  <li>Hosting and upkeep for a business tool is quoted with the tool.</li>
 </ul>
 
-<h2>Small edits</h2>
+<h2>Once-off websites and the yearly renewal</h2>
 <ul>
-  <li>A small edit is a text, price, photo or hours change to something already there. Your care plan says how many you get each month. Unused edits don’t carry over.</li>
-  <li>I do edits in a weekly batch. Edits sent by {editsDeadline} go live by {editsLive}.</li>
-  <li>Bigger changes, like new pages, new features or a redesign, and any work outside a care plan, are quoted per job, from {extraWorkFrom}. I only start once you’ve accepted the quote.</li>
+  <li>A once-off website includes the first year of hosting and your domain. After that, the renewal is {renewalFee} a year.</li>
+  {{#if renewal.payByEft}}<li>I send you an invoice before your renewal date, and you pay by EFT.</li>{{/if}}
+  {{#if renewal.payfastOn}}<li>You pay the renewal through PayFast.</li>{{/if}}
+  <li>If the renewal isn’t paid, you get a {graceDays}-day grace period. After that, your site goes offline until the renewal is paid. It comes back as soon as you’ve paid.</li>
 </ul>
 
-<h2>Late care plan payments</h2>
-<p>{{#if care.payfastOn}}If a care plan payment fails, you’ll get an automatic reminder.{{/if}}{{#if care.payByEft}}Care plan fees are due by the date on your invoice. If a payment is late, I’ll send you a reminder.{{/if}} If it’s still unpaid {suspendAfterDays} days after the due date, your website shows a “temporarily unavailable” page until the payment comes through. It comes back as soon as you’ve paid.</p>
+<h2>Care and Care Plus</h2>
+<ul>
+  <li>With Care or Care Plus, you pay less for the build and a fixed monthly fee. The monthly fee starts when your website goes live.</li>
+  <li>Both plans have a {minMonths}-month minimum. If you cancel before then, you pay the months that are left.</li>
+  <li>After {minMonths} months, you can cancel any time. You keep your site, and it moves to the {renewalFee} yearly renewal.</li>
+  {{#if plans.payByEft}}<li>You pay plan fees by EFT, using the bank details on your invoice.</li>{{/if}}
+  {{#if plans.payfastOn}}<li>You pay plan fees through PayFast.</li>{{/if}}
+  {{#if terms.yearlyPaysMonths}}<li>You can pay a plan yearly instead: 12 months for the price of {yearlyPaysMonths}, paid upfront. A yearly plan renews for another year unless you tell me at least {noticeDays} days before the renewal date, and yearly fees aren’t refunded for unused months.</li>{{/if}}
+</ul>
+
+<h2>Changes to your website</h2>
+<ul>
+  <li>A change is a text, price, photo, hours or small layout update to something already there. Bigger work, like new pages, new features or a redesign, is quoted. I only start once you’ve accepted the quote.</li>
+  <li>On once-off, each change is {changeFee}. Care includes {careChanges}, and Care Plus {carePlusChanges}. Unused plan hours don’t roll over.</li>
+  <li>Changes sent by {editsDeadline} go live by {editsLive}.</li>
+</ul>
+
+<h2>Late plan payments</h2>
+<p>{{#if plans.payfastOn}}If a plan payment fails, you’ll get an automatic reminder.{{/if}}{{#if plans.payByEft}}Plan fees are due by the date on your invoice. If a payment is late, I’ll send you a reminder.{{/if}} If it’s still unpaid {suspendAfterDays} days after the due date, your website shows a “temporarily unavailable” page until the payment comes through. It comes back as soon as you’ve paid.</p>
 
 <h2>What I can and can’t promise</h2>
 <p>I use reliable hosting and do my best to keep your website or tool online, fast and secure, but nothing online works 100% of the time. I can’t guarantee search rankings, bookings or sales.</p>

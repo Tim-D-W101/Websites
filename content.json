@@ -1,17 +1,18 @@
 {
   "_readme": [
-    "Every price, band, care plan, question and contact detail on the site lives in this file.",
+    "Every price, website option, band, question and contact detail on the site lives in this file.",
     "Edit it, then run:  node build.js",
     "Anything that is empty or starts with TODO counts as blank, and the matching button or section is hidden on the site.",
-    "Prices are plain numbers in rand: 3500 shows as R3 500. A band with \"from\": null shows as \"Quoted\".",
-    "Words in {curly brackets} are filled in for you, e.g. {websitesFrom} becomes R3 500. The full list is in README.md."
+    "Prices are plain numbers in rand: 7500 shows as R7 500. A band with \"from\": null shows as \"Quoted\".",
+    "The three ways to buy a website (Once-off, Build + Care, Build + Care Plus) are in website.options. The renewal fee, change fee and minimum term are in terms.",
+    "Words in {curly brackets} are filled in for you, e.g. {onceOffBuild} becomes R7 500. The full list is in README.md."
   ],
   "site": {
     "name": "Front Door Sites",
     "domain": "frontdoorsites.co.za",
     "url": "https://frontdoorsites.co.za",
     "language": "en-ZA",
-    "summary": "Front Door Sites builds websites and business tools for South African businesses, with a fixed quote before any work starts and optional care plans afterwards."
+    "summary": "Front Door Sites builds websites and business tools for South African businesses, with a fixed quote before any work starts. Pay once-off, or pay less upfront with a monthly plan."
   },
   "contact": {
     "firstName": "John",
@@ -29,28 +30,31 @@
   "terms": {
     "depositPercent": 50,
     "quoteValidDays": 30,
-    "noticeDays": 30,
-    "extraWorkFrom": 500,
+    "minimumTermMonths": 6,
+    "renewalYearly": 999,
+    "renewalGraceDays": 30,
+    "changeFee": 250,
     "editsDeadline": "Thursday",
     "editsLive": "Monday",
     "suspendAfterDays": 14,
-    "yearlyPaysMonths": 10
+    "noticeDays": 30,
+    "yearlyPaysMonths": 0
   },
   "legal": {
     "_note": "Shown on the Terms and Privacy pages only. ECTA asks online sellers to show these; check with your adviser.",
     "legalName": "John Knot trading as Front Door Sites",
     "registrationNumber": "",
     "noticeAddress": "PO Box 3867, Mtunzini, 3867",
-    "lastUpdated": "2026-10-14"
+    "lastUpdated": "2026-10-15"
   },
   "founding": {
     "enabled": true,
     "spotsTotal": 3,
     "spotsLeft": 3,
-    "discountPercent": 50,
-    "title": "Founding-client offer: {foundingDiscount} off your build",
-    "text": "My first {spotsTotal} clients get {foundingDiscount} off the build price of any website or tool. Care plans are the normal price. If you're happy, I'd love an honest Google review.",
-    "startNote": "Founding client? Your quote shows {foundingDiscount} off the build price, and your deposit is based on that lower price."
+    "title": "Founding-client offer: first month of Care or Care Plus free",
+    "text": "My first {spotsTotal} clients get their first month of any care plan free. If you're happy, I'd love an honest Google review.",
+    "cardNote": "First month free for founding clients",
+    "startNote": "Founding client? Your first month of Care or Care Plus is free. Your quote shows it."
   },
   "groups": {
     "websites": {
@@ -62,23 +66,82 @@
       "page": "/business-tools"
     }
   },
+  "website": {
+    "_note": "A business website can be bought three ways. build and monthly are prices in rand (monthly: null means no monthly fee). Each row in rows is a line on every option card, filled from the option's field with the same key. A blank field shows as a dash, and \"Yes\" shows with a tick.",
+    "name": "Business website",
+    "buildTime": "1–2 weeks",
+    "heading": "One website, three ways to pay",
+    "lead": "Pay more upfront and nothing monthly, or pay less upfront with a monthly plan. It's the same website either way.",
+    "badge": "Most popular",
+    "priceLabel": "Build from",
+    "noMonthly": "No monthly fee",
+    "rows": [
+      { "key": "term", "label": "Minimum term" },
+      { "key": "hosting", "label": "Hosting & domain" },
+      { "key": "changes", "label": "Changes" },
+      { "key": "replies", "label": "Replies" },
+      { "key": "report", "label": "Monthly report" },
+      { "key": "backups", "label": "Backups & security" }
+    ],
+    "options": [
+      {
+        "id": "once-off",
+        "name": "Once-off",
+        "summary": "Pay for the build once. No monthly fee.",
+        "build": 7500,
+        "monthly": null,
+        "term": "",
+        "hosting": "1st year included, then {renewalFee}/year",
+        "changes": "{changeFee} per change",
+        "replies": "Standard",
+        "report": "",
+        "backups": "",
+        "payLabel": "Pay the yearly renewal",
+        "payfast": "TODO: PayFast link for the yearly renewal (optional)"
+      },
+      {
+        "id": "care",
+        "name": "Build + Care",
+        "plan": "Care",
+        "featured": true,
+        "summary": "Pay less upfront. I keep your site online and make your changes every month.",
+        "build": 4999,
+        "monthly": 399,
+        "term": "{minMonths} months",
+        "hosting": "Included",
+        "changes": "1 hour of changes a month",
+        "replies": "Standard",
+        "report": "",
+        "backups": "Yes",
+        "payLabel": "Start Care",
+        "payfast": "TODO: PayFast link for Care, monthly (optional)"
+      },
+      {
+        "id": "care-plus",
+        "name": "Build + Care Plus",
+        "plan": "Care Plus",
+        "summary": "Pay the least upfront. More changes, faster replies and a monthly report.",
+        "build": 3999,
+        "monthly": 699,
+        "term": "{minMonths} months",
+        "hosting": "Included",
+        "changes": "3 hours of changes a month",
+        "replies": "Priority (same or next working day)",
+        "report": "Simple visitor stats report",
+        "backups": "Yes",
+        "payLabel": "Start Care Plus",
+        "payfast": "TODO: PayFast link for Care Plus, monthly (optional)"
+      }
+    ]
+  },
+  "bigger": {
+    "heading": "Bigger jobs and business tools",
+    "priceNote": "once-off",
+    "intro": "These are once-off starting prices.",
+    "lead": "Take Care or Care Plus and the build costs less. Your quote shows both.",
+    "toolsHosting": "Hosting and upkeep for business tools is quoted with the tool."
+  },
   "bands": [
-    {
-      "id": "starter-site",
-      "group": "websites",
-      "name": "Starter site",
-      "from": 3500,
-      "scope": "1–3 pages (home, services, contact), a WhatsApp button and your Google Business Profile set up.",
-      "buildTime": "1 week"
-    },
-    {
-      "id": "business-site",
-      "group": "websites",
-      "name": "Business site",
-      "from": 6500,
-      "scope": "4–8 pages, like services and prices, a gallery, about, FAQ and a contact form. Can link to a booking tool you already use.",
-      "buildTime": "2 weeks"
-    },
     {
       "id": "bookings-shop",
       "group": "websites",
@@ -118,67 +181,18 @@
     "A WhatsApp button, so customers reach you in one tap",
     "Basic SEO setup, so Google can find and understand your site",
     "Your Google Business Profile set up",
-    "A .co.za domain registered in your name, first year included",
+    "Hosting and a .co.za domain in your name, first year included on every option",
     "Launch: I put it live and check it on phones and computers"
-  ],
-  "care": {
-    "heading": "Care plans",
-    "lead": "Optional. Fixed monthly prices, month-to-month with {noticeDays} days' notice and no minimum term.",
-    "noPlan": "Without a care plan, I hand over the files so you can host it anywhere."
-  },
-  "carePlans": [
-    {
-      "id": "hosting",
-      "name": "Hosting",
-      "monthly": 250,
-      "summary": "The basics, handled for you.",
-      "includes": [
-        "Hosting with the HTTPS padlock",
-        "Backups",
-        "Domain renewal",
-        "Kept online and secure"
-      ],
-      "payfast": "TODO: PayFast link for the Hosting plan, monthly",
-      "payfastYearly": "TODO: PayFast link for the Hosting plan, yearly"
-    },
-    {
-      "id": "care",
-      "name": "Care",
-      "monthly": 450,
-      "summary": "Hosting, plus small changes every month.",
-      "featured": true,
-      "includes": [
-        "Everything in Hosting, plus:",
-        "2 small edits a month",
-        "Google Business Profile kept up to date"
-      ],
-      "payfast": "TODO: PayFast link for the Care plan, monthly",
-      "payfastYearly": "TODO: PayFast link for the Care plan, yearly"
-    },
-    {
-      "id": "care-plus",
-      "name": "Care+",
-      "monthly": 950,
-      "summary": "For businesses running a tool or system.",
-      "includes": [
-        "Everything in Care, plus:",
-        "Hosting and upkeep for business tools: database, backups and user accounts",
-        "6 small edits a month",
-        "Priority replies"
-      ],
-      "payfast": "TODO: PayFast link for the Care+ plan, monthly",
-      "payfastYearly": "TODO: PayFast link for the Care+ plan, yearly"
-    }
   ],
   "home": {
     "seo": {
       "title": "Website Design & Business Tools in South Africa | Front Door Sites",
-      "description": "Websites from {websitesFrom} and business tools from {toolsFrom} for South African businesses. A free mock-up or plan, a fixed quote and no calls. Based in {serviceArea}."
+      "description": "Websites from {carePlusBuild} with Care Plus or {onceOffBuild} once-off, and business tools from {toolsFrom}. A free mock-up or plan, a fixed quote and no calls."
     },
     "hero": {
       "eyebrow": "Websites and business tools for South African businesses",
       "h1": "Tell me what your business needs. I'll build it.",
-      "priceAnchor": "Websites from {websitesFrom} · Business tools from {toolsFrom}",
+      "priceAnchor": "Websites from {carePlusBuild} with Care Plus, or {onceOffBuild} once-off · Business tools from {toolsFrom}",
       "lead": "A website, a booking system, a quote builder, or something to replace the spreadsheet. You get a free mock-up or plan and a fixed price before any work starts, and I look after it afterwards.",
       "points": [
         "Fixed quote before I start",
@@ -196,6 +210,7 @@
           "icon": "globe",
           "address": "yourbusiness.co.za",
           "text": "From a simple three-page site to online bookings and payments, built to bring in customers.",
+          "priceNote": "with Care Plus, or {onceOffBuild} once-off",
           "more": "See website options"
         },
         {
@@ -204,6 +219,7 @@
           "icon": "grid",
           "address": "app.yourbusiness.co.za",
           "text": "Quote builders, booking systems, trackers and portals, built around the way you already work.",
+          "priceNote": "once-off",
           "more": "See business tools"
         }
       ]
@@ -277,14 +293,15 @@
         },
         {
           "title": "It goes live",
-          "text": "Pay the balance and it goes live. It's yours. Add a care plan if you'd like me to look after it."
+          "text": "Pay the balance and it goes live, with hosting included. It's yours once it's paid in full."
         }
       ],
       "quoteTimeText": "Mock-ups and plans usually reach you within {quoteTime}."
     },
     "pricingTeaser": {
       "heading": "Clear starting prices",
-      "lead": "Starting prices, so you know roughly what to expect."
+      "lead": "Pay more upfront and nothing monthly, or less upfront with a monthly plan. Every job gets a fixed quote.",
+      "websiteNote": "Care and Care Plus have a {minMonths}-month minimum. Once-off includes the first year of hosting, then {renewalFee} a year."
     },
     "industries": {
       "heading": "Built for your kind of business",
@@ -305,6 +322,7 @@
       "heading": "Common questions",
       "ids": [
         "cost",
+        "need-plan",
         "mockup",
         "own",
         "calls"
@@ -318,20 +336,20 @@
   "websitesPage": {
     "seo": {
       "title": "Website Design South Africa from {websitesFrom} | Front Door Sites",
-      "description": "Web design for South African small businesses, from {websitesFrom}. A free mock-up first, a fixed quote, and a .co.za domain in your name. Based in {serviceArea}."
+      "description": "Web design for South African small businesses, from {carePlusBuild} with Care Plus or {onceOffBuild} once-off. A free mock-up first, a fixed quote and a .co.za domain in your name."
     },
     "hero": {
       "eyebrow": "Websites",
       "h1": "A website that brings in customers",
-      "lead": "Your services, your prices, your reviews and a way to reach you in one tap. I build a free mock-up first, so you see your site before you pay anything."
+      "lead": "Your services, your prices, your reviews and a way to reach you in one tap. I build a free mock-up first, so you see your site before you pay anything.",
+      "from": "Websites from {carePlusBuild} with Care Plus, or {onceOffBuild} once-off. Free mock-up first."
     },
     "includesHeading": "Every website includes",
     "mockupCard": {
       "heading": "Prefer to see it first?",
       "text": "Send me a link to your Google Maps listing or Facebook page, and I'll build a sample of your website. It's free, and you only pay if you go ahead."
     },
-    "bandsHeading": "Three sizes of website",
-    "bandsLead": "Pick the size that fits. Not sure which? Ask, and I'll tell you.",
+    "biggerHeading": "Need bookings or an online shop?",
     "steps": {
       "heading": "How a website project works",
       "items": [
@@ -352,18 +370,18 @@
           "text": "Ask for changes until it's right. Pay the balance and it goes live on your own domain."
         }
       ]
-    },
-    "careLead": "Optional. Keep your site online and up to date for a fixed monthly price."
+    }
   },
   "toolsPage": {
     "seo": {
       "title": "Custom Business Software & Booking Systems SA | Front Door Sites",
-      "description": "Custom business tools for South African businesses: quote and invoice software, booking systems, job tracking and more. From {toolsFrom}, with a free plan and a fixed quote."
+      "description": "Custom business tools for South African businesses: quote and invoice software, booking systems, job tracking and more. From {toolsFrom} once-off, with a free plan and a fixed quote."
     },
     "hero": {
       "eyebrow": "Business tools",
       "h1": "Business tools built around how you work",
-      "lead": "Simple, reliable tools that save you time every week: quotes, bookings, orders, jobs, stock and staff. You get a free plan and a fixed quote before I start."
+      "lead": "Simple, reliable tools that save you time every week: quotes, bookings, orders, jobs, stock and staff. You get a free plan and a fixed quote before I start.",
+      "from": "Business tools from {toolsFrom} once-off. Free plan first."
     },
     "listHeading": "What a business tool can do",
     "list": [
@@ -453,8 +471,7 @@
       }
     ],
     "bandsHeading": "Three sizes of tool",
-    "bandsLead": "Every tool gets a fixed quote, based on its plan.",
-    "careLead": "Tools need hosting, backups and someone to keep them running. Care+ covers all of that."
+    "bandsLead": "Every tool gets a fixed quote, based on its plan. These are once-off starting prices."
   },
   "enquiry": {
     "heading": "Get a free quote",
@@ -516,7 +533,7 @@
       },
       "seo": {
         "title": "Guesthouse Website Design South Africa | Front Door Sites",
-        "description": "Websites and booking tools for South African guesthouses and B&Bs. Bring in direct bookings and keep the 15–18% commission booking sites charge. Websites from {websitesFrom}."
+        "description": "Websites and booking tools for South African guesthouses and B&Bs. Keep the 15–18% commission. Websites from {carePlusBuild} with Care Plus or {onceOffBuild} once-off."
       },
       "hero": {
         "eyebrow": "For guesthouses & B&Bs",
@@ -541,9 +558,9 @@
         "type": "commission",
         "heading": "What is commission costing you?",
         "intro": "Put in your own numbers. The figures below are only an example.",
-        "bands": [
-          "business-site",
-          "bookings-shop"
+        "builds": [
+          { "id": "once-off", "label": "Website" },
+          { "id": "bookings-shop", "label": "Bookings" }
         ],
         "carePlan": "care",
         "defaults": {
@@ -557,7 +574,7 @@
       "ideas": [
         {
           "kind": "website",
-          "band": "business-site",
+          "band": "once-off",
           "title": "Direct-booking website",
           "text": "Rooms, rates, photos and a 'Book direct' button, so returning guests skip the booking sites."
         },
@@ -597,7 +614,7 @@
         },
         {
           "q": "I don't have a booking system. Can I still take bookings?",
-          "a": "Yes. A business site lets guests send an enquiry through a form or on WhatsApp, and you confirm the booking yourself, the way you do now."
+          "a": "Yes. Your website lets guests send an enquiry through a form or on WhatsApp, and you confirm the booking yourself, the way you do now."
         },
         {
           "q": "What's a digital guest info book?",
@@ -617,7 +634,7 @@
       },
       "seo": {
         "title": "Salon & Beauty Website Design South Africa | Front Door Sites",
-        "description": "Websites and booking tools for South African hair salons, nail, lash and brow studios and beauty therapists. Show your prices and take bookings. Websites from {websitesFrom}."
+        "description": "Websites and booking tools for South African salons, nail, lash and brow studios and beauty therapists. Websites from {carePlusBuild} with Care Plus or {onceOffBuild} once-off."
       },
       "hero": {
         "eyebrow": "For salons & beauty businesses",
@@ -644,9 +661,8 @@
         "inputLabel": "Your average service price",
         "unit": "booking",
         "units": "bookings",
-        "bands": [
-          "starter-site",
-          "business-site"
+        "builds": [
+          { "id": "once-off", "label": "Website" }
         ],
         "carePlan": "care",
         "defaults": {
@@ -656,13 +672,13 @@
       "ideas": [
         {
           "kind": "website",
-          "band": "starter-site",
+          "band": "once-off",
           "title": "Price list and booking site",
           "text": "Your services, prices, best work and a WhatsApp booking button."
         },
         {
           "kind": "website",
-          "band": "business-site",
+          "band": "once-off",
           "title": "Online booking through Fresha or Booksy",
           "text": "Clients choose a time straight from your site, using the booking tool you already have."
         },
@@ -698,7 +714,7 @@
         },
         {
           "q": "Can I change my prices?",
-          "a": "Yes. With the Care or Care+ plan, price changes are small edits, included every month. Without a plan, I quote small changes per job, from {extraWorkFrom}."
+          "a": "Yes. On Care or Care Plus, price changes come out of your monthly hours of changes. Without a plan, each change is {changeFee}."
         },
         {
           "q": "Can you show my Google reviews on the site?",
@@ -722,7 +738,7 @@
       },
       "seo": {
         "title": "Restaurant & Cafe Website Design South Africa | Front Door Sites",
-        "description": "Websites and ordering tools for South African restaurants and cafes: menus with prices, a live open/closed sign, table requests and online ordering. Websites from {websitesFrom}."
+        "description": "Websites and ordering tools for South African restaurants and cafes: menus, a live open/closed sign and online orders. From {carePlusBuild} with Care Plus or {onceOffBuild} once-off."
       },
       "hero": {
         "eyebrow": "For restaurants & cafes",
@@ -785,9 +801,8 @@
         "inputLabel": "Average spend per person",
         "unit": "customer",
         "units": "customers",
-        "bands": [
-          "starter-site",
-          "business-site"
+        "builds": [
+          { "id": "once-off", "label": "Website" }
         ],
         "carePlan": "care",
         "defaults": {
@@ -797,19 +812,19 @@
       "ideas": [
         {
           "kind": "website",
-          "band": "starter-site",
+          "band": "once-off",
           "title": "Menu site with a live open/closed sign",
           "text": "Your menu, hours and directions, with a sign that shows whether you're open right now."
         },
         {
           "kind": "website",
-          "band": "starter-site",
+          "band": "once-off",
           "title": "QR menu",
           "text": "Guests scan a code on the table and see your current menu and prices."
         },
         {
           "kind": "website",
-          "band": "business-site",
+          "band": "once-off",
           "title": "Table requests",
           "text": "Guests ask for a table, and the request comes to you on WhatsApp or email."
         },
@@ -835,7 +850,7 @@
       "faq": [
         {
           "q": "Can I change my menu prices?",
-          "a": "Yes. With the Care or Care+ plan, menu and price updates are small edits, included every month. Edits sent by {editsDeadline} go live by {editsLive}."
+          "a": "Yes. On Care or Care Plus, menu and price updates come out of your monthly hours of changes. Without a plan, each change is {changeFee}. Changes sent by {editsDeadline} go live by {editsLive}."
         },
         {
           "q": "Can people order online for collection?",
@@ -847,7 +862,7 @@
         },
         {
           "q": "What about public holidays and special hours?",
-          "a": "Send me your holiday hours and I'll update the site. With the Care or Care+ plan, that's a small edit. The open/closed sign follows whatever hours are on your site."
+          "a": "Send me your holiday hours and I'll update the site. On Care or Care Plus, that comes out of your monthly hours. Without a plan, it's one change at {changeFee}. The open/closed sign follows whatever hours are on your site."
         }
       ]
     }
@@ -855,10 +870,11 @@
   "pricing": {
     "seo": {
       "title": "Website & Business Tool Prices | Front Door Sites",
-      "description": "Website design from {websitesFrom} and business tools from {toolsFrom}, with fixed quotes. Optional care plans from {careFrom}. Clear South African pricing."
+      "description": "Websites from {onceOffBuild} once-off, or from {carePlusBuild} with a monthly plan. Business tools from {toolsFrom}. Fixed quotes and clear South African pricing."
     },
     "h1": "Clear prices, fixed quotes",
-    "lead": "Every job gets a fixed quote. These starting prices show roughly where you'll land.",
+    "lead": "Every job gets a fixed quote. For a website, you choose how to pay: more upfront, or less upfront with a monthly plan.",
+    "termsHeading": "How quotes and payment work",
     "terms": [
       "{deposit} deposit to start, and the other {balance} when you approve it, before it goes live.",
       {
@@ -869,8 +885,17 @@
       },
       "Quotes are valid for {quoteValidDays} days.",
       "The price is fixed for the agreed scope. Anything new is quoted before I do it.",
-      "A small edit is a text, price, photo or hours change. Extra work outside a care plan is quoted per job, from {extraWorkFrom}.",
-      "Third-party costs, like booking software subscriptions, payment gateway fees, SMS or email sending and paid integrations, are paid by you and always listed in your quote."
+      "Your domain is registered in your name. Once the site is paid in full, it's yours.",
+      "Third-party costs, like booking software, payment fees and SMS, are paid by you and listed in your quote."
+    ],
+    "planTermsHeading": "Hosting, renewals and plans",
+    "planTerms": [
+      "Once-off includes the first year of hosting and your domain. After that, the renewal is {renewalFee} a year.",
+      "If the renewal isn't paid, your site goes offline after a {graceDays}-day grace period, until it's paid.",
+      "Care and Care Plus have a {minMonths}-month minimum. If you cancel early, you pay the months that are left.",
+      "After {minMonths} months, cancel any time. You keep your site, and it moves to the {renewalFee} yearly renewal.",
+      "Unused plan hours don't roll over.",
+      "Email hosting isn't included. I can set it up in your name, or add it for a fee."
     ],
     "factorsHeading": "What sets the price",
     "factors": [
@@ -880,32 +905,64 @@
       "Whether you supply the text and photos, or I write them",
       "How soon you need it"
     ],
-    "smallEdit": {
-      "heading": "What's a small edit?",
-      "lead": "A quick change to something that's already on your website or tool. For example:",
+    "changes": {
+      "heading": "What's a change?",
+      "lead": "A text, price, photo, hours or small layout update to something already on your website. For example:",
       "examples": [
         "Changing text, like a special or your About section",
         "Updating prices or your menu",
         "Swapping or adding photos",
-        "Changing your opening hours or contact details"
+        "Changing your opening hours or contact details",
+        "A small layout update, like moving a section"
       ],
-      "notIncluded": "New pages, new features and redesigns aren't small edits. I quote those first, and only start once you've said yes.",
-      "timing": "Edits sent by {editsDeadline} go live by {editsLive}. Unused edits don't carry over to the next month."
+      "notIncluded": "Bigger work, like new pages, new features or a redesign, is quoted. I only start once you've said yes.",
+      "allowanceHeading": "Changes on each option",
+      "timing": "Changes sent by {editsDeadline} go live by {editsLive}."
     }
   },
   "faqPage": {
     "seo": {
-      "title": "Questions: Prices, Quotes, Care Plans & More | Front Door Sites",
-      "description": "Answers about Front Door Sites websites and business tools: prices, the free mock-up and plan, paying, owning your site, care plans and build times."
+      "title": "Questions: Prices, Plans, Quotes & More | Front Door Sites",
+      "description": "Answers about Front Door Sites websites and business tools: prices, once-off or monthly plans, the free mock-up and plan, paying, owning your site and build times."
     },
     "h1": "Questions & answers",
-    "lead": "Straight answers about prices, payment, ownership and care plans. Can't find your question? Ask me on WhatsApp."
+    "lead": "Straight answers about prices, plans, payment and ownership. Can't find your question? Ask me on WhatsApp."
   },
   "faq": [
     {
       "id": "cost",
       "q": "How much will it cost?",
-      "a": "Websites from {websitesFrom} and business tools from {toolsFrom}. Tell me what you need and I'll send a fixed quote. The price only changes if you ask for something new, and I quote that first."
+      "a": "A business website is {onceOffBuild} once-off, or from {carePlusBuild} with a monthly plan. Business tools start from {toolsFrom}. Tell me what you need and I'll send a fixed quote. The price only changes if you ask for something new, and I quote that first."
+    },
+    {
+      "id": "need-plan",
+      "q": "Do I have to take a monthly plan?",
+      "a": "No. Pay once-off and the first year of hosting is included. After that it's {renewalFee} a year. Changes are {changeFee} each."
+    },
+    {
+      "id": "plan-cheaper",
+      "q": "Why is the build cheaper with a plan?",
+      "a": "Because you stay with me for at least {minMonths} months, I can spread the cost."
+    },
+    {
+      "id": "cancel-plan",
+      "q": "Can I cancel my plan?",
+      "a": "Yes, after the {minMonths}-month minimum. You keep your site, and hosting moves to {renewalFee} a year. If you cancel sooner, you pay the months that are left."
+    },
+    {
+      "id": "hosting",
+      "q": "What's included in hosting?",
+      "a": "Your site kept online and secure, the HTTPS padlock, and your .co.za domain renewal."
+    },
+    {
+      "id": "renewal",
+      "q": "What if the yearly renewal isn't paid?",
+      "a": "You get a {graceDays}-day grace period. If it's still unpaid after that, your site goes offline until it's paid."
+    },
+    {
+      "id": "email",
+      "q": "Is email included?",
+      "a": "Not by default. I can set it up for you, and it's listed in your quote."
     },
     {
       "id": "mockup",
@@ -929,9 +986,15 @@
           ]
         },
         {
-          "text": "Care plans are paid by EFT each month, using the bank details on your invoice.",
+          "text": "Care and Care Plus are paid each month by EFT, using the bank details on your invoice.",
           "requires": [
-            "care.payByEft"
+            "plans.payByEft"
+          ]
+        },
+        {
+          "text": "Care and Care Plus are paid each month through PayFast.",
+          "requires": [
+            "plans.payfastOn"
           ]
         }
       ]
@@ -942,27 +1005,17 @@
       "a": "Yes. Once it's paid in full, the website or tool is yours, and your domain is registered in your name."
     },
     {
-      "id": "need-care",
-      "q": "Do I have to take a care plan?",
-      "a": "No. Without one, I hand over the files so you can host it anywhere. Every website needs hosting somewhere, and a care plan is the easy way to have it handled."
-    },
-    {
-      "id": "cancel-care",
-      "q": "Can I cancel my care plan?",
-      "a": "Yes, with {noticeDays} days' notice. There's no minimum term."
-    },
-    {
-      "id": "care-yearly",
-      "q": "Can I pay for a care plan yearly?",
-      "a": "Yes. Pay for a year upfront and you get 12 months for the price of {yearlyPaysMonths}. For example, the Care plan costs {careYearly} a year.",
+      "id": "plan-yearly",
+      "q": "Can I pay for a plan yearly?",
+      "a": "Yes. Pay for a year upfront and you get 12 months for the price of {yearlyPaysMonths}. For example, Care costs {careYearly} a year.",
       "requires": [
         "terms.yearlyPaysMonths"
       ]
     },
     {
-      "id": "small-edit",
-      "q": "What's a small edit?",
-      "a": "A text, price, photo or hours change. Bigger changes are quoted, from {extraWorkFrom}."
+      "id": "changes",
+      "q": "What counts as a change?",
+      "a": "A text, price, photo, hours or small layout update. Bigger work is quoted. Care includes {careChanges}, and Care Plus {carePlusChanges}. Unused hours don't roll over. Without a plan, each change is {changeFee}."
     },
     {
       "id": "time",
@@ -994,7 +1047,7 @@
     {
       "id": "other-costs",
       "q": "Are there other costs?",
-      "a": "Things like booking software, payment fees or SMS sending are paid by you, and I list them in your quote. Hosting is covered by a care plan, or you can host it yourself."
+      "a": "Things like booking software, payment fees or SMS are paid by you, and I list them in your quote. Email hosting isn't included, but I can add it. Hosting and upkeep for a business tool is quoted with the tool."
     }
   ],
   "examplesPage": {
@@ -1023,7 +1076,7 @@
       {
         "id": "quote",
         "title": "Get a free mock-up or plan, with a fixed quote",
-        "text": "For a website, a sample built from your public info. For a tool, a short written plan. Both come with a fixed price, valid for {quoteValidDays} days.",
+        "text": "For a website, a sample built from your public info. For a tool, a short written plan. Both come with a fixed price, valid for {quoteValidDays} days. A website quote shows the once-off price and the price with Care or Care Plus, so you can choose.",
         "extra": {
           "text": "Usually within {quoteTime}.",
           "requires": [
@@ -1050,20 +1103,14 @@
       {
         "id": "live",
         "title": "Pay the balance, and it goes live",
-        "text": "Pay the other {balance} once you've approved it. It goes live, and it's yours."
+        "text": "Pay the other {balance} once you've approved it. It goes live, and once it's paid in full, it's yours."
       },
       {
-        "id": "care",
-        "title": "Choose a care plan (optional)",
-        "text": "If you'd like me to keep it online and up to date, pick a care plan. You can cancel with {noticeDays} days' notice.",
+        "id": "after",
+        "title": "After go-live: hosting and changes",
+        "text": "On once-off, the first year of hosting and your domain is included. After that, the renewal is {renewalFee} a year. On Care or Care Plus, your plan starts when your site goes live and runs for at least {minMonths} months.",
         "noLinksText": [
-          "Tell me which plan you'd like, and I'll send you an invoice. You pay by EFT each month.",
-          {
-            "text": "Or pay once a year and get 12 months for the price of {yearlyPaysMonths}.",
-            "requires": [
-              "terms.yearlyPaysMonths"
-            ]
-          }
+          "I send you an invoice for each plan payment and each yearly renewal, and you pay by EFT."
         ]
       }
     ],
@@ -1082,10 +1129,10 @@
     "terms": {
       "seo": {
         "title": "Terms of Service | Front Door Sites",
-        "description": "The terms for Front Door Sites projects: quotes, deposits, ownership, care plans, small edits, third-party costs and payments."
+        "description": "The terms for Front Door Sites projects: quotes, deposits, ownership, hosting and renewals, Care and Care Plus, changes and third-party costs."
       },
       "h1": "Terms of service",
-      "lead": "The plain-English terms for website and business tool projects, and care plans."
+      "lead": "The plain-English terms for website and business tool projects, hosting and monthly plans."
     }
   },
   "notFound": {
