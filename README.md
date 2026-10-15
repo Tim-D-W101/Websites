@@ -15,9 +15,10 @@ content.json            ← edit this: prices, website options, terms, FAQ, indu
 content/pages/          ← privacy.html and terms.html (drafts: review before launch)
 content/guides/         ← guide articles (none yet)
 src/styles.css          ← all styles
-src/site.js             ← menu, calculators, enquiry form, examples filter, open/closed sign
+src/site.js             ← menu, calculators, enquiry form, examples filter, open/closed sign,
+                          the home page's front door and tour, things rising into view
 src/calc.js             ← calculator maths (shared by the build and the browser)
-src/svg.js              ← logo, illustrations and icons
+src/svg.js              ← logo, the front door, illustrations and icons
 src/fonts/              ← Fraunces + Figtree, self-hosted (SIL Open Font Licence)
 src/img/examples/       ← screenshots for the Examples page (.webp)
 src/static/             ← favicon, share image, touch icon (copied as-is)
@@ -85,7 +86,7 @@ A business website can be bought three ways. They live in `website.options`, and
   "payLabel": "Start Care", "payfast": "" }
 ```
 
-- **Option prices:** change `build` (the "from" price for the build) and `monthly` (the monthly fee; `null` for once-off). Run `node build.js` and everything updates: the option cards, the price line in the hero ("Websites from R3 999 with Care Plus, or R7 500 once-off"), the home price teaser, the industry ideas, the calculators, the Start page, the FAQ, the Terms, page descriptions and the search-engine data.
+- **Option prices:** change `build` (the "from" price for the build) and `monthly` (the monthly fee; `null` for once-off). Run `node build.js` and everything updates: the option cards, the price line in the hero ("Websites from R3 999 with Care Plus, or R7 500 once-off"), the home page's "What it costs" and "What it could earn you" chapters, the industry ideas, the calculators, the Start page, the FAQ, the Terms, page descriptions and the search-engine data.
 - **The card rows** (Minimum term, Hosting & domain, Changes, Replies, Monthly report, Backups & security) are listed in `website.rows`. Each row shows the option's field with the same `key`. Leave a field blank to show a dash, or write `Yes` to show a tick.
 - `"featured": true` gives an option the darker border and the "Most popular" badge (`website.badge`).
 - `website.buildTime` is the typical build time for the business website.
@@ -132,6 +133,30 @@ While every `payfast` link in `website.options` is blank, the monthly plan fees 
 - The offer: the first month of Care or Care Plus free. The wording is in `founding.title`, `founding.text`, `founding.cardNote` (the note on the Care and Care Plus cards) and `founding.startNote`.
 - Each time someone signs up as a founding client, lower `spotsLeft` and rebuild.
 - When `spotsLeft` reaches `0`, or `enabled` is `false`, the banner and the notes on the option cards disappear everywhere.
+
+## The home page: the front door and the tour
+
+The home page tells the story as you scroll. Everything it says is in `home` in `content.json`.
+
+1. **The front door** (`home.hero`). When the page opens, the heading rises in, the door creaks open a little and a speech bubble types out `bubble`. As you scroll, the door moves to the middle, swings open, the things in `inside` (up to 6, each an `icon` and a `label`) come out of it, and you go through the doorway into the light. Put `*stars*` around words in `h1` to highlight them. `address`, `mat`, `openSign` and `bookButton` are the words drawn on the door picture.
+2. **The tour** (`home.tour`): "Come in", with a link to each chapter. Once you're through the door, a bar at the top shows which chapter you're in and how far through you are.
+3. **The chapters.** Each has a `kicker` (its name in the tour) and a `short` name (in the bar at the top):
+
+| Chapter | In `content.json` | What it shows |
+|---|---|---|
+| 1. Why you need a website | `home.why` | A customer's search, step by step (`steps`), on a phone that changes as you read. The phone's made-up example (a salon) is in `phone` |
+| 2. How it helps you | `home.helps` | Six cards (`items`, each with an `icon`) |
+| 3. What I can build | `home.services`, `home.canBuild`, `home.industries` | Websites and business tools, then tabs of ideas for each kind of business. The industry tabs use each industry page's `ideas` |
+| 4. What it could earn you | `home.earn` | Two sliders, the sums and a 12-month chart. `build` is the website option whose price it uses, `carePlan` the plan whose fee it uses, and `defaults` the starting figures |
+| 5. What it costs | `home.costs` | The three ways to pay, and the question in `chooser`: each answer points to a website option and explains why it suits |
+| 6. How it works | `home.steps` | The four steps; each lights up as you reach it |
+| 7. Why it's worth it | `home.compare` | Cards that flip from "without a website" to "with a website" (`rows`) |
+
+After the chapters come the founding-client offer, "Who you'll be dealing with", common questions and the enquiry form.
+
+The icons you can use are listed in `ICONS` in `src/svg.js` (for example `globe`, `calendar`, `form`, `cart`, `clipboard`, `chart`, `clock`, `pin`, `eye`, `chat`, `phone`, `key`).
+
+Everything still works without movement: if someone has asked their phone or computer for reduced motion, the door stays ajar with its labels around it and nothing slides or flips. Without JavaScript, every chapter shows in full: the ideas for each industry one after another, and "without" and "with" side by side.
 
 ## Edit the industry pages
 

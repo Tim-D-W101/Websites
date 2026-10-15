@@ -433,10 +433,38 @@ function priceAnchor(s, cls = '') {
   return `<p class="price-anchor${cls}">${s.split(' · ').map((part) => `<span><span>${t(part)}</span></span>`).join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
 }
 
-function stepsSection(id, heading, lead, items, sand = true) {
+// opts.chapter: { id, n, label } makes it a numbered chapter of the home page tour.
+function stepsSection(id, heading, lead, items, sand = true, opts = {}) {
   const list = items.map((s, i) => `<li class="step"><div class="step-art">${svg.stepDoor(Math.min(i + 1, 4))}</div><p class="step-num">Step ${i + 1}</p><h3>${t(s.title)}</h3><p>${t(s.text)}</p></li>`).join('');
-  return `<section class="section${sand ? ' section-sand' : ''}" aria-labelledby="${id}-h"><div class="wrap">${sectionHead(id, heading, lead)}<ol class="steps steps-${items.length}">${list}</ol></div></section>`;
+  const ch = opts.chapter;
+  const head = ch ? `<div class="chapter-head">${kicker(ch.n, ch.label)}${sectionHead(id, heading, lead)}</div>` : sectionHead(id, heading, lead);
+  return `<section class="section${sand ? ' section-sand' : ''}${ch ? ' chapter' : ''}"${ch ? ` id="${ch.id}"` : ''} aria-labelledby="${id}-h"><div class="wrap">${head}<ol class="steps steps-${items.length}" data-steps>${list}</ol></div></section>`;
 }
+
+// The numbered plaque and label above a home page chapter's heading.
+function kicker(n, label) {
+  return `<p class="kicker"><span class="kicker-num" aria-hidden="true">${n}</span><span>${t(label)}</span></p>`;
+}
+
+// Industry ideas with their starting prices (industry pages and the home page).
+// "band" is a band id or a website option id ("once-off": the business website's once-off price).
+function ideaPrice(n, i) {
+  if (!i.band) return isSet(i.note) ? t(i.note) : '';
+  const o = optionById[i.band];
+  if (o) return `From <strong>${rand(o.build)}</strong>${o.monthly ? ` + ${month(o.monthly)}` : ` ${t(BG.priceNote)}`} · ${esc(WEB.name)}`;
+  const b = bandById[i.band];
+  if (!b) { warn(`${n.id}: idea "${i.title}" uses unknown band "${i.band}"`); return ''; }
+  return hasPrice(b) ? `From <strong>${rand(b.from)}</strong> ${t(BG.priceNote)} · ${esc(b.name)}` : `Quoted · ${esc(b.name)}`;
+}
+
+function ideasList(n, tag = 'h3') {
+  return `<ul class="ideas">${n.ideas.map((i) => {
+    const price = ideaPrice(n, i);
+    return `<li class="idea">${kindTag(i.kind)}<${tag} class="idea-h">${t(i.title)}</${tag}><p>${t(i.text)}</p>${price ? `<p class="idea-price">${price}</p>` : ''}</li>`;
+  }).join('')}</ul>`;
+}
+
+const nicheLower = (n) => n.name.toLowerCase().replace('b&bs', 'B&Bs');
 
 /* ---------- WebP size (for width/height, so images never shift the layout) ---------- */
 
@@ -800,20 +828,106 @@ function iconGrid(items, cls = 'includes') {
   return `<ul class="${cls}">${items.map((i) => `<li><span class="inc-icon">${svg.icon(i.icon)}</span><div><h3>${t(i.title)}</h3><p>${t(i.text)}</p></div></li>`).join('')}</ul>`;
 }
 
-function priceTeaser() {
-  const col = (title, href, rows, note) => `<div class="pt-col"><h3><a href="${href}">${esc(title)}</a></h3><ul>${rows}</ul>${note ? `<p class="pt-note">${note}</p>` : ''}</div>`;
-  const optionRows = options.map((o) => `<li><span>${esc(o.name)}</span><span><strong>${rand(o.build)}</strong>${o.monthly ? ` + ${month(o.monthly)}` : ''}</span></li>`).join('');
-  const bandRows = bands.map((b) => `<li><span>${esc(b.name)}</span><span>${hasPrice(b) ? `from <strong>${rand(b.from)}</strong>` : 'Quoted'}</span></li>`).join('');
-  return `<div class="price-teaser price-teaser-2">${col(WEB.name, '/pricing#websites-prices', optionRows, t(C.home.pricingTeaser.websiteNote))}${col(BG.heading, '/pricing#tools-prices', bandRows, `${t(BG.intro)} ${t(BG.lead)}`)}</div>`;
+/* ---------- home: the front door, then a guided tour in seven chapters ---------- */
+
+// "Open the door to *more customers*": words between stars are highlighted.
+const tHl = (s) => t(s).replace(/\*([^*]+)\*/g, '<span class="hl">$1</span>');
+// Plain text of an HTML fragment, for the screen-reader copy of the calculator's sums.
+const strip = (html) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+// The front door. Scrolling opens it (site.js): the things inside come out, then you go
+// through the doorway into the tour. Without JavaScript, or with reduced motion, it stays ajar.
+function doorHero(page) {
+  const D = C.home.hero;
+  const pops = (D.inside || []).slice(0, 6).map((p, i) => `<li class="pop pop-${i + 1}">${svg.icon(p.icon)}<span>${t(p.label)}</span></li>`).join('');
+  const leaf = '<div class="door-hole"><div class="door-inside"></div><div class="door-hinge"><div class="door-leaf"><i class="dp dp-1"></i><i class="dp dp-2"></i><i class="dp dp-3"></i><i class="dp dp-4"></i><i class="door-slot"></i><i class="door-handle"></i></div></div></div>';
+  return `<section class="door-hero" data-door aria-labelledby="hero-h">
+<div class="door-stage">
+<div class="wrap door-grid">
+<div class="door-copy">
+<p class="eyebrow">${t(D.eyebrow)}</p>
+<h1 id="hero-h">${tHl(D.h1)}</h1>
+<p class="lead">${t(D.lead)}</p>
+${priceAnchor(D.priceAnchor)}
+${ctaRow(page, [{ href: '#tour', label: `${t(D.tourButton)}${svg.icon('down')}` }])}
+<ul class="hero-points">${D.points.map((p) => `<li>${svg.icon('check')}<span>${t(p)}</span></li>`).join('')}</ul>
+</div>
+<div class="door-visual">
+<div class="door-scene">
+<p class="door-bubble"><span class="visually-hidden">${t(D.bubble)}</span><span aria-hidden="true" data-type>${t(D.bubble)}</span></p>
+<div class="door-zoom" aria-hidden="true">${svg.doorBack(D)}${leaf}${svg.doorFront()}<ul class="door-pops">${pops}</ul></div>
+</div>
+</div>
+</div>
+<p class="door-cue" aria-hidden="true"><span>${t(D.cue)}</span>${svg.icon('chevron')}</p>
+<div class="door-flood" aria-hidden="true"></div>
+</div>
+</section>`;
 }
 
-function homePage() {
-  const H = C.home;
-  const page = { url: '/', out: 'index.html', hasForm: true, jsonLd: true, title: H.seo.title, description: H.seo.description, bodyClass: 'page-home' };
-  const S = H.services;
+// Fixed to the top once you're through the door: the chapter you're in, and a progress line.
+function storyBar(chapters) {
+  const items = chapters.map((c, i) => `<li><a href="#${c.id}" data-story-link><span class="sb-num" aria-hidden="true">${i + 1}</span><span>${t(c.short || c.kicker)}</span></a></li>`).join('');
+  return `<nav class="storybar" aria-label="Tour of this page" data-storybar>
+<div class="wrap storybar-inner">
+<p class="storybar-now" aria-hidden="true"><span class="sb-num" data-sb-num>1</span><span class="sb-label" data-sb-label>${t(chapters[0].short || chapters[0].kicker)}</span><span class="sb-of">of ${chapters.length}</span></p>
+<ol class="storybar-list">${items}</ol>
+</div>
+<span class="storybar-line" aria-hidden="true"></span>
+</nav>`;
+}
+
+function tourSection(chapters) {
+  const T = C.home.tour;
+  const D = C.home.hero;
+  const items = chapters.map((c, i) => `<li><a href="#${c.id}"><span class="tour-num" aria-hidden="true">${i + 1}</span><span class="tour-label">${t(c.kicker)}</span>${svg.icon('arrow')}</a></li>`).join('');
+  return `<section class="section tour" id="tour" aria-labelledby="tour-h"><div class="wrap">
+<div class="tour-head center"><p class="kicker kicker-plain">${t(T.kicker)}</p>${sectionHead('tour', T.heading, T.lead)}</div>
+<div class="tour-extra">${priceAnchor(D.priceAnchor)}<ul class="hero-points">${D.points.map((p) => `<li>${svg.icon('check')}<span>${t(p)}</span></li>`).join('')}</ul></div>
+<ol class="tour-list">${items}</ol>
+</div></section>`;
+}
+
+// 1. Why: a customer's search, step by step, on a phone that follows along (site.js).
+function whySection(n) {
+  const W = C.home.why;
+  const P = W.phone;
+  const ph = (s) => esc(typo(s));
+  const icon = svg.icon(P.icon || 'globe');
+  const bar = (live) => `<p class="ps-bar">${svg.icon('search')}<span${live ? ' data-query' : ''}>${ph(P.query)}</span></p>`;
+  const screens = `<div class="ps ps-search">${bar(true)}<p class="ps-tabs"><span>All</span><span>Maps</span><span>Images</span><span>News</span></p><div class="ps-skel"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<div class="ps ps-results">${bar(false)}<div class="ps-map"><i></i><i></i><i class="you"></i></div><ol class="ps-list">${P.results.map((r) => `<li${r.you ? ' class="is-you"' : ''}><b>${ph(r.name)}</b><span>${ph(r.meta)}</span>${r.tag ? `<em>${ph(r.tag)}</em>` : ''}</li>`).join('')}</ol></div>
+<div class="ps ps-site"><p class="ps-site-top"><b>${ph(P.siteName)}</b><i></i></p><div class="ps-site-hero">${icon}<span>${ph(P.siteTagline)}</span></div><p class="ps-site-h">${ph(P.pricesHeading)}</p><ul class="ps-prices">${P.prices.map(([a, b]) => `<li><span>${ph(a)}</span><b>${ph(b)}</b></li>`).join('')}</ul><p class="ps-btn">${ph(P.button)}</p><p class="ps-gallery"><i></i><i></i><i></i></p><span class="ps-wa">${svg.whatsapp()}</span></div>
+<div class="ps ps-chat"><p class="ps-chat-top"><span class="ps-avatar">${icon}</span><b>${ph(P.siteName)}</b></p><div class="ps-msgs">${P.messages.map((m, i) => `<p class="ps-msg ${i % 2 ? 'ps-in' : 'ps-out'}">${ph(m)}</p>`).join('')}<p class="ps-done">${svg.icon('check')}<span>${ph(P.notice)}</span></p></div></div>`;
+  const steps = W.steps.map((s, i) => `<li class="journey-step"><div class="journey-card"><span class="journey-num" aria-hidden="true">${i + 1}</span><div><h3>${t(s.title)}</h3><p>${t(s.text)}</p></div></div></li>`).join('');
+  return `<section class="section section-sand chapter" id="why" aria-labelledby="why-h"><div class="wrap">
+<div class="chapter-head">${kicker(n, W.kicker)}${sectionHead('why', W.heading, W.lead)}</div>
+<div class="journey" data-journey>
+<div class="journey-phone" aria-hidden="true"><div class="phone"><div class="phone-screen">${screens}</div></div></div>
+<ol class="journey-steps">${steps}</ol>
+</div>
+<p class="punch">${t(W.punch)}</p>
+</div></section>`;
+}
+
+// 2. How it helps.
+function helpsSection(n) {
+  const Hp = C.home.helps;
+  return `<section class="section chapter" id="helps" aria-labelledby="helps-h"><div class="wrap">
+<div class="chapter-head">${kicker(n, Hp.kicker)}${sectionHead('helps', Hp.heading, Hp.lead)}</div>
+<ul class="helps">${Hp.items.map((i) => `<li class="help tilt"><span class="help-icon">${svg.icon(i.icon)}</span><h3>${t(i.title)}</h3><p>${t(i.text)}</p></li>`).join('')}</ul>
+</div></section>`;
+}
+
+// 3. What I build: websites and business tools, then ideas for each kind of business.
+// The ideas are tabs (site.js); without JavaScript every panel shows, one under the other.
+function buildSection(page, n) {
+  const S = C.home.services;
+  const I = C.home.industries;
+  const B = C.home.canBuild;
   const serviceCards = S.cards.map((c) => {
     const from = c.group === 'tools' ? toolsFrom : websitesFrom;
-    return `<article class="niche-card service-card">
+    return `<article class="niche-card service-card tilt">
 <div class="browser-bar" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url">${esc(c.address)}</span></div>
 <div class="niche-card-body">
 <span class="niche-icon">${svg.icon(c.icon)}</span>
@@ -824,41 +938,172 @@ function homePage() {
 </div>
 </article>`;
   }).join('');
-  const canBuild = `<ul class="can-build">${H.canBuild.items.map((i) => `<li><span class="inc-icon">${svg.icon(i.icon)}</span><span class="cb-text">${t(i.text)}</span>${kindTag(i.kind)}</li>`).join('')}</ul>`;
-  const I = H.industries;
-  const industryCards = niches.map((n) => `<article class="niche-card">
-<div class="browser-bar" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url">${esc(n.card.address)}</span></div>
-<div class="niche-card-body">
-<span class="niche-icon">${nicheIcon(n)}</span>
-<h3><a class="stretched" href="/${n.id}">${t(n.name)}</a></h3>
-<p>${t(n.card.text)}</p>
-<span class="niche-more" aria-hidden="true">See ideas ${svg.icon('arrow')}</span>
+  const anyBody = `<ul class="can-build">${B.items.map((i) => `<li><span class="inc-icon">${svg.icon(i.icon)}</span><span class="cb-text">${t(i.text)}</span>${kindTag(i.kind)}</li>`).join('')}</ul>${canEnquire ? `<p class="chooser-other">${svg.icon('chat')}<span><strong>${t(I.other.title)}?</strong> ${t(I.other.text)} <a href="#enquiry">${t(I.other.more)}</a></span></p>` : ''}`;
+  const panels = [{ id: 'any', label: I.anyLabel, icon: svg.icon('grid'), heading: B.heading, lead: B.lead, body: anyBody }]
+    .concat(niches.map((x) => ({
+      id: x.id,
+      label: x.navLabel,
+      icon: nicheIcon(x),
+      heading: `Ideas for ${nicheLower(x)}`,
+      lead: x.card.text,
+      body: `${ideasList(x, 'h5')}<p class="more-link"><a href="/${x.id}">More for ${esc(nicheLower(x))} ${svg.icon('arrow')}</a></p>`
+    })));
+  const tabs = panels.map((p) => `<button type="button" class="tab" data-tab="${p.id}">${p.icon}<span>${t(p.label)}</span></button>`).join('');
+  const bodies = panels.map((p) => `<div class="tab-panel" id="panel-${p.id}" data-panel="${p.id}"><h4 class="panel-h">${t(p.heading)}</h4>${p.lead ? `<p class="panel-lead">${t(p.lead)}</p>` : ''}${p.body}</div>`).join('');
+  return `<section class="section section-sand chapter" id="build" aria-labelledby="build-h"><div class="wrap">
+<div class="chapter-head">${kicker(n, S.kicker)}${sectionHead('build', S.heading, S.lead)}</div>
+<div class="niche-cards service-cards">${serviceCards}</div>
+<div class="chooser" data-tabs>
+<h3 class="chooser-h" id="chooser-h">${t(I.heading)}</h3><p class="section-lead">${t(I.lead)}</p>
+<div class="tabs" data-tablist aria-labelledby="chooser-h" hidden>${tabs}</div>
+${bodies}
 </div>
-</article>`).join('') + (canEnquire ? `<article class="niche-card niche-card-other">
-<div class="browser-bar" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url">yourbusiness.co.za</span></div>
-<div class="niche-card-body">
-<span class="niche-icon">${svg.icon('chat')}</span>
-<h3><a class="stretched" href="#enquiry">${t(I.other.title)}</a></h3>
-<p>${t(I.other.text)}</p>
-<span class="niche-more" aria-hidden="true">${t(I.other.more)} ${svg.icon('arrow')}</span>
+</div></section>`;
+}
+
+// 4. What it could earn: two sliders, the sums and a 12-month chart. site.js redraws the
+// chart with the same geometry (read from the data- attributes).
+function earnChart(r, build) {
+  const n = 12, w = 360, top = 34, bottom = 150, gap = 6;
+  const bw = (w - gap * (n + 1)) / n;
+  const max = Math.max(build * 1.25, r.monthly * n);
+  const y = (v) => bottom - (Math.min(v, max) / max) * (bottom - top);
+  const bars = Array.from({ length: n }, (_, i) => {
+    const v = r.monthly * (i + 1);
+    const x = gap + i * (bw + gap);
+    return `<rect class="bar${v >= build ? ' is-paid' : ''}" x="${x.toFixed(1)}" y="${y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(bottom - y(v)).toFixed(1)}" rx="4"/>`;
+  }).join('');
+  const nums = Array.from({ length: n }, (_, i) => `<text x="${(gap + i * (bw + gap) + bw / 2).toFixed(1)}" y="${bottom + 17}" text-anchor="middle">${i + 1}</text>`).join('');
+  const m = Math.min(r.months, n);
+  const fx = gap + (m - 1) * (bw + gap) + bw / 2;
+  return `<svg class="earn-chart" viewBox="0 0 ${w} ${bottom + 24}" aria-hidden="true" focusable="false" data-chart data-top="${top}" data-bottom="${bottom}" data-gap="${gap}">
+<g class="bars">${bars}</g><g class="bar-nums">${nums}</g>
+<line class="cost-line" x1="0" x2="${w}" y1="${y(build).toFixed(1)}" y2="${y(build).toFixed(1)}"/>
+<g class="pay-flag${r.months > n ? ' is-off' : ''}" transform="translate(${fx.toFixed(1)} ${y(r.monthly * m).toFixed(1)})"><path class="flag-pole" d="M0-5v-24"/><path class="flag-cloth" d="M0-29h17l-4 5.5 4 5.5H0z"/></g>
+</svg>`;
+}
+
+function earnSection(n) {
+  const E = C.home.earn;
+  const d = E.defaults || {};
+  const o = optionById[E.build] || onceOff;
+  const care = optionById[E.carePlan] || plans[0];
+  const min = Number(d.spendMin) || 50;
+  const max = Number(d.spendMax) || 5000;
+  const pos = calc.spendPos(Number(d.spend) || 400, min, max);
+  const spend = calc.spendAt(pos, min, max);
+  const cmax = Number(d.customersMax) || 30;
+  const customers = Math.min(cmax, Math.max(1, Number(d.customers) || 4));
+  const r = calc.earnings({ spend, customers, build: o.build, care: care.monthly });
+  const what = o.monthly ? `${esc(o.name)} build` : `${esc(o.name.toLowerCase())} website`;
+  const careName = esc(planName(care));
+  const sums = `<p class="earn-big"><strong data-out="monthly">${rand(r.monthly)}</strong> <span>a month in new takings.</span></p>
+<p class="earn-year">That’s <strong data-out="yearly">${rand(r.yearly)}</strong> a year.</p>
+<ul class="earn-facts">
+<li>${svg.icon('check')}<span>A ${what} (${rand(o.build)}) pays for itself after <strong data-out="payback">${plural(r.payback, 'customer', 'customers')}</strong>, in about <strong data-out="months">${plural(r.months, 'month', 'months')}</strong>.</span></li>
+<li>${svg.icon('check')}<span>On ${careName}, <strong data-out="care">${plural(r.care, 'customer', 'customers')}</strong> a month <span data-out="careVerb">${r.care === 1 ? 'covers' : 'cover'}</span> the ${month(care.monthly)} fee.</span></li>
+</ul>`;
+  return `<section class="section section-navy chapter earn-section" id="earn" aria-labelledby="earn-h"><div class="wrap earn-grid">
+<div class="chapter-head">${kicker(n, E.kicker)}${sectionHead('earn', E.heading, E.lead)}</div>
+<div class="earn" data-earn data-build="${o.build}" data-care="${care.monthly}">
+<div class="earn-inputs">
+<div class="field"><p class="label-row"><label for="earn-spend">${t(E.spendLabel)}</label> <output for="earn-spend" data-out="spend">${rand(spend)}</output></p><input class="range" id="earn-spend" name="spend" type="range" min="0" max="100" step="1" value="${pos}" data-min="${min}" data-max="${max}" aria-valuetext="${esc(rand(spend))}"><div class="range-ends" aria-hidden="true"><span>${rand(min)}</span><span>${rand(max)}</span></div></div>
+<div class="field"><p class="label-row"><label for="earn-customers">${t(E.customersLabel)}</label> <output for="earn-customers" data-out="customers">${customers}</output></p><input class="range" id="earn-customers" name="customers" type="range" min="1" max="${cmax}" step="1" value="${customers}"><div class="range-ends" aria-hidden="true"><span>1</span><span>${cmax}</span></div></div>
 </div>
-</article>` : '');
+<div class="earn-result"><div class="earn-sums" aria-hidden="true" data-sums>${sums}</div><p class="visually-hidden" aria-live="polite" data-sums-sr>${esc(strip(sums))}</p></div>
+<figure class="earn-figure"><p class="earn-legend" aria-hidden="true"><span><i class="lg-line"></i>Your website (${rand(o.build)})</span><span><i class="lg-bar"></i>Takings so far</span><span><i class="lg-paid"></i>Paid for itself</span></p>${earnChart(r, o.build)}<figcaption>Your takings over 12 months, against the cost of the website.</figcaption></figure>
+<p class="calc-small">${t(E.note)} Uses the ${esc(o.name.toLowerCase())} price of ${rand(o.build)} and the ${careName} fee of ${month(care.monthly)}, so your own quote may differ.</p>
+</div>
+</div></section>`;
+}
+
+// 5. What it costs: the three ways to buy a website (compact cards), a "which suits me?"
+// question (site.js; hidden without JavaScript), then bigger jobs and tools.
+function miniOption(o) {
+  const featured = o.featured === true;
+  const rows = (WEB.rows || []).filter((r) => ['hosting', 'changes', 'term'].includes(r.key) && isSet(o[r.key]))
+    .map((r) => `<li><span>${t(r.label)}</span><b>${t(o[r.key])}</b></li>`).join('');
+  const monthly = o.monthly ? `<p class="option-monthly"><strong>+ ${rand(o.monthly)}</strong>/month</p>` : `<p class="option-monthly">${t(WEB.noMonthly)}</p>`;
+  const founding = foundingOn && o.monthly && isSet(F.cardNote) ? `<p class="option-note">${t(F.cardNote)}</p>` : '';
+  const ch = C.home.costs.chooser || {};
+  return `<article class="mini${featured ? ' mini-featured' : ''}" data-mini="${esc(o.id)}">
+${featured && isSet(WEB.badge) ? `<p class="option-badge">${t(WEB.badge)}</p>` : ''}${isSet(ch.badge) ? `<p class="mini-fit" aria-hidden="true">${svg.icon('check')}${t(ch.badge)}</p>` : ''}
+<h3>${t(o.name)}</h3>
+<p class="option-label">${t(WEB.priceLabel)}</p>
+<p class="plan-price"><span class="plan-amount">${rand(o.build)}</span></p>
+${monthly}${founding}
+<p class="plan-summary">${t(o.summary)}</p>
+<ul class="mini-rows">${rows}</ul>
+<a class="mini-link" href="/pricing#option-${esc(o.id)}">What’s included<span class="visually-hidden"> in ${t(o.name)}</span> ${svg.icon('arrow')}</a>
+</article>`;
+}
+
+function costSection(page, n) {
+  const K = C.home.costs;
+  const ch = K.chooser;
+  const answers = ch && ch.answers ? ch.answers.filter((a) => optionById[a.option] || warn(`home.costs.chooser: no website option "${a.option}"`)) : [];
+  const fit = answers.length ? `<div class="fit" data-fit hidden>
+<p class="fit-q" id="fit-q">${t(ch.question)}</p>
+<div class="fit-answers" role="group" aria-labelledby="fit-q">${answers.map((a) => `<button type="button" class="fit-btn" aria-pressed="false" data-option="${esc(a.option)}" data-text="${esc(typo(fill(a.text)))}">${t(a.label)}</button>`).join('')}</div>
+<p class="fit-result" aria-live="polite" data-fit-result></p>
+</div>` : '';
+  const bandRows = bands.map((b) => `<li><span>${esc(b.name)}</span><span>${hasPrice(b) ? `from <strong>${rand(b.from)}</strong>` : 'Quoted'}</span></li>`).join('');
+  return `<section class="section chapter" id="cost" aria-labelledby="cost-h"><div class="wrap">
+<div class="chapter-head">${kicker(n, K.kicker)}${sectionHead('cost', K.heading, K.lead)}</div>
+${fit}
+<div class="minis" data-minis>${options.map(miniOption).join('')}</div>
+<p class="fine">${t(K.note)}</p>
+<div class="cost-more">
+<div class="pt-col"><h3><a href="/pricing#tools-prices">${t(BG.heading)}</a></h3><ul>${bandRows}</ul><p class="pt-note">${t(BG.intro)} ${t(BG.lead)}</p></div>
+${foundingBanner(page)}
+</div>
+<p class="more-link"><a href="/pricing">${t(K.more)} ${svg.icon('arrow')}</a></p>
+</div></section>`;
+}
+
+// 7. Why it's worth it: without and with a website. site.js turns the two columns into
+// cards that flip over with a switch; without JavaScript they sit side by side.
+function compareSection(page, n) {
+  const K = C.home.compare;
+  const rows = K.rows.map((r) => `<li class="flip-row"><span class="flip-a">${svg.icon('x')}<span><span class="visually-hidden">${t(K.without)}: </span>${t(r.without)}</span></span><span class="flip-b">${svg.icon('check')}<span><span class="visually-hidden">${t(K.with)}: </span>${t(r.with)}</span></span></li>`).join('');
+  const door = '<span class="mini-door" aria-hidden="true"><span class="md-hole"><span class="door-inside"></span><span class="md-hinge"><span class="md-leaf"><i class="door-handle"></i></span></span></span></span>';
+  const wa = contact.wa ? [{ href: esc(waGeneral()), label: `${svg.whatsapp()}WhatsApp me`, cls: 'btn-navy' }] : [];
+  return `<section class="section chapter" id="start" aria-labelledby="start-h"><div class="wrap narrow">
+<div class="chapter-head center">${kicker(n, K.kicker)}${sectionHead('start', K.heading, K.lead)}</div>
+<div class="flip" data-flip>
+<div class="flip-top" data-flip-switch hidden>
+<p class="flip-hint">${t(K.hint)}</p>
+<div class="flip-switch" role="group" aria-label="${esc(typo(K.heading))}"><button type="button" aria-pressed="true" data-side="a">${t(K.without)}</button><button type="button" aria-pressed="false" data-side="b">${t(K.with)}</button></div>
+</div>
+${door}
+<p class="flip-heads" aria-hidden="true"><span class="flip-a">${t(K.without)}</span><span class="flip-b">${t(K.with)}</span></p>
+<ul class="flip-rows">${rows}</ul>
+</div>
+<div class="center">${ctaRow(page, wa)}</div>
+</div></section>`;
+}
+
+function homePage() {
+  const H = C.home;
+  const page = { url: '/', out: 'index.html', hasForm: true, jsonLd: true, title: H.seo.title, description: H.seo.description, bodyClass: 'page-home' };
+  const chapters = [['why', H.why], ['helps', H.helps], ['build', H.services], ['earn', H.earn], ['cost', H.costs], ['how', H.steps], ['start', H.compare]]
+    .map(([id, c]) => ({ id, kicker: c.kicker, short: c.short }));
+  const num = (id) => chapters.findIndex((c) => c.id === id) + 1;
   const about = contact.firstName
     ? `<section class="section about" aria-labelledby="about-h"><div class="wrap narrow about-inner">${svg.logo('logo about-logo')}<div>${sectionHead('about', H.about.heading)}<p>${t(H.about.text)}${contact.area ? ` ${t(H.about.areaText)}` : ''}</p></div></div></section>`
     : '';
   const st = H.steps;
-  page.body = `${splitHero('hero-home', t(H.hero.eyebrow), H.hero.h1, H.hero.lead, {
-    anchor: priceAnchor(H.hero.priceAnchor),
-    cta: ctaRow(page, [{ href: '/pricing', label: 'See prices' }]),
-    extra: `<ul class="hero-points">${H.hero.points.map((p) => `<li>${svg.icon('check')}<span>${t(p)}</span></li>`).join('')}</ul>`
-  }, svg.hero())}
-<section class="section section-tight-top" aria-labelledby="services-h"><div class="wrap">${sectionHead('services', S.heading, S.lead)}<div class="niche-cards service-cards">${serviceCards}</div></div></section>
-<section class="section" aria-labelledby="build-h"><div class="wrap">${sectionHead('build', H.canBuild.heading, H.canBuild.lead)}${canBuild}</div></section>
-${stepsSection('how', st.heading, `${st.lead}${tokens.quoteTime && st.quoteTimeText ? ` ${st.quoteTimeText}` : ''}`, st.items)}
-<section class="section" aria-labelledby="prices-h"><div class="wrap">${sectionHead('prices', H.pricingTeaser.heading)}${priceAnchor(H.hero.priceAnchor, ' price-anchor-inline')}<p class="section-lead">${t(H.pricingTeaser.lead)}</p>${priceTeaser()}<p class="more-link"><a href="/pricing">See full pricing and what’s included ${svg.icon('arrow')}</a></p></div></section>
-<section class="section section-sand" aria-labelledby="ind-h"><div class="wrap">${sectionHead('ind', I.heading, I.lead)}<div class="niche-cards industry-cards">${industryCards}</div></div></section>
-${foundingOn ? `<div class="section section-tight-top"><div class="wrap">${foundingBanner(page)}</div></div>` : ''}
+  page.body = `${storyBar(chapters)}
+${doorHero(page)}
+${tourSection(chapters)}
+${whySection(num('why'))}
+${helpsSection(num('helps'))}
+${buildSection(page, num('build'))}
 ${examplesBlock(examples, H.examplesHeading)}
+${earnSection(num('earn'))}
+${costSection(page, num('cost'))}
+${stepsSection('how', st.heading, `${st.lead}${tokens.quoteTime && st.quoteTimeText ? ` ${st.quoteTimeText}` : ''}`, st.items, true, { chapter: { id: 'how', n: num('how'), label: st.kicker } })}
+${compareSection(page, num('start'))}
 ${about}
 <section class="section section-sand" aria-labelledby="faqt-h"><div class="wrap narrow">${sectionHead('faqt', H.faqTeaser.heading)}${faqList(generalFaq(H.faqTeaser.ids))}<p class="more-link"><a href="/faq">All questions and answers ${svg.icon('arrow')}</a></p></div></section>
 ${enquirySection(page, { heading: H.cta.heading, lead: H.cta.lead })}`;
@@ -912,20 +1157,8 @@ function nichePage(n) {
   const page = { url: `/${n.id}`, out: `${n.id}.html`, hasForm: true, title: n.seo.title, description: n.seo.description, bodyClass: `page-${n.id}` };
   const A = n.argument;
   const nicheExamples = examples.filter((e) => e.niche === n.id);
-  // "band" is a band id or a website option id ("once-off": the business website's once-off price).
-  const ideaPrice = (i) => {
-    if (!i.band) return isSet(i.note) ? t(i.note) : '';
-    const o = optionById[i.band];
-    if (o) return `From <strong>${rand(o.build)}</strong>${o.monthly ? ` + ${month(o.monthly)}` : ` ${t(BG.priceNote)}`} · ${esc(WEB.name)}`;
-    const b = bandById[i.band];
-    if (!b) { warn(`${n.id}: idea "${i.title}" uses unknown band "${i.band}"`); return ''; }
-    return hasPrice(b) ? `From <strong>${rand(b.from)}</strong> ${t(BG.priceNote)} · ${esc(b.name)}` : `Quoted · ${esc(b.name)}`;
-  };
-  const ideas = `<ul class="ideas">${n.ideas.map((i) => {
-    const price = ideaPrice(i);
-    return `<li class="idea">${kindTag(i.kind)}<h3>${t(i.title)}</h3><p>${t(i.text)}</p>${price ? `<p class="idea-price">${price}</p>` : ''}</li>`;
-  }).join('')}</ul>`;
-  const ideasLead = `Ideas for ${n.name.toLowerCase().replace('b&bs', 'B&Bs')}, with ${BG.priceNote} starting prices. ${BG.lead}`;
+  const ideas = ideasList(n);
+  const ideasLead = `Ideas for ${nicheLower(n)}, with ${BG.priceNote} starting prices. ${BG.lead}`;
   page.body = `${splitHero('hero-niche', `${nicheIcon(n)}${t(n.hero.eyebrow)}`, n.hero.h1, n.hero.lead, {
     cta: ctaRow(page, [{ href: '#ideas', label: 'See ideas and prices' }]),
     extra: `<p class="hero-from">${tMoney(C.home.hero.priceAnchor)}</p>`
@@ -981,7 +1214,7 @@ function faqPage() {
   ].filter(Boolean).join('');
   page.body = `${pageHero(Q.h1, Q.lead)}
 <section class="section section-tight" aria-labelledby="general-h"><div class="wrap narrow">${sectionHead('general', 'The basics')}${faqList(C.faq)}</div></section>
-${niches.map((n) => `<section class="section section-tight" aria-labelledby="faq-${n.id}-h"><div class="wrap narrow"><h2 id="faq-${n.id}-h" class="with-icon"><span class="niche-icon">${nicheIcon(n)}</span>${t(n.name)}</h2>${faqList(n.faq)}<p class="more-link"><a href="/${n.id}">Ideas for ${esc(n.name.toLowerCase().replace('b&bs', 'B&Bs'))} ${svg.icon('arrow')}</a></p></div></section>`).join('')}
+${niches.map((n) => `<section class="section section-tight" aria-labelledby="faq-${n.id}-h"><div class="wrap narrow"><h2 id="faq-${n.id}-h" class="with-icon"><span class="niche-icon">${nicheIcon(n)}</span>${t(n.name)}</h2>${faqList(n.faq)}<p class="more-link"><a href="/${n.id}">Ideas for ${esc(nicheLower(n))} ${svg.icon('arrow')}</a></p></div></section>`).join('')}
 ${contactBtns || canEnquire ? `<section class="section section-sand" aria-labelledby="ask-h"><div class="wrap narrow center">${sectionHead('ask', 'Still have a question?', 'Ask me directly. No calls needed, and voice notes are welcome.')}<div class="cta-row cta-center">${contactBtns}${quoteButton(page, 'btn btn-gold btn-lg')}</div></div></section>` : ''}`;
   return page;
 }
