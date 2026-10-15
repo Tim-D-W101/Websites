@@ -47,9 +47,10 @@
     "enabled": true,
     "spotsTotal": 3,
     "spotsLeft": 3,
-    "title": "Founding-client offer: first month of care free",
-    "text": "My first {spotsTotal} clients get their first month of any care plan free. No strings attached. If you're happy, I'd love an honest Google review.",
-    "startNote": "Founding client? Your first month of any care plan is free. I'll set that up when you choose your plan."
+    "discountPercent": 50,
+    "title": "Founding-client offer: {foundingDiscount} off your build",
+    "text": "My first {spotsTotal} clients get {foundingDiscount} off the build price of any website or tool. Care plans are the normal price. If you're happy, I'd love an honest Google review.",
+    "startNote": "Founding client? Your quote shows {foundingDiscount} off the build price, and your deposit is based on that lower price."
   },
   "groups": {
     "websites": {
