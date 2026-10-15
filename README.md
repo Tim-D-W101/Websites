@@ -62,7 +62,7 @@ If neither WhatsApp nor email is filled in, the enquiry form and every "Free quo
 
 You can use these in any text in `content.json`, and in the privacy, terms and guide pages:
 
-`{websitesFrom}` (lowest website band, e.g. R3 500) · `{toolsFrom}` · `{careFrom}` (cheapest care plan, e.g. R250/month) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{quoteTime}` · `{paymentMethods}` · `{noticeDays}` · `{extraWorkFrom}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}` · `{yearlyPaysMonths}` · `{yearlyFree}` · `{careYearly}` · `{spotsTotal}` · `{spotsLeft}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
+`{websitesFrom}` (lowest website band, e.g. R3 500) · `{toolsFrom}` · `{careFrom}` (cheapest care plan, e.g. R250/month) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{quoteTime}` · `{paymentMethods}` · `{noticeDays}` · `{extraWorkFrom}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}` · `{yearlyPaysMonths}` · `{yearlyFree}` · `{careYearly}` · `{spotsTotal}` · `{spotsLeft}` · `{foundingDiscount}` (50%) · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
 
 A FAQ item, or one part of an answer, that needs a blank detail can be hidden until it's filled in: add `"requires": ["process.quoteTime"]`. In the HTML pages, wrap the text in `{{#if contact.email}} … {{/if}}`.
 
@@ -104,9 +104,9 @@ Care plans live in `carePlans`:
 "founding": { "enabled": true, "spotsTotal": 3, "spotsLeft": 3, ... }
 ```
 
-- The offer: the first month of any care plan free. The wording is in `founding.title`, `founding.text` and `founding.startNote`.
+- The offer: `discountPercent` (50) off the build price of any website or tool. Care plans stay the normal price. The wording is in `founding.title`, `founding.text` and `founding.startNote`, where `{foundingDiscount}` shows as "50%".
 - Each time someone signs up as a founding client, lower `spotsLeft` and rebuild.
-- When `spotsLeft` reaches `0`, or `enabled` is `false`, the banner and the "First month free" notes disappear everywhere.
+- When `spotsLeft` reaches `0`, or `enabled` is `false`, the banner and the "50% off for founding clients" notes on the price cards disappear everywhere.
 
 ## Edit the industry pages
 

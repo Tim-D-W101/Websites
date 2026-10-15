@@ -135,6 +135,8 @@ effective['terms.yearlyPaysMonths'] = yearlyOn ? 'on' : '';
 
 const F = C.founding || {};
 const foundingOn = F.enabled === true && Number(F.spotsLeft) > 0;
+// Founding clients get this much off the build price (not the care plans).
+const foundingPct = Number(F.discountPercent) || 50;
 
 const examples = (C.examples || []).filter((e) => {
   if (!isSet(e.name)) { warn('An example has no name, so it was skipped.'); return false; }
@@ -180,6 +182,7 @@ const tokens = {
   yearlyFree: yearlyOn ? yearlyFree : '',
   careYearly: yearlyOn && careById.care ? rand(yearly(careById.care.monthly)) : '',
   spotsTotal: F.spotsTotal,
+  foundingDiscount: `${foundingPct}%`,
   spotsLeft: F.spotsLeft,
   siteName: site.name,
   domain: site.domain,
@@ -322,6 +325,7 @@ function bandCard(b, page) {
   return `<article class="plan band" id="band-${esc(b.id)}">
 <h3>${t(b.name)}</h3>
 ${bandPrice(b)}
+${foundingOn ? `<p class="plan-setup"><strong>${foundingPct}% off</strong> for founding clients</p>` : ''}
 <p class="plan-summary">${t(b.scope)}</p>
 ${isSet(b.buildTime) ? `<p class="band-time">${svg.icon('clock')}<span>Typical build: ${esc(typo(b.buildTime))}</span></p>` : ''}
 ${canEnquire ? `<div class="plan-actions">${quoteButton(page, 'btn btn-gold', hasPrice(b) ? 'Get a free quote' : 'Ask for a free plan')}</div>` : ''}
@@ -338,7 +342,6 @@ function careCard(p, opts = {}) {
 <header><h3>${t(p.name)}</h3><p class="plan-summary">${t(p.summary)}</p></header>
 <p class="plan-price"><span class="plan-amount">${rand(p.monthly)}</span><span class="plan-per">/month</span></p>
 ${yearlyOn ? `<p class="plan-yearly">or pay <strong>${rand(yearly(p.monthly))}</strong> once a year <span class="plan-save">${yearlyFree} free</span></p>` : ''}
-${foundingOn ? '<p class="plan-setup"><strong>First month free</strong> for founding clients</p>' : ''}
 ${ticks(p.includes)}
 <div class="plan-actions"><a class="btn btn-ghost" href="/start#step-care">How to sign up</a></div>
 </article>`;
@@ -349,7 +352,6 @@ function careSection(page, opts = {}) {
   return `<section class="section${opts.sand ? ' section-sand' : ''}" id="care" aria-labelledby="care-h">
 <div class="wrap">
 ${sectionHead('care', CA.heading, opts.lead || CA.lead)}
-${opts.founding && foundingOn ? foundingBanner(page, { compact: true }) : ''}
 <div class="plans plans-3">${carePlans.map((p) => careCard(p, opts)).join('')}</div>
 <p class="fine">${t(CA.noPlan)}</p>
 </div>
@@ -775,9 +777,9 @@ function websitesPage() {
 <div>${sectionHead('inc', W.includesHeading)}${ticks(C.websiteIncludes)}</div>
 <div class="card points-card"><h3>${t(W.mockupCard.heading)}</h3><p>${t(W.mockupCard.text)}</p>${canEnquire ? `<p>${quoteButton(page, 'btn btn-gold', 'Get a free mock-up')}</p>` : ''}</div>
 </div></section>
-<section class="section section-sand" id="prices" aria-labelledby="wb-h"><div class="wrap">${sectionHead('wb', W.bandsHeading, W.bandsLead)}${bandsGrid('websites', page)}<p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
+<section class="section section-sand" id="prices" aria-labelledby="wb-h"><div class="wrap">${sectionHead('wb', W.bandsHeading, W.bandsLead)}${foundingBanner(page, { compact: true })}${bandsGrid('websites', page)}<p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
 ${stepsSection('wsteps', W.steps.heading, '', W.steps.items, false)}
-${careSection(page, { lead: W.careLead, sand: true, founding: true })}
+${careSection(page, { lead: W.careLead, sand: true })}
 ${examplesBlock(webExamples, 'Website examples')}
 ${faqSection(page, 'Questions about websites', generalFaq(['cost', 'time', 'own', 'need-care', 'small-edit', 'phones']), 'websites', webExamples.length > 0)}
 ${enquirySection(page, { need: 'website', heading: 'Get a free mock-up', lead: 'Tell me about your business and I’ll build a free sample of your website, with a fixed quote. No obligation, no calls.' })}`;
@@ -796,8 +798,8 @@ function toolsPage() {
 <p class="big-callout">${t(P.callout)}</p></div></section>
 ${stepsSection('tsteps', P.steps.heading, '', P.steps.items)}
 <section class="section" aria-labelledby="tp-h"><div class="wrap"><h2 id="tp-h" class="visually-hidden">Good to know</h2><ul class="point-cards">${P.points.map((p) => `<li class="card"><span class="inc-icon">${svg.icon(p.icon)}</span><h3>${t(p.title)}</h3><p>${t(p.text)}</p></li>`).join('')}</ul></div></section>
-<section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${bandsGrid('tools', page)}<p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
-${careSection(page, { lead: P.careLead, highlight: 'care-plus', founding: true })}
+<section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${foundingBanner(page, { compact: true })}${bandsGrid('tools', page)}<p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
+${careSection(page, { lead: P.careLead, highlight: 'care-plus' })}
 ${examplesBlock(toolExamples, 'Tool examples', true)}
 ${faqSection(page, 'Questions about business tools', generalFaq(['tool-what', 'plan', 'cost', 'other-costs', 'own', 'time']), 'tools', !toolExamples.length)}
 ${enquirySection(page, { need: 'tool', heading: 'Get a free plan & quote', lead: 'Tell me how things work now and what you’d like to fix. I’ll send a short plan and a fixed quote. No obligation, no calls.' })}`;
@@ -843,10 +845,11 @@ ${bandsGrid(key, page)}${extra}
   const S = P.smallEdit;
   page.body = `${pageHero(P.h1, P.lead)}
 <div class="section section-tight"><div class="wrap">
+${foundingBanner(page, { compact: true })}
 ${group('websites', `<div class="card includes-card"><h3>Every website includes</h3>${ticks(C.websiteIncludes, 'ticks ticks-2col')}</div>`)}
 ${group('tools')}
 </div></div>
-${careSection(page, { sand: true, founding: true })}
+${careSection(page, { sand: true })}
 <section class="section" aria-labelledby="terms-h"><div class="wrap two-col">
 <div>${sectionHead('terms', 'How quotes and payment work')}${ticks(P.terms)}<p><a href="/terms">Read the full terms</a></p></div>
 <div class="stack">
