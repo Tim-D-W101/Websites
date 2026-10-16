@@ -31,7 +31,7 @@
     "depositPercent": 50,
     "quoteValidDays": 30,
     "minimumTermMonths": 6,
-    "renewalYearly": 999,
+    "renewalYearly": 249,
     "renewalGraceDays": 30,
     "changeFee": 250,
     "editsDeadline": "Thursday",
@@ -45,7 +45,7 @@
     "legalName": "John Knot trading as Front Door Sites",
     "registrationNumber": "",
     "noticeAddress": "PO Box 3867, Mtunzini, 3867",
-    "lastUpdated": "2026-10-15"
+    "lastUpdated": "2026-10-16"
   },
   "founding": {
     "enabled": true,
