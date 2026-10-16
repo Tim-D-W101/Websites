@@ -64,7 +64,7 @@ If neither WhatsApp nor email is filled in, the enquiry form and every "Free quo
 You can use these in any text in `content.json`, and in the privacy, terms and guide pages:
 
 - **Prices:** `{onceOffBuild}` (R7 500) · `{careBuild}` (R4 999) · `{careMonthly}` (R399/month) · `{carePlusBuild}` (R3 999) · `{carePlusMonthly}` (R699/month) · `{websitesFrom}` (the lowest website build price, R3 999) · `{toolsFrom}` (R5 000) · `{careFrom}` (the cheapest monthly fee, R399/month)
-- **Terms:** `{renewalFee}` (R999) · `{changeFee}` (R250) · `{minMonths}` (6) · `{graceDays}` (30) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}`
+- **Terms:** `{renewalFee}` (R249) · `{changeFee}` (R250) · `{minMonths}` (6) · `{graceDays}` (30) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}`
 - **Changes per option:** `{onceOffChanges}` (R250 per change) · `{careChanges}` (1 hour of changes a month) · `{carePlusChanges}` (3 hours of changes a month)
 - **Yearly payment** (only while it's switched on): `{yearlyPaysMonths}` · `{yearlyFree}` · `{careYearly}` · `{carePlusYearly}`
 - **Everything else:** `{quoteTime}` · `{paymentMethods}` · `{spotsTotal}` · `{spotsLeft}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
@@ -97,7 +97,7 @@ These live in `terms`, and every page that mentions them updates when you rebuil
 
 | Field | What it does |
 |---|---|
-| `terms.renewalYearly` | The yearly hosting and domain renewal for once-off websites, from the second year, and for plans after they're cancelled (999 shows as R999) |
+| `terms.renewalYearly` | The yearly hosting and domain renewal for once-off websites, from the second year, and for plans after they're cancelled (249 shows as R249) |
 | `terms.renewalGraceDays` | How long an unpaid renewal has before the site goes offline (30) |
 | `terms.changeFee` | The price of one change on a once-off website (250) |
 | `terms.minimumTermMonths` | The minimum term for Care and Care Plus (6) |
