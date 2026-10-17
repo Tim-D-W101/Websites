@@ -65,7 +65,7 @@ You can use these in any text in `content.json`, and in the privacy, terms and g
 
 - **Prices:** `{onceOffBuild}` (R7 500) · `{careBuild}` (R4 999) · `{careMonthly}` (R399/month) · `{carePlusBuild}` (R3 999) · `{carePlusMonthly}` (R699/month) · `{websitesFrom}` (the lowest website build price, R3 999) · `{toolsFrom}` (R5 000) · `{careFrom}` (the cheapest monthly fee, R399/month)
 - **Terms:** `{renewalFee}` (R249) · `{changeFee}` (R250) · `{minMonths}` (6) · `{graceDays}` (30) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}`
-- **Changes per option:** `{onceOffChanges}` (R250 per change) · `{careChanges}` (1 hour of changes a month) · `{carePlusChanges}` (3 hours of changes a month)
+- **Changes per option:** `{onceOffChanges}` (R250 per change) · `{careChanges}` (a set number of small changes a month) · `{carePlusChanges}` (a bigger monthly allowance of changes)
 - **Yearly payment** (only while it's switched on): `{yearlyPaysMonths}` · `{yearlyFree}` · `{careYearly}` · `{carePlusYearly}`
 - **Everything else:** `{quoteTime}` · `{paymentMethods}` · `{spotsTotal}` · `{spotsLeft}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
 
@@ -79,10 +79,10 @@ A business website can be bought three ways. They live in `website.options`, and
 
 ```json
 { "id": "care", "name": "Build + Care", "plan": "Care", "featured": true,
-  "summary": "Pay less upfront. I keep your site online and make your changes every month.",
+  "summary": "Pay less upfront. I keep your site online and make a set number of small changes for you each month.",
   "build": 4999, "monthly": 399,
-  "term": "{minMonths} months", "hosting": "Included", "changes": "1 hour of changes a month",
-  "replies": "Standard", "report": "", "backups": "Yes",
+  "term": "{minMonths} months", "hosting": "Included", "changes": "a set number of small changes a month",
+  "replies": "Standard (email or WhatsApp)", "report": "", "backups": "Yes",
   "payLabel": "Start Care", "payfast": "" }
 ```
 
