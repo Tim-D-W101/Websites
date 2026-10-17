@@ -116,7 +116,6 @@
   function initEnquiry(form) {
     var wa = form.getAttribute('data-wa');
     var email = form.getAttribute('data-email');
-    var firstName = form.getAttribute('data-name');
     var status = form.querySelector('.form-status');
     var emailField = form.querySelector('[data-when="email"]');
     var phoneField = form.querySelector('[data-when="phone"]');
@@ -172,12 +171,12 @@
 
     var messages = {
       business: 'Please enter your business name.',
-      type: 'Please tell me what kind of business it is.',
+      type: 'Please tell us what kind of business it is.',
       town: 'Please enter your town.',
-      details: 'Please tell me a little about what you need.',
+      details: 'Please tell us a little about what you need.',
       name: 'Please enter your name.',
-      email: 'Please enter your email address, so I can reply.',
-      phone: 'Please enter your WhatsApp number, so I can reply.'
+      email: 'Please enter your email address, so we can reply.',
+      phone: 'Please enter your WhatsApp number, so we can reply.'
     };
 
     function showError(el, anchor, id, text) {
@@ -226,7 +225,7 @@
     function buildMessage() {
       var n = need();
       var lines = [
-        (firstName ? 'Hi ' + firstName + '! ' : 'Hi! ') + n.getAttribute('data-intro'),
+        'Hi! ' + n.getAttribute('data-intro'),
         '',
         'What I need: ' + n.value,
         'Business name: ' + value('business'),

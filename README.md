@@ -45,9 +45,10 @@ If it prints **warnings**, something needs fixing. For example: a WhatsApp numbe
 
 Open `content.json`. Anything that's empty or starts with `TODO` counts as blank. Its button, link or section is hidden, so the site never shows a broken or empty link.
 
+The site speaks as the business ("we", "us", "our") and shows no personal names. Keep new text that way. Words in the visitor's own voice stay as they are, like "Get my free mock-up" or the questions in the FAQ ("Can I change my prices?"). The only name on the site is `legal.legalName`, in the "Who we are" line of the Terms and Privacy pages.
+
 | Field | What it does |
 |---|---|
-| `contact.firstName` | The "Hi, I'm …" line on the home page, and the greeting in WhatsApp messages |
 | `contact.whatsapp` | International format, digits only, no `+` (e.g. `27821234567`). Turns on the WhatsApp buttons, the sticky phone bar and the enquiry form |
 | `contact.email` | Footer, FAQ page, Terms and Privacy, and the "send by email instead" option on the form. Set up the address before you launch (see [Set up hello@frontdoorsites.co.za](#set-up-hellofrontdoorsitescoza)) |
 | `contact.serviceArea` | "Based in …" in the footer, the About line and page descriptions (local SEO) |
@@ -57,7 +58,7 @@ Open `content.json`. Anything that's empty or starts with `TODO` counts as blank
 | `process.paymentMethods` | How deposits and balances are paid. Shown as "You pay by …" |
 | `website.buildTime`, `bands[].buildTime` | Typical build time for the business website and each band. Shown on the band cards, the FAQ and the Start page table. Leave one blank to hide that row |
 | `website.options[].payfast` | Optional PayFast links: the yearly renewal (on Once-off) and the monthly fee (on Build + Care and Build + Care Plus). Leave them blank to take these payments by EFT (see [How clients pay](#how-clients-pay-plans-and-the-renewal)) |
-| `legal.*` | Your legal name, registration number and an address for legal notices (Terms and Privacy pages only) |
+| `legal.*` | Your legal name, registration number and an address for legal notices (Terms and Privacy pages only). ECTA section 43 asks a business that sells online to show its full name and legal status, so the legal name stays in the "Who we are" line there |
 
 If neither WhatsApp nor email is filled in, the enquiry form and every "Free quote" button stay hidden, because there would be nowhere to send them.
 
@@ -69,7 +70,7 @@ You can use these in any text in `content.json`, and in the privacy, terms and g
 - **Terms:** `{renewalFee}` (R249) · `{changeFee}` (R199) · `{minMonths}` (6) · `{graceDays}` (30) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}`
 - **Changes per option:** `{onceOffChanges}` (R199 per change) · `{careChanges}` (5 free changes a month) · `{carePlusChanges}` (10 free changes a month)
 - **Yearly payment** (only while it's switched on): `{yearlyPaysMonths}` · `{yearlyFree}` · `{careYearly}` · `{carePlusYearly}`
-- **Everything else:** `{quoteTime}` · `{paymentMethods}` · `{spotsTotal}` · `{spotsLeft}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
+- **Everything else:** `{quoteTime}` · `{paymentMethods}` · `{spotsTotal}` · `{spotsLeft}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
 
 The option words come from each option's `id`: `once-off` gives `{onceOffBuild}`, `care-plus` gives `{carePlusBuild}`, and so on.
 
@@ -81,7 +82,7 @@ A business website can be bought three ways. They live in `website.options`, and
 
 ```json
 { "id": "care", "name": "Build + Care", "plan": "Care", "featured": true,
-  "summary": "Pay less upfront. I keep your site online and make up to 5 free changes for you each month.",
+  "summary": "Pay less upfront. We keep your site online and make up to 5 free changes for you each month.",
   "build": 4999, "monthly": 399,
   "term": "{minMonths} months", "hosting": "Included", "changes": "5 free changes a month",
   "replies": "Standard (email or WhatsApp)", "report": "", "backups": "Yes",
@@ -154,7 +155,7 @@ The home page tells the story as you scroll. Everything it says is in `home` in 
 | 6. How it works | `home.steps` | The four steps; each lights up as you reach it |
 | 7. Why it's worth it | `home.compare` | Cards that flip from "without a website" to "with a website" (`rows`) |
 
-After the chapters come the founding-client offer, "Who you'll be dealing with", common questions and the enquiry form.
+After the chapters come the founding-client offer, "About Front Door Sites", common questions and the enquiry form.
 
 The icons you can use are listed in `ICONS` in `src/svg.js` (for example `globe`, `calendar`, `form`, `cart`, `clipboard`, `chart`, `clock`, `pin`, `eye`, `chat`, `phone`, `key`).
 

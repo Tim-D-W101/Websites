@@ -15,17 +15,16 @@
     "summary": "Front Door Sites builds websites and business tools for South African businesses, with a fixed quote before any work starts. Pay once-off, or pay less upfront with a monthly plan."
   },
   "contact": {
-    "firstName": "John",
     "whatsapp": "27732426068",
     "email": "hello@frontdoorsites.co.za",
     "serviceArea": "KwaZulu-Natal",
     "replyHours": "within 24 hours",
     "googleBusinessProfile": "TODO: link to your Google Business Profile (optional)",
-    "whatsappGreeting": "Hi {firstName}, I have a question about a website or business tool."
+    "whatsappGreeting": "Hi, I have a question about a website or business tool."
   },
   "process": {
     "quoteTime": "3 working days",
-    "paymentMethods": "EFT, with my bank details on your quote"
+    "paymentMethods": "EFT, with our bank details on your quote"
   },
   "terms": {
     "depositPercent": 50,
@@ -52,7 +51,7 @@
     "spotsTotal": 3,
     "spotsLeft": 3,
     "title": "Founding-client offer: first month of Care or Care Plus free",
-    "text": "My first {spotsTotal} clients get their first month of any care plan free. If you're happy, I'd love an honest Google review.",
+    "text": "Our first {spotsTotal} clients get their first month of any care plan free. If you're happy, we'd love an honest Google review.",
     "cardNote": "First month free for founding clients",
     "startNote": "Founding client? Your first month of Care or Care Plus is free. Your quote shows it."
   },
@@ -104,7 +103,7 @@
         "name": "Build + Care",
         "plan": "Care",
         "featured": true,
-        "summary": "Pay less upfront. I keep your site online and make up to 5 free changes for you each month.",
+        "summary": "Pay less upfront. We keep your site online and make up to 5 free changes for you each month.",
         "build": 4999,
         "monthly": 399,
         "term": "{minMonths} months",
@@ -182,7 +181,7 @@
     "Basic SEO setup, so Google can find and understand your site",
     "Your Google Business Profile set up",
     "Hosting and a .co.za domain in your name, first year included on every option",
-    "Launch: I put it live and check it on phones and computers"
+    "Launch: we put it live and check it on phones and computers"
   ],
   "home": {
     "seo": {
@@ -193,15 +192,15 @@
       "_note": "The front door at the top of the home page. Scrolling opens the door, and the things in inside (up to 6) come out of it. Put *stars* around words in h1 to highlight them.",
       "eyebrow": "Websites and business tools for South African businesses",
       "h1": "Open the door to *more customers*",
-      "lead": "I build websites and business tools for South African businesses. You get a free mock-up or plan and a fixed price before any work starts, and I look after it afterwards.",
+      "lead": "We build websites and business tools for South African businesses. You get a free mock-up or plan and a fixed price before any work starts, and we look after it afterwards.",
       "priceAnchor": "Websites from {carePlusBuild} with Care Plus, or {onceOffBuild} once-off · Business tools from {toolsFrom}",
       "points": [
-        "Fixed quote before I start",
+        "Fixed quote before we start",
         "You own it once it's paid for",
         "No calls, voice notes welcome"
       ],
       "tourButton": "Show me around",
-      "bubble": "Scroll down, and I'll open the door and show you around.",
+      "bubble": "Scroll down, and we'll open the door and show you around.",
       "cue": "Scroll to open the door",
       "address": "yourbusiness.co.za",
       "mat": "WELCOME",
@@ -219,7 +218,7 @@
     "tour": {
       "kicker": "Come in",
       "heading": "Here's the quick tour",
-      "lead": "Keep scrolling and I'll walk you through it, one step at a time. Or jump straight to the part you want."
+      "lead": "Keep scrolling and we'll walk you through it, one step at a time. Or jump straight to the part you want."
     },
     "why": {
       "kicker": "Why you need a website",
@@ -310,9 +309,9 @@
       ]
     },
     "services": {
-      "kicker": "What I can build",
-      "short": "What I build",
-      "heading": "Two things I build",
+      "kicker": "What we can build",
+      "short": "What we build",
+      "heading": "Two things we build",
       "lead": "Start with one, and add the other later if you need it.",
       "cards": [
         {
@@ -392,8 +391,8 @@
       "anyLabel": "Any business",
       "other": {
         "title": "Any other business",
-        "text": "Tell me how your business works and what you'd like to fix. I'll suggest what would help most.",
-        "more": "Tell me what you need"
+        "text": "Tell us how your business works and what you'd like to fix. We'll suggest what would help most.",
+        "more": "Tell us what you need"
       }
     },
     "earn": {
@@ -451,16 +450,16 @@
       "lead": "Four steps, and you know the price before any work starts.",
       "items": [
         {
-          "title": "Tell me what you need",
-          "text": "Send a WhatsApp, an email or a voice note. Tell me what's slowing you down, or what you'd like your customers to be able to do."
+          "title": "Tell us what you need",
+          "text": "Send a WhatsApp, an email or a voice note. Tell us what's slowing you down, or what you'd like your customers to be able to do."
         },
         {
           "title": "Get a free mock-up or plan and a fixed quote",
-          "text": "For a website, I build a sample from your public info. For a tool, I write a short plan of what it will do. Either way you get a fixed price, with no obligation."
+          "text": "For a website, we build a sample from your public info. For a tool, we write a short plan of what it will do. Either way you get a fixed price, with no obligation."
         },
         {
-          "title": "Pay a {deposit} deposit, then I build it",
-          "text": "I show you as I go. Ask for changes until it's right."
+          "title": "Pay a {deposit} deposit, then we build it",
+          "text": "We show you as we go. Ask for changes until it's right."
         },
         {
           "title": "It goes live",
@@ -501,9 +500,9 @@
       ]
     },
     "about": {
-      "heading": "Who you'll be dealing with",
-      "text": "Hi, I'm {firstName}, the person behind Front Door Sites. I build and look after every website and tool myself, so you deal with me directly, on WhatsApp or email.",
-      "areaText": "I'm based in {serviceArea}. Because everything happens on WhatsApp and email, I can work with businesses anywhere in South Africa."
+      "heading": "About {siteName}",
+      "text": "We build and look after every website and tool ourselves, so you deal with us directly, on WhatsApp or email.",
+      "areaText": "We're based in {serviceArea}. Because everything happens on WhatsApp and email, we can work with businesses anywhere in South Africa."
     },
     "examplesHeading": "Demos you can try",
     "faqTeaser": {
@@ -517,8 +516,8 @@
       ]
     },
     "cta": {
-      "heading": "Tell me what you need",
-      "lead": "A few lines is enough. I'll reply with ideas, a free mock-up or plan, and a fixed quote."
+      "heading": "Tell us what you need",
+      "lead": "A few lines is enough. We'll reply with ideas, a free mock-up or plan, and a fixed quote."
     }
   },
   "websitesPage": {
@@ -529,13 +528,13 @@
     "hero": {
       "eyebrow": "Websites",
       "h1": "A website that brings in customers",
-      "lead": "Your services, your prices, your reviews and a way to reach you in one tap. I build a free mock-up first, so you see your site before you pay anything.",
+      "lead": "Your services, your prices, your reviews and a way to reach you in one tap. We build a free mock-up first, so you see your site before you pay anything.",
       "from": "Websites from {carePlusBuild} with Care Plus, or {onceOffBuild} once-off. Free mock-up first."
     },
     "includesHeading": "Every website includes",
     "mockupCard": {
       "heading": "Prefer to see it first?",
-      "text": "Send me a link to your Google Maps listing or Facebook page, and I'll build a sample of your website. It's free, and you only pay if you go ahead."
+      "text": "Send us a link to your Google Maps listing or Facebook page, and we'll build a sample of your website. It's free, and you only pay if you go ahead."
     },
     "biggerHeading": "Need bookings or an online shop?",
     "steps": {
@@ -543,7 +542,7 @@
       "items": [
         {
           "title": "Free mock-up",
-          "text": "Send me your business name and a link to your Google Maps listing, Facebook page or current site. I build a sample from your public info."
+          "text": "Send us your business name and a link to your Google Maps listing, Facebook page or current site. We build a sample from your public info."
         },
         {
           "title": "Fixed quote",
@@ -551,7 +550,7 @@
         },
         {
           "title": "Deposit and build",
-          "text": "Pay a {deposit} deposit, send your logo, photos and prices, and I build the full site."
+          "text": "Pay a {deposit} deposit, send your logo, photos and prices, and we build the full site."
         },
         {
           "title": "Approve and go live",
@@ -568,7 +567,7 @@
     "hero": {
       "eyebrow": "Business tools",
       "h1": "Business tools built around how you work",
-      "lead": "Simple, reliable tools that save you time every week: quotes, bookings, orders, jobs, stock and staff. You get a free plan and a fixed quote before I start.",
+      "lead": "Simple, reliable tools that save you time every week: quotes, bookings, orders, jobs, stock and staff. You get a free plan and a fixed quote before we start.",
       "from": "Business tools from {toolsFrom} once-off. Free plan first."
     },
     "listHeading": "What a business tool can do",
@@ -625,19 +624,19 @@
       "items": [
         {
           "title": "A free plan",
-          "text": "Tell me how things work now. I send a short written plan: what the tool will do, the main screens, the price and how long it will take."
+          "text": "Tell us how things work now. We send a short written plan: what the tool will do, the main screens, the price and how long it will take."
         },
         {
           "title": "A working demo, early",
-          "text": "After the {deposit} deposit, I build a working demo first, so you can try it with real examples."
+          "text": "After the {deposit} deposit, we build a working demo first, so you can try it with real examples."
         },
         {
           "title": "Built in stages",
-          "text": "I build it in small steps and show you each one, so changes are easy while it's taking shape."
+          "text": "We build it in small steps and show you each one, so changes are easy while it's taking shape."
         },
         {
           "title": "Handover",
-          "text": "I set it up, show you and your staff how it works, and stay on hand while you settle in."
+          "text": "We set it up, show you and your staff how it works, and stay on hand while you settle in."
         }
       ]
     },
@@ -663,7 +662,7 @@
   },
   "enquiry": {
     "heading": "Get a free quote",
-    "lead": "Tell me a bit about your business. I'll reply with ideas, a free mock-up or plan, and a fixed quote.",
+    "lead": "Tell us a bit about your business. We'll reply with ideas, a free mock-up or plan, and a fixed quote.",
     "needs": [
       {
         "value": "A website",
@@ -705,7 +704,7 @@
       "In 1–3 months",
       "Just exploring"
     ],
-    "note": "Your details go straight to me and are only used to reply to you and quote.",
+    "note": "Your details go straight to us and are only used to reply to you and quote.",
     "noCalls": "No calls needed. Voice notes welcome."
   },
   "niches": [
@@ -794,7 +793,7 @@
       "faq": [
         {
           "q": "Does it work with NightsBridge?",
-          "a": "Yes. On a bookings website I connect your NightsBridge booking button and live availability, so guests can check dates and book without leaving your site. Using a different booking system? Tell me which one. Most have a booking link or widget I can connect."
+          "a": "Yes. On a bookings website we connect your NightsBridge booking button and live availability, so guests can check dates and book without leaving your site. Using a different booking system? Tell us which one. Most have a booking link or widget we can connect."
         },
         {
           "q": "Do I have to stop using Booking.com or Airbnb?",
@@ -898,7 +897,7 @@
       "faq": [
         {
           "q": "Can clients book online?",
-          "a": "Yes. I can connect the booking tool you already use, like Fresha or Booksy, so clients choose a time straight from your site. Or I can build you a booking tool of your own. On a simple site, clients book with you on WhatsApp in one tap."
+          "a": "Yes. We can connect the booking tool you already use, like Fresha or Booksy, so clients choose a time straight from your site. Or we can build you a booking tool of your own. On a simple site, clients book with you on WhatsApp in one tap."
         },
         {
           "q": "Can I change my prices?",
@@ -906,7 +905,7 @@
         },
         {
           "q": "Can you show my Google reviews on the site?",
-          "a": "Yes. I add a selection of your real reviews to your site and refresh them when you ask. I never write or make up reviews."
+          "a": "Yes. We add a selection of your real reviews to your site and refresh them when you ask. We never write or make up reviews."
         },
         {
           "q": "I work from home. Do you have to show my address?",
@@ -1050,7 +1049,7 @@
         },
         {
           "q": "What about public holidays and special hours?",
-          "a": "Send me your holiday hours and I'll update the site. On Care or Care Plus, that counts towards your free monthly changes. Without a plan, it's one change at {changeFee}. The open/closed sign follows whatever hours are on your site."
+          "a": "Send us your holiday hours and we'll update the site. On Care or Care Plus, that counts towards your free monthly changes. Without a plan, it's one change at {changeFee}. The open/closed sign follows whatever hours are on your site."
         }
       ]
     }
@@ -1072,7 +1071,7 @@
         ]
       },
       "Quotes are valid for {quoteValidDays} days.",
-      "The price is fixed for the agreed scope. Anything new is quoted before I do it.",
+      "The price is fixed for the agreed scope. Anything new is quoted before we do it.",
       "Your domain is registered in your name. Once the site is paid in full, it's yours.",
       "Third-party costs, like booking software, payment fees and SMS, are paid by you and listed in your quote."
     ],
@@ -1083,14 +1082,14 @@
       "Care and Care Plus have a {minMonths}-month minimum. If you cancel early, you pay the months that are left.",
       "After {minMonths} months, cancel any time. You keep your site, and it moves to the {renewalFee} yearly renewal.",
       "Unused plan changes don't roll over.",
-      "Email hosting isn't included. I can set it up in your name, or add it for a fee."
+      "Email hosting isn't included. We can set it up in your name, or add it for a fee."
     ],
     "factorsHeading": "What sets the price",
     "factors": [
       "The number of pages or screens",
       "Features like bookings, payments, logins or an admin area",
       "Connecting to other systems",
-      "Whether you supply the text and photos, or I write them",
+      "Whether you supply the text and photos, or we write them",
       "How soon you need it"
     ],
     "changes": {
@@ -1103,7 +1102,7 @@
         "Changing your opening hours or contact details",
         "A small layout update, like moving a section"
       ],
-      "notIncluded": "Bigger work, like new pages, new features or a redesign, is quoted. I only start once you've said yes.",
+      "notIncluded": "Bigger work, like new pages, new features or a redesign, is quoted. We only start once you've said yes.",
       "allowanceHeading": "Changes on each option",
       "timing": "Changes sent by {editsDeadline} go live by {editsLive}."
     }
@@ -1114,13 +1113,13 @@
       "description": "Answers about Front Door Sites websites and business tools: prices, once-off or monthly plans, the free mock-up and plan, paying, owning your site and build times."
     },
     "h1": "Questions & answers",
-    "lead": "Straight answers about prices, plans, payment and ownership. Can't find your question? Ask me on WhatsApp."
+    "lead": "Straight answers about prices, plans, payment and ownership. Can't find your question? Ask us on WhatsApp."
   },
   "faq": [
     {
       "id": "cost",
       "q": "How much will it cost?",
-      "a": "A business website is {onceOffBuild} once-off, or from {carePlusBuild} with a monthly plan. Business tools start from {toolsFrom}. Tell me what you need and I'll send a fixed quote. The price only changes if you ask for something new, and I quote that first."
+      "a": "A business website is {onceOffBuild} once-off, or from {carePlusBuild} with a monthly plan. Business tools start from {toolsFrom}. Tell us what you need and we'll send a fixed quote. The price only changes if you ask for something new, and we quote that first."
     },
     {
       "id": "need-plan",
@@ -1130,7 +1129,7 @@
     {
       "id": "plan-cheaper",
       "q": "Why is the build cheaper with a plan?",
-      "a": "Because you stay with me for at least {minMonths} months, I can spread the cost."
+      "a": "Because you stay with us for at least {minMonths} months, we can spread the cost."
     },
     {
       "id": "cancel-plan",
@@ -1150,7 +1149,7 @@
     {
       "id": "email",
       "q": "Is email included?",
-      "a": "Not by default. I can set it up for you, and it's listed in your quote."
+      "a": "Not by default. We can set it up for you, and it's listed in your quote."
     },
     {
       "id": "mockup",
@@ -1235,7 +1234,7 @@
     {
       "id": "other-costs",
       "q": "Are there other costs?",
-      "a": "Things like booking software, payment fees or SMS are paid by you, and I list them in your quote. Email hosting isn't included, but I can add it. Hosting and upkeep for a business tool is quoted with the tool."
+      "a": "Things like booking software, payment fees or SMS are paid by you, and we list them in your quote. Email hosting isn't included, but we can add it. Hosting and upkeep for a business tool is quoted with the tool."
     }
   ],
   "examples": {
@@ -1247,8 +1246,8 @@
     "navLabel": "On this page",
     "hero": {
       "eyebrow": "Examples",
-      "h1": "See what I build, then *tap it*",
-      "lead": "Everything here is a working demo of a made-up business, built the same way I'd build yours.",
+      "h1": "See what we build, then *tap it*",
+      "lead": "Everything here is a working demo of a made-up business, built the same way we'd build yours.",
       "websiteButton": "Browse the demo website",
       "toolButton": "Try a tool",
       "note": "Nothing you type here is sent or stored."
@@ -1286,7 +1285,7 @@
         { "icon": "chat", "title": "You get a tidy WhatsApp message", "text": "Every detail written out, instead of a phone call while your hands are full." }
       ],
       "line": "Start with one, and add the other when you're ready.",
-      "data": "Every tool is built so your data is yours. Export it any time; nothing is locked behind me."
+      "data": "Every tool is built so your data is yours. Export it any time; nothing is locked behind us."
     },
     "clients": {
       "heading": "Real client work",
@@ -1294,7 +1293,7 @@
     },
     "yourTurn": {
       "heading": "Your turn",
-      "lead": "Tell me what wastes your time and I'll show you what I'd build. Free mock-up or plan, fixed quote, no calls needed."
+      "lead": "Tell us what wastes your time and we'll show you what we'd build. Free mock-up or plan, fixed quote, no calls needed."
     },
     "items": [
       {
@@ -1410,14 +1409,14 @@
   "startPage": {
     "seo": {
       "title": "How It Works: From Quote to Go-Live | Front Door Sites",
-      "description": "How a project with Front Door Sites works: tell me what you need, get a free mock-up or plan and a fixed quote, pay a {deposit} deposit, approve, and go live."
+      "description": "How a project with Front Door Sites works: tell us what you need, get a free mock-up or plan and a fixed quote, pay a {deposit} deposit, approve, and go live."
     },
     "h1": "From first message to go-live",
     "lead": "Here's exactly what happens, step by step.",
     "steps": [
       {
         "id": "tell",
-        "title": "Tell me what you need",
+        "title": "Tell us what you need",
         "text": "Use the form, or send a WhatsApp, an email or a voice note. A few lines is enough."
       },
       {
@@ -1434,7 +1433,7 @@
       {
         "id": "deposit",
         "title": "Pay the {deposit} deposit",
-        "text": "That books your project in, and I start building.",
+        "text": "That books your project in, and we start building.",
         "extra": {
           "text": "You pay by {paymentMethods}.",
           "requires": [
@@ -1444,8 +1443,8 @@
       },
       {
         "id": "build",
-        "title": "I build it, you approve it",
-        "text": "You see it as it takes shape and ask for changes until it's right. Send your logo, photos and prices when I ask for them."
+        "title": "We build it, you approve it",
+        "text": "You see it as it takes shape and ask for changes until it's right. Send your logo, photos and prices when we ask for them."
       },
       {
         "id": "live",
@@ -1457,12 +1456,12 @@
         "title": "After go-live: hosting and changes",
         "text": "On once-off, the first year of hosting and your domain is included. After that, the renewal is {renewalFee} a year. On Care or Care Plus, your plan starts when your site goes live and runs for at least {minMonths} months.",
         "noLinksText": [
-          "I send you an invoice for each plan payment and each yearly renewal, and you pay by EFT."
+          "We send you an invoice for each plan payment and each yearly renewal, and you pay by EFT."
         ]
       }
     ],
     "timesHeading": "Typical build times",
-    "timesNote": "Counted from when your deposit and content reach me. Your quote gives the exact timeline."
+    "timesNote": "Counted from when your deposit and content reach us. Your quote gives the exact timeline."
   },
   "legalPages": {
     "privacy": {
