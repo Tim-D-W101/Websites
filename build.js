@@ -75,7 +75,6 @@ const rand = calc.rand;
 const month = (n) => `${rand(n)}/month`;
 
 const contact = {
-  firstName: val('contact.firstName'),
   area: val('contact.serviceArea'),
   hours: val('contact.replyHours'),
   gbp: link('contact.googleBusinessProfile', 'Google Business Profile'),
@@ -200,7 +199,6 @@ function longDate(iso) {
 }
 
 const tokens = {
-  firstName: contact.firstName,
   serviceArea: contact.area,
   replyHours: contact.hours,
   quoteTime: val('process.quoteTime'),
@@ -235,20 +233,19 @@ const tokens = {
 for (const k of ['renewalYearly', 'changeFee', 'minimumTermMonths', 'renewalGraceDays']) {
   if (!(Number(T[k]) > 0)) warn(`terms.${k} should be a number above 0.`);
 }
-const softTokens = new Set(['firstName']);
 
 /* ---------- text helpers ---------- */
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-// Fill {tokens}. Blank soft tokens disappear quietly ("Hi {firstName}," -> "Hi,").
+// Fill {tokens}. A blank token is left out, with a warning.
 function fill(s) {
   return String(s)
     .replace(/\{(\w+)\}/g, (m, k) => {
       if (!(k in tokens)) { warn(`Unknown {${k}} in: "${String(s).slice(0, 70)}"`); return m; }
       const v = tokens[k];
       if (v === '' || v === undefined || v === null) {
-        if (!softTokens.has(k)) warn(`{${k}} is blank but used in: "${String(s).slice(0, 70)}…"`);
+        warn(`{${k}} is blank but used in: "${String(s).slice(0, 70)}…"`);
         return '';
       }
       return String(v);
@@ -308,7 +305,7 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 const kindTag = (kind) => `<span class="tag tag-${kind === 'tool' ? 'tool' : 'website'}">${kind === 'tool' ? 'Tool' : 'Website'}</span>`;
 
 const waLink = (text) => `https://wa.me/${contact.wa}?text=${encodeURIComponent(fill(text))}`;
-const waGeneral = () => waLink(C.contact.whatsappGreeting || 'Hi {firstName}');
+const waGeneral = () => waLink(C.contact.whatsappGreeting || 'Hi');
 
 function enquiryHref(page) { return page.hasForm ? '#enquiry' : '/#enquiry'; }
 
@@ -341,7 +338,7 @@ function faqAnswer(i, group) {
   const parts = shown(i.a);
   let html = parts.length ? `<p>${parts.map(t).join(' ')}</p>` : '';
   if (i.list) html += `<ul>${i.list.map((x) => `<li>${t(x)}</li>`).join('')}</ul>`;
-  if (i.special === 'buildTimes' && timedJobs.some((b) => !group || b.group === group)) html += `<p>Typical build times, from when your deposit and content reach me:</p>${buildTimesList(group)}`;
+  if (i.special === 'buildTimes' && timedJobs.some((b) => !group || b.group === group)) html += `<p>Typical build times, from when your deposit and content reach us:</p>${buildTimesList(group)}`;
   return html;
 }
 
@@ -572,7 +569,7 @@ function enquirySection(page, opts = {}) {
   const free = { website: ['A free mock-up of your website', 'Mock-ups'], tool: ['A free written plan', 'Plans'] }[opts.need] || ['A free mock-up (websites) or plan (tools)', 'Mock-ups and plans'];
   const intro = [
     `${svg.icon('check')}<span>${free[0]}</span>`,
-    `${svg.icon('check')}<span>A fixed quote before I start</span>`,
+    `${svg.icon('check')}<span>A fixed quote before we start</span>`,
     `${svg.icon('check')}<span>You own it once it’s paid for</span>`
   ].map((x) => `<li>${x}</li>`).join('');
   return `<section class="section section-navy mockup" id="enquiry" aria-labelledby="enquiry-h">
@@ -581,22 +578,22 @@ function enquirySection(page, opts = {}) {
 <h2 id="enquiry-h">${t(opts.heading || E.heading)}</h2>
 <p class="lead">${t(opts.lead || E.lead)}</p>
 <ul class="mockup-points">${intro}</ul>
-${contact.hours ? `<p class="mockup-hours">${svg.icon('clock')}<span>I reply ${t(contact.hours)}</span></p>` : ''}
+${contact.hours ? `<p class="mockup-hours">${svg.icon('clock')}<span>We reply ${t(contact.hours)}</span></p>` : ''}
 ${tokens.quoteTime ? `<p class="mockup-hours">${svg.icon('calendar')}<span>${t(free[1] + ' usually within {quoteTime}')}</span></p>` : ''}
 </div>
-<form class="mockup-form" data-enquiry data-wa="${esc(contact.wa)}" data-email="${esc(contact.email)}" data-name="${esc(contact.firstName)}" novalidate>
+<form class="mockup-form" data-enquiry data-wa="${esc(contact.wa)}" data-email="${esc(contact.email)}" novalidate>
 <fieldset class="field plan-toggle need-toggle"><legend>What do you need?</legend>${needs}</fieldset>
 <div class="field"><label for="ef-business">Business name</label><input id="ef-business" name="business" type="text" autocomplete="organization" required></div>
 <div class="field"><label for="ef-type">Type of business</label><input id="ef-type" name="type" type="text" value="${esc(opts.businessType || '')}" placeholder="e.g. plumber, farm stall, accountant" required></div>
 <div class="field"><label for="ef-town">Town</label><input id="ef-town" name="town" type="text" autocomplete="address-level2" required></div>
-<div class="field"><label for="ef-details">Tell me what you need</label><textarea id="ef-details" name="details" rows="4" maxlength="${max}" placeholder="${esc(typo(E.detailsPlaceholder))}" aria-describedby="ef-details-count" required></textarea><p class="char-count" id="ef-details-count">Up to ${max} characters</p></div>
+<div class="field"><label for="ef-details">Tell us what you need</label><textarea id="ef-details" name="details" rows="4" maxlength="${max}" placeholder="${esc(typo(E.detailsPlaceholder))}" aria-describedby="ef-details-count" required></textarea><p class="char-count" id="ef-details-count">Up to ${max} characters</p></div>
 <div class="field" data-hide-for="tool"><label for="ef-link">Link to your Google Maps, Facebook, Instagram or current website <span class="optional">(optional)</span></label><input id="ef-link" name="link" type="text" inputmode="url" autocomplete="url" placeholder="e.g. facebook.com/yourbusiness"></div>
 <div class="field-row">
 <div class="field"><label for="ef-budget">Rough budget <span class="optional">(optional)</span></label><select id="ef-budget" name="budget"><option value="">Choose one</option>${options(E.budgets)}</select></div>
 <div class="field"><label for="ef-timing">When do you need it? <span class="optional">(optional)</span></label><select id="ef-timing" name="timing"><option value="">Choose one</option>${options(E.timings)}</select></div>
 </div>
 <div class="field"><label for="ef-name">Your name</label><input id="ef-name" name="name" type="text" autocomplete="name" required></div>
-<fieldset class="field choices"><legend>How should I reply?</legend>
+<fieldset class="field choices"><legend>How should we reply?</legend>
 <label class="choice"><input type="radio" name="reply" value="WhatsApp" checked><span>WhatsApp</span></label>
 <label class="choice"><input type="radio" name="reply" value="Email"><span>Email</span></label>
 </fieldset>
@@ -742,7 +739,7 @@ function footer() {
 <div class="wrap footer-grid">
 <div class="footer-about"><a class="brand brand-footer" href="/">${svg.logo('logo')}<span class="brand-name">Front Door <span>Sites</span></span><span class="visually-hidden"> home</span></a><p>${t(site.summary)}</p></div>
 ${items.length ? `<div><h2>Get in touch</h2><ul class="contact-list">${items.join('')}</ul></div>` : ''}
-<div><h2>What I build</h2><ul><li><a href="/websites">Websites</a></li><li><a href="/business-tools">Business tools</a></li><li><a href="/pricing">Pricing</a></li><li><a href="/examples">Examples</a></li></ul>
+<div><h2>What we build</h2><ul><li><a href="/websites">Websites</a></li><li><a href="/business-tools">Business tools</a></li><li><a href="/pricing">Pricing</a></li><li><a href="/examples">Examples</a></li></ul>
 <h2 class="footer-sub">Industries</h2><ul>${niches.map((n) => `<li><a href="/${n.id}">${esc(n.name)}</a></li>`).join('')}</ul></div>
 <div><h2>More</h2><ul><li><a href="/start">How it works</a></li><li><a href="/faq">FAQ</a></li>${guides.length ? '<li><a href="/guides/">Guides</a></li>' : ''}<li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li></ul></div>
 </div>
@@ -1110,7 +1107,7 @@ function compareSection(page, n) {
   const K = C.home.compare;
   const rows = K.rows.map((r) => `<li class="flip-row"><span class="flip-a">${svg.icon('x')}<span><span class="visually-hidden">${t(K.without)}: </span>${t(r.without)}</span></span><span class="flip-b">${svg.icon('check')}<span><span class="visually-hidden">${t(K.with)}: </span>${t(r.with)}</span></span></li>`).join('');
   const door = '<span class="mini-door" aria-hidden="true"><span class="md-hole"><span class="door-inside"></span><span class="md-hinge"><span class="md-leaf"><i class="door-handle"></i></span></span></span></span>';
-  const wa = contact.wa ? [{ href: esc(waGeneral()), label: `${svg.whatsapp()}WhatsApp me`, cls: 'btn-navy' }] : [];
+  const wa = contact.wa ? [{ href: esc(waGeneral()), label: `${svg.whatsapp()}WhatsApp us`, cls: 'btn-navy' }] : [];
   return `<section class="section chapter" id="start" aria-labelledby="start-h"><div class="wrap narrow">
 <div class="chapter-head center">${kicker(n, K.kicker)}${sectionHead('start', K.heading, K.lead)}</div>
 <div class="flip" data-flip>
@@ -1132,7 +1129,7 @@ function homePage() {
   const chapters = [['why', H.why], ['helps', H.helps], ['build', H.services], ['earn', H.earn], ['cost', H.costs], ['how', H.steps], ['start', H.compare]]
     .map(([id, c]) => ({ id, kicker: c.kicker, short: c.short }));
   const num = (id) => chapters.findIndex((c) => c.id === id) + 1;
-  const about = contact.firstName
+  const about = H.about
     ? `<section class="section about" aria-labelledby="about-h"><div class="wrap narrow about-inner">${svg.logo('logo about-logo')}<div>${sectionHead('about', H.about.heading)}<p>${t(H.about.text)}${contact.area ? ` ${t(H.about.areaText)}` : ''}</p></div></div></section>`
     : '';
   const st = H.steps;
@@ -1173,7 +1170,7 @@ ${bigger.length ? `<div class="bigger-web"><h3>${t(W.biggerHeading)}</h3>${bigge
 ${stepsSection('wsteps', W.steps.heading, '', W.steps.items, false)}
 ${examplesBlock(webExamples, 'Website examples', true)}
 ${faqSection(page, 'Questions about websites', generalFaq(['cost', 'need-plan', 'plan-cheaper', 'cancel-plan', 'hosting', 'email', 'changes', 'own', 'time']), 'websites', !webExamples.length)}
-${enquirySection(page, { need: 'website', heading: 'Get a free mock-up', lead: 'Tell me about your business and I’ll build a free sample of your website, with a fixed quote. No obligation, no calls.' })}`;
+${enquirySection(page, { need: 'website', heading: 'Get a free mock-up', lead: 'Tell us about your business and we’ll build a free sample of your website, with a fixed quote. No obligation, no calls.' })}`;
   return page;
 }
 
@@ -1192,7 +1189,7 @@ ${stepsSection('tsteps', P.steps.heading, '', P.steps.items)}
 <section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${foundingBanner(page, { compact: true })}${bandsGrid('tools', page)}<p class="fine">${t(BG.lead)} ${t(BG.toolsHosting)}</p><p class="fine"><a class="tap-area" href="/pricing">How quotes and payment work</a></p></div></section>
 ${examplesBlock(toolExamples, 'Tool examples', false, 4)}
 ${faqSection(page, 'Questions about business tools', generalFaq(['tool-what', 'plan', 'cost', 'other-costs', 'own', 'time']), 'tools', toolExamples.length > 0)}
-${enquirySection(page, { need: 'tool', heading: 'Get a free plan & quote', lead: 'Tell me how things work now and what you’d like to fix. I’ll send a short plan and a fixed quote. No obligation, no calls.' })}`;
+${enquirySection(page, { need: 'tool', heading: 'Get a free plan & quote', lead: 'Tell us how things work now and what you’d like to fix. We’ll send a short plan and a fixed quote. No obligation, no calls.' })}`;
   return page;
 }
 
@@ -1214,7 +1211,7 @@ function nichePage(n) {
 </section>
 ${n.openStatus ? openStatusSection(n) : ''}
 ${calculatorSection(n)}
-<section class="section" id="ideas" aria-labelledby="ideas-h"><div class="wrap">${sectionHead('ideas', 'What I can build for you', ideasLead)}${ideas}<p class="more-link"><a href="/pricing">See all prices ${svg.icon('arrow')}</a></p></div></section>
+<section class="section" id="ideas" aria-labelledby="ideas-h"><div class="wrap">${sectionHead('ideas', 'What we can build for you', ideasLead)}${ideas}<p class="more-link"><a href="/pricing">See all prices ${svg.icon('arrow')}</a></p></div></section>
 ${examplesBlock(nicheExamples, `${n.name}: examples`, true)}
 ${faqSection(page, `Questions from ${n.singular} owners`, n.faq.concat(generalFaq(['cost', 'need-plan', 'own', 'time'])), undefined, !nicheExamples.length)}
 ${enquirySection(page, { businessType: n.businessType, heading: `Get a free quote for your ${n.singular}`, lead: C.enquiry.lead })}`;
@@ -1244,7 +1241,7 @@ ${group('tools', BG.heading, `${t(BG.intro)} ${t(BG.lead)} ${t(BG.toolsHosting)}
 <div class="card" id="changes"><h2 class="h3">${t(S.heading)}</h2><p>${t(S.lead)}</p>${ticks(S.examples)}<p>${t(S.notIncluded)}</p><p class="list-head">${t(S.allowanceHeading)}</p>${allowance}<p class="callout">${svg.icon('calendar')}<span>${t(S.timing)}</span></p></div>
 </div>
 </div></section>
-<section class="section" aria-labelledby="next-h"><div class="wrap narrow center">${sectionHead('next', 'Want an exact price?', 'Tell me what you need, and I’ll send a fixed quote with a free mock-up or plan.')}${ctaRow(page, [{ href: '/start', label: 'How it works' }])}</div></section>`;
+<section class="section" aria-labelledby="next-h"><div class="wrap narrow center">${sectionHead('next', 'Want an exact price?', 'Tell us what you need, and we’ll send a fixed quote with a free mock-up or plan.')}${ctaRow(page, [{ href: '/start', label: 'How it works' }])}</div></section>`;
   return page;
 }
 
@@ -1253,12 +1250,12 @@ function faqPage() {
   const page = { url: '/faq', out: 'faq.html', title: Q.seo.title, description: Q.seo.description };
   const contactBtns = [
     contact.wa ? `<a class="btn btn-navy btn-lg" href="${esc(waGeneral())}">${svg.whatsapp()}Ask on WhatsApp</a>` : '',
-    contact.email ? `<a class="btn btn-ghost btn-lg" href="mailto:${esc(contact.email)}">${svg.icon('mail')}Email me</a>` : ''
+    contact.email ? `<a class="btn btn-ghost btn-lg" href="mailto:${esc(contact.email)}">${svg.icon('mail')}Email us</a>` : ''
   ].filter(Boolean).join('');
   page.body = `${pageHero(Q.h1, Q.lead)}
 <section class="section section-tight" aria-labelledby="general-h"><div class="wrap narrow">${sectionHead('general', 'The basics')}${faqList(C.faq)}</div></section>
 ${niches.map((n) => `<section class="section section-tight" aria-labelledby="faq-${n.id}-h"><div class="wrap narrow"><h2 id="faq-${n.id}-h" class="with-icon"><span class="niche-icon">${nicheIcon(n)}</span>${t(n.name)}</h2>${faqList(n.faq)}<p class="more-link"><a href="/${n.id}">Ideas for ${esc(nicheLower(n))} ${svg.icon('arrow')}</a></p></div></section>`).join('')}
-${contactBtns || canEnquire ? `<section class="section section-sand" aria-labelledby="ask-h"><div class="wrap narrow center">${sectionHead('ask', 'Still have a question?', 'Ask me directly. No calls needed, and voice notes are welcome.')}<div class="cta-row cta-center">${contactBtns}${quoteButton(page, 'btn btn-gold btn-lg')}</div></div></section>` : ''}`;
+${contactBtns || canEnquire ? `<section class="section section-sand" aria-labelledby="ask-h"><div class="wrap narrow center">${sectionHead('ask', 'Still have a question?', 'Ask us directly. No calls needed, and voice notes are welcome.')}<div class="cta-row cta-center">${contactBtns}${quoteButton(page, 'btn btn-gold btn-lg')}</div></div></section>` : ''}`;
   return page;
 }
 
@@ -1376,8 +1373,8 @@ function startPage() {
   const S = C.startPage;
   const page = { url: '/start', out: 'start.html', title: S.seo.title, description: S.seo.description };
   const ask = [
-    contact.wa ? `<a class="btn btn-navy" href="${esc(waLink('Hi {firstName}, please send me the payment link for my plan or renewal.'))}">${svg.whatsapp()}WhatsApp me</a>` : '',
-    contact.email ? `<a class="btn btn-ghost" href="mailto:${esc(contact.email)}?subject=${encodeURIComponent('Payment link')}">${svg.icon('mail')}Email me</a>` : ''
+    contact.wa ? `<a class="btn btn-navy" href="${esc(waLink('Hi, please send me the payment link for my plan or renewal.'))}">${svg.whatsapp()}WhatsApp us</a>` : '',
+    contact.email ? `<a class="btn btn-ghost" href="mailto:${esc(contact.email)}?subject=${encodeURIComponent('Payment link')}">${svg.icon('mail')}Email us</a>` : ''
   ].filter(Boolean).join('');
   // PayFast buttons: one per plan (monthly, and yearly if that's on) and one for the once-off renewal.
   const payOptions = options.flatMap((o) => (o.monthly
@@ -1389,12 +1386,12 @@ function startPage() {
   const withLinks = payOptions.filter((o) => o.url);
   const afterStep = S.steps.find((s) => s.id === 'after') || {};
   const payBlock = withLinks.length
-    ? `<div class="pay-buttons">${withLinks.map((o) => `<a class="btn btn-navy" href="${esc(o.url)}">${svg.icon('card')}<span>${esc(o.label)}<small>${o.price}</small></span></a>`).join('')}</div>${withLinks.length < payOptions.length && ask ? `<p>Can’t see the option you want? Message me and I’ll send you the link.</p><div class="cta-row">${ask}</div>` : ''}`
+    ? `<div class="pay-buttons">${withLinks.map((o) => `<a class="btn btn-navy" href="${esc(o.url)}">${svg.icon('card')}<span>${esc(o.label)}<small>${o.price}</small></span></a>`).join('')}</div>${withLinks.length < payOptions.length && ask ? `<p>Can’t see the option you want? Message us and we’ll send you the link.</p><div class="cta-row">${ask}</div>` : ''}`
     : `<p>${shown(afterStep.noLinksText).map(t).join(' ')}</p>`;
   const afterList = `<ul class="time-list">${options.map((o) => `<li><span>${esc(o.name)}</span><span>${o.monthly ? month(o.monthly) : t(o.hosting)}${yearlyOn && o.monthly ? ` <small>or ${rand(yearly(o.monthly))}/year</small>` : ''}</span></li>`).join('')}</ul><p><a class="tap-area" href="/pricing#websites-prices">Compare the options ${svg.icon('arrow')}</a></p>`;
   const items = S.steps.map((s, i) => {
     let extra = shown(s.extra).map((x) => `<p class="callout">${svg.icon('clock')}<span>${t(x)}</span></p>`).join('');
-    if (s.id === 'tell' && canEnquire) extra += `<p>${quoteButton(page, 'btn btn-gold', 'Tell me what you need')}</p>`;
+    if (s.id === 'tell' && canEnquire) extra += `<p>${quoteButton(page, 'btn btn-gold', 'Tell us what you need')}</p>`;
     if (s.id === 'after') extra += `${afterList}${payBlock}`;
     return `<li class="start-step" id="step-${esc(s.id)}"><div class="start-num" aria-hidden="true">${i + 1}</div><div class="start-body"><h2>${t(s.title)}</h2><p>${t(s.text)}</p>${extra}</div></li>`;
   }).join('');
@@ -1444,7 +1441,7 @@ function guidePages() {
     const page = { url: `/guides/${g.slug}`, out: `guides/${g.slug}.html`, hasForm: false, title: `${g.title} | ${site.name}`, description: g.description || G.seo.description };
     page.body = `<article>${pageHero(g.title, g.description, isSet(g.date) ? `<p class="updated">${esc(longDate(g.date))}</p>` : '', '<a href="/guides/">Guides</a>')}
 <section class="section section-tight"><div class="wrap narrow prose">${fillHtml(g.body.replace(/<!--[\s\S]*?-->/g, ''))}</div></section></article>
-${canEnquire ? `<section class="section section-sand"><div class="wrap narrow center">${sectionHead('next', 'Want this done for you?', 'Tell me what you need and get a free mock-up or plan, with a fixed quote. No obligation, no calls.')}${ctaRow(page)}</div></section>` : ''}`;
+${canEnquire ? `<section class="section section-sand"><div class="wrap narrow center">${sectionHead('next', 'Want this done for you?', 'Tell us what you need and get a free mock-up or plan, with a fixed quote. No obligation, no calls.')}${ctaRow(page)}</div></section>` : ''}`;
     return page;
   });
   return [index, ...articles];
