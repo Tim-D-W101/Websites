@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painting price calculator | Coastline Painting (demo)</title>
+<meta name="description" content="A working demo of a painter's instant estimate: rooms, sizes and finish in, a price range out, then a firm-quote request as the owner receives it.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#123A2C">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23123A2C'/%3E%3Crect x='14' y='16' width='30' height='14' rx='3' fill='%23F7C948'/%3E%3Cpath d='M44 23h6v12H32v13' fill='none' stroke='%23fff' stroke-width='4'/%3E%3C/svg%3E">
+<!-- demo:head -->
+<style>
+/* Coastline Painting: a made-up painter's instant estimate (demo).
+   Deep green, white and a yellow accent; Barlow Condensed and Barlow. */
+@font-face { font-family: "Barlow Condensed"; src: url("/fonts/barlow-condensed-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Barlow"; src: url("/fonts/barlow-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Barlow"; src: url("/fonts/barlow-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+:root {
+  --green: #123A2C; --green-2: #1C5240; --green-l: #E7F0EA; --green-line: #C6D9CD;
+  --yellow: #F7C948; --yellow-l: #FFF3CC; --ink: #0F2219; --muted: #4C5E54; --white: #FFFFFF; --bg: #F3F6F2;
+  --head: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --body: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; font: 400 1.05rem/1.5 var(--body); color: var(--ink); background: var(--bg); }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--green-2); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { margin: 0; font-family: var(--head); font-weight: 700; line-height: 1.02; text-transform: uppercase; letter-spacing: .01em; color: var(--green); }
+p { margin: 0; }
+.sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.i { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; }
+
+.top { background: var(--green); color: var(--white); border-bottom: 6px solid var(--yellow); }
+.top-in { display: flex; align-items: center; justify-content: space-between; gap: .75rem; max-width: 64rem; margin: 0 auto; padding: .8rem 1rem; }
+.logo { display: flex; align-items: center; gap: .6rem; }
+.logo-mark { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 8px; background: var(--yellow); color: var(--green); }
+.logo-mark .i { width: 1.45rem; height: 1.45rem; stroke-width: 2.2; }
+.logo b { display: block; font: 700 1.3rem/1 var(--head); letter-spacing: .04em; text-transform: uppercase; }
+.logo small { display: block; margin-top: .1rem; font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: #CFE2D6; }
+.badge { padding: .25rem .6rem; border: 2px solid var(--yellow); border-radius: 6px; font: 700 .85rem/1.1 var(--head); letter-spacing: .06em; text-transform: uppercase; color: var(--yellow); white-space: nowrap; }
+@media (max-width: 379px) { .badge { display: none; } }
+
+.wrap { max-width: 64rem; margin: 0 auto; padding: 1.25rem 1rem 6.5rem; }
+#form-view, #done-view { max-width: 40rem; }
+.title h1 { font-size: 2.3rem; }
+.title p { margin-top: .4rem; color: var(--muted); }
+.grid { display: grid; gap: 1rem; margin-top: 1.1rem; }
+.grid > * { min-width: 0; }
+.panel { padding: 1.1rem 1rem; border: 2px solid var(--green); border-radius: 10px; background: var(--white); }
+.q + .q { margin-top: 1.35rem; padding-top: 1.2rem; border-top: 1px solid var(--green-line); }
+.q-label { display: block; margin: 0 0 .55rem; font: 700 1.15rem/1.1 var(--head); text-transform: uppercase; letter-spacing: .03em; color: var(--green); }
+.q-note { margin: -.35rem 0 .55rem; color: var(--muted); font-size: .9rem; }
+.stepper { display: inline-flex; align-items: center; border: 2px solid var(--green); border-radius: 8px; }
+.stepper button { display: grid; place-items: center; width: 52px; height: 52px; border: 0; background: var(--green-l); color: var(--green); }
+.stepper button:hover { background: var(--yellow-l); }
+.stepper button:disabled { color: #9FB3A7; cursor: not-allowed; background: #F1F4F2; }
+.stepper output { min-width: 3.5rem; font: 700 1.8rem/1 var(--head); text-align: center; color: var(--ink); }
+.stepper button .i { width: 1.4rem; height: 1.4rem; stroke-width: 2.6; }
+.pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: .45rem; border: 0; margin: 0; padding: 0; min-width: 0; }
+.pills legend { padding: 0; }
+.pills.two { grid-template-columns: 1fr 1fr; }
+.pill { position: relative; }
+.pill input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.pill span { display: grid; place-items: center; align-content: center; gap: .05rem; min-height: 58px; height: 100%; padding: .45rem .3rem; border: 2px solid var(--green-line); border-radius: 8px; background: var(--white); text-align: center; line-height: 1.15; }
+.pill b { font: 700 1.12rem/1 var(--head); text-transform: uppercase; letter-spacing: .03em; }
+.pill small { color: var(--muted); font-size: .82rem; }
+.pill input:checked + span { border-color: var(--green); background: var(--green); color: var(--white); }
+.pill input:checked + span small { color: #CFE2D6; }
+.pill input:focus-visible + span { outline: 3px solid var(--yellow); outline-offset: 2px; }
+.pill:hover span { border-color: var(--green); }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 1rem; width: 100%; min-height: 52px; padding: .4rem .8rem; border: 2px solid var(--green-line); border-radius: 8px; background: var(--white); text-align: left; }
+.switch b { font-weight: 600; }
+.track { position: relative; flex: none; width: 3.4rem; height: 2rem; border-radius: 99px; background: #B9C9BF; transition: background-color .2s; }
+.track::after { content: ""; position: absolute; top: .25rem; left: .25rem; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform .2s; }
+.switch[aria-checked="true"] { border-color: var(--green); }
+.switch[aria-checked="true"] .track { background: var(--green); }
+.switch[aria-checked="true"] .track::after { transform: translateX(1.4rem); }
+.switch .state { margin-left: auto; font: 700 1rem/1 var(--head); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+
+/* the estimate */
+.result { position: relative; padding: 1.25rem 1.1rem; border-radius: 10px; background: var(--green); color: var(--white); }
+.result::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; border-radius: 10px 10px 0 0; background: repeating-linear-gradient(-45deg, var(--yellow) 0 10px, var(--green) 10px 20px); }
+.result-label { margin-top: .2rem; font: 700 1rem/1 var(--head); letter-spacing: .1em; text-transform: uppercase; color: #CFE2D6; }
+.range { margin-top: .35rem; font: 700 clamp(2.3rem, 9vw, 3.1rem)/1 var(--head); color: var(--yellow); letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+.range-note { margin-top: .4rem; color: #DCEBE2; font-size: .92rem; }
+.breakdown { width: 100%; margin-top: 1rem; border-collapse: collapse; font-size: .95rem; font-variant-numeric: tabular-nums; }
+.breakdown th, .breakdown td { padding: .45rem 0; border-top: 1px solid rgba(255, 255, 255, .16); vertical-align: top; }
+.breakdown th { font-weight: 400; text-align: left; color: #DCEBE2; }
+.breakdown td { text-align: right; font-weight: 600; white-space: nowrap; padding-left: .75rem; }
+.breakdown small { display: block; color: #B9D2C3; font-size: .82rem; font-weight: 400; }
+.breakdown tr.total th, .breakdown tr.total td { border-top: 2px solid var(--yellow); color: var(--white); font-weight: 600; font-size: 1.05rem; }
+.incl { display: flex; gap: .45rem; align-items: flex-start; margin-top: .8rem; font-size: .9rem; color: #DCEBE2; }
+.incl .i { margin-top: .12rem; color: var(--yellow); }
+.btn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; min-height: 54px; padding: .6rem 1rem; border: 2px solid var(--yellow); border-radius: 8px; background: var(--yellow); color: var(--ink); font: 700 1.2rem/1 var(--head); letter-spacing: .05em; text-transform: uppercase; text-decoration: none; }
+.btn:hover { background: #FFD866; }
+.btn-ghost { background: transparent; color: var(--white); border-color: rgba(255, 255, 255, .55); }
+.btn-ghost:hover { background: rgba(255, 255, 255, .1); }
+.btns { display: grid; gap: .5rem; margin-top: 1.1rem; }
+
+/* the sticky summary on phones, while the estimate is off screen */
+.mini { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; padding: .55rem .75rem calc(.55rem + env(safe-area-inset-bottom)); background: var(--green); color: var(--white); border-top: 4px solid var(--yellow); }
+.mini-in { display: flex; align-items: center; justify-content: space-between; gap: .75rem; max-width: 40rem; margin: 0 auto; }
+.mini small { display: block; font: 700 .8rem/1 var(--head); letter-spacing: .1em; text-transform: uppercase; color: #CFE2D6; }
+.mini b { font: 700 1.45rem/1.1 var(--head); color: var(--yellow); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.mini button { flex: none; min-height: 46px; padding: .4rem .8rem; border: 0; border-radius: 8px; background: var(--yellow); color: var(--ink); font: 700 1.05rem/1 var(--head); letter-spacing: .05em; text-transform: uppercase; }
+@keyframes up { from { transform: translateY(110%); } }
+@media (prefers-reduced-motion: no-preference) { .mini:not([hidden]) { animation: up .3s ease; } }
+
+/* firm quote form and confirmation */
+.view-h { display: flex; align-items: center; gap: .5rem; }
+.back { display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; margin: 0 0 .5rem -.4rem; padding: .3rem .4rem; border: 0; border-radius: 6px; background: none; font-weight: 600; color: var(--green); }
+.back:hover { background: var(--green-l); }
+.recap { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .2rem .75rem; margin-top: 1rem; padding: .8rem .9rem; border-radius: 8px; background: var(--green); color: var(--white); }
+.recap b { font: 700 1.6rem/1 var(--head); color: var(--yellow); }
+.recap span { color: #DCEBE2; font-size: .9rem; }
+.nothing { display: flex; gap: .45rem; align-items: flex-start; margin-top: 1rem; padding: .6rem .8rem; border-radius: 8px; background: var(--yellow-l); color: #5A4300; font-size: .9rem; font-weight: 600; }
+.nothing .i { margin-top: .12rem; }
+.field { margin-top: 1rem; }
+label { display: block; margin-bottom: .35rem; font-weight: 600; color: var(--ink); }
+input[type="text"], input[type="tel"], select { width: 100%; min-height: 52px; padding: .6rem .8rem; border: 2px solid var(--green); border-radius: 8px; background: var(--white); }
+input:focus-visible, select:focus-visible { outline: 3px solid var(--yellow); outline-offset: 1px; }
+[aria-invalid="true"] { border-color: #A3271B !important; }
+.err { margin-top: .35rem; color: #A3271B; font-weight: 600; font-size: .92rem; }
+.form-btn { margin-top: 1.25rem; }
+.done-card { padding: 1.4rem 1.1rem; border: 2px solid var(--green); border-radius: 10px; background: var(--white); text-align: center; }
+.tick { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; margin: 0 auto .8rem; border-radius: 8px; background: var(--yellow); color: var(--green); }
+.tick .i { width: 2rem; height: 2rem; stroke-width: 2.8; }
+.done-card h1 { font-size: 2.2rem; outline: none; }
+.done-card p { margin-top: .5rem; color: var(--muted); }
+.done-card .ref { display: inline-block; margin-top: .7rem; padding: .25rem .7rem; border: 2px dashed var(--green); border-radius: 6px; font: 700 1.15rem/1.2 var(--head); letter-spacing: .06em; color: var(--green); }
+.owner-btn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; min-height: 52px; margin-top: 1rem; padding: .6rem 1rem; border: 2px dashed #3F6E58; border-radius: 10px; background: #EAF3EC; color: #1F4B36; font-weight: 700; }
+.owner-btn[aria-expanded="true"] { border-style: solid; }
+.chev { transition: transform .2s; }
+.owner-btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.owner { margin-top: .75rem; }
+.chat { border-radius: 14px; overflow: hidden; background: #ECE5DA; }
+.chat-top { display: flex; align-items: center; gap: .6rem; padding: .65rem .85rem; background: #1F4F46; color: #fff; font-weight: 600; line-height: 1.25; }
+.chat-top small { display: block; font-weight: 400; opacity: .82; font-size: .78rem; }
+.chat-av { display: grid; place-items: center; flex: none; width: 2.1rem; height: 2.1rem; border-radius: 50%; background: #8FB7A9; color: #173832; font-weight: 700; }
+.chat-body { padding: .8rem; }
+.bubble { position: relative; max-width: 94%; padding: .6rem .75rem 1.35rem; border-radius: 14px 14px 14px 4px; background: #fff; box-shadow: 0 1px 1px rgba(0, 0, 0, .12); white-space: pre-wrap; overflow-wrap: anywhere; font-size: .93rem; line-height: 1.45; color: #1F1C1A; }
+.bubble time { position: absolute; right: .6rem; bottom: .3rem; font-size: .7rem; color: #6F6A64; }
+.owner-note { display: flex; gap: .45rem; align-items: flex-start; margin-top: .6rem; color: #1F4B36; font-size: .92rem; font-weight: 600; }
+.owner-note .i { margin-top: .12rem; }
+.btn-dark { margin-top: 1rem; background: var(--green); border-color: var(--green); color: var(--white); }
+.btn-dark:hover { background: var(--green-2); }
+
+.foot { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .25rem 1rem; padding: .5rem 1rem 1rem; color: var(--muted); font-size: .88rem; }
+.link { min-height: 44px; padding: .5rem .2rem; border: 0; background: none; color: var(--green); font-weight: 600; text-decoration: underline; text-underline-offset: .2em; }
+.toasts { position: fixed; left: 0; right: 0; bottom: calc(5.5rem + env(safe-area-inset-bottom)); z-index: 60; display: flex; justify-content: center; padding: 0 1rem; pointer-events: none; }
+.toast { max-width: 26rem; padding: .65rem 1rem; border-radius: 8px; background: var(--ink); color: var(--white); font-size: .92rem; box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .5); }
+#print { display: none; }
+noscript p { padding: 1rem; }
+
+@media (min-width: 860px) {
+  .wrap { padding: 2rem 1.5rem 3rem; }
+  .title h1 { font-size: 3rem; }
+  .grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 1.5rem; align-items: start; }
+  .result { position: sticky; top: 1rem; }
+  .panel { padding: 1.5rem; }
+  .mini { display: none !important; }
+  .toasts { bottom: 1.5rem; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* The printable estimate: only that, on one page. */
+@media print {
+  @page { size: A4; margin: 16mm; }
+  body { background: #fff; }
+  body > *:not(#print) { display: none !important; }
+  #print { display: block; color: #000; font: 11pt/1.45 var(--body); }
+  #print h1 { color: #000; font-size: 26pt; }
+  .p-head { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 8pt; border-bottom: 3pt solid #123A2C; }
+  .p-head b { display: block; font: 700 18pt/1 var(--head); text-transform: uppercase; letter-spacing: .04em; color: #123A2C; }
+  .p-meta { text-align: right; font-size: 10pt; }
+  .p-range { margin: 14pt 0 4pt; font: 700 28pt/1 var(--head); color: #123A2C; }
+  .p-table { width: 100%; margin-top: 10pt; border-collapse: collapse; }
+  .p-table th, .p-table td { padding: 5pt 0; border-bottom: .75pt solid #999; text-align: left; }
+  .p-table td { text-align: right; }
+  .p-small { margin-top: 12pt; font-size: 9.5pt; color: #333; }
+}
+</style>
+</head>
+<body>
+<!-- demo:ribbon -->
+<header class="top"><div class="top-in">
+<p class="logo"><span class="logo-mark" data-icon="roller"></span><span><b>Coastline Painting</b><small>Interiors · Fixed prices</small></span></p>
+<p class="badge">Free estimates</p>
+</div></header>
+<noscript><p>This demo needs JavaScript to run.</p></noscript>
+
+<main class="wrap" id="calc-view">
+<div class="title">
+<h1>What will it cost to paint?</h1>
+<p>Tell us about the rooms. You’ll see a price straight away.</p>
+</div>
+<div class="grid">
+<div class="panel" id="inputs">
+<div class="q">
+<span class="q-label" id="rooms-label">How many rooms?</span>
+<span class="stepper" role="group" aria-labelledby="rooms-label"><button type="button" id="rooms-down"><span data-icon="minus"></span><span class="sr">One room fewer</span></button><output id="rooms" aria-live="polite">3</output><button type="button" id="rooms-up"><span data-icon="plus"></span><span class="sr">One room more</span></button></span>
+</div>
+<div class="q"><fieldset class="pills" id="size">
+<legend class="q-label">Average room size</legend>
+<label class="pill"><input type="radio" name="size" value="12"><span><b>Small</b><small>12 m²</small></span></label>
+<label class="pill"><input type="radio" name="size" value="18" checked><span><b>Medium</b><small>18 m²</small></span></label>
+<label class="pill"><input type="radio" name="size" value="25"><span><b>Large</b><small>25 m²</small></span></label>
+</fieldset></div>
+<div class="q">
+<span class="q-label" id="ceil-label">Ceilings too?</span>
+<button class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="ceil-label ceil-text" id="ceilings"><b id="ceil-text">Paint the ceilings</b><span class="state" id="ceil-state" aria-hidden="true">Yes</span><span class="track" aria-hidden="true"></span></button>
+</div>
+<div class="q"><fieldset class="pills two" id="walls">
+<legend class="q-label">Walls condition</legend>
+<label class="pill"><input type="radio" name="walls" value="good" checked><span><b>Good</b><small>Ready to paint</small></span></label>
+<label class="pill"><input type="radio" name="walls" value="patch"><span><b>Needs patching</b><small>+15% on walls</small></span></label>
+</fieldset></div>
+<div class="q"><fieldset class="pills two" id="finish">
+<legend class="q-label">Finish</legend>
+<label class="pill"><input type="radio" name="finish" value="standard" checked><span><b>Standard</b><small>Washable matt</small></span></label>
+<label class="pill"><input type="radio" name="finish" value="premium"><span><b>Premium</b><small>+R20 per m² on walls</small></span></label>
+</fieldset></div>
+</div>
+
+<section class="result" id="result" aria-labelledby="result-label">
+<p class="result-label" id="result-label">Your estimate</p>
+<p class="range" id="range" aria-live="polite">R0 – R0</p>
+<p class="range-note">A range, because every house is a bit different. We confirm the price after a quick look.</p>
+<table class="breakdown">
+<caption class="sr">How the estimate is worked out</caption>
+<tbody id="breakdown"></tbody>
+</table>
+<p class="incl"><span data-icon="check"></span><span>Includes labour and paint, excludes moving furniture.</span></p>
+<div class="btns">
+<button class="btn" type="button" id="firm">Get a firm quote</button>
+<button class="btn btn-ghost" type="button" id="print-btn"><span data-icon="download"></span>Download estimate</button>
+</div>
+</section>
+</div>
+</main>
+
+<main class="wrap" id="form-view" hidden>
+<button class="back" type="button" id="back"><span data-icon="left"></span>Back to the estimate</button>
+<h1 id="form-h" tabindex="-1">Get a firm quote</h1>
+<p class="recap"><b id="recap-range">R0 – R0</b><span id="recap-job"></span></p>
+<form id="quote-form" class="panel" novalidate>
+<p class="nothing"><span data-icon="lock"></span><span>Demo: nothing you type here is sent or stored.</span></p>
+<div class="field"><label for="f-name">Your name</label><input id="f-name" type="text" autocomplete="name" maxlength="50" required></div>
+<div class="field"><label for="f-mobile">Mobile number</label><input id="f-mobile" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="e.g. 082 123 4567" required></div>
+<div class="field"><label for="f-suburb">Suburb</label><input id="f-suburb" type="text" autocomplete="address-level3" maxlength="50" required></div>
+<div class="field"><label for="f-week">Preferred week</label><select id="f-week" required></select></div>
+<button class="btn btn-dark form-btn" type="submit">Request my firm quote</button>
+</form>
+</main>
+
+<main class="wrap" id="done-view" hidden>
+<div class="done-card">
+<span class="tick" data-icon="check"></span>
+<h1 id="done-h" tabindex="-1">Request received</h1>
+<p id="done-text"></p>
+<p class="ref" id="done-ref">CP-2047</p>
+</div>
+<button class="owner-btn" id="owner-btn" type="button" aria-expanded="false" aria-controls="owner"><span data-icon="chat"></span>See what the owner receives<span class="chev" data-icon="chev"></span></button>
+<div class="owner" id="owner" hidden>
+<div class="chat"><p class="chat-top"><span class="chat-av" id="owner-av">S</span><span><span id="owner-from">Customer</span><small>WhatsApp · new quote request</small></span></p><div class="chat-body"><p class="bubble"><span id="owner-msg"></span><time id="owner-time">12:00</time></p></div></div>
+<p class="owner-note"><span data-icon="phone"></span><span>On your system, every request lands on your phone like this, with the job already measured up.</span></p>
+</div>
+<button class="btn btn-dark" type="button" id="again">Back to the calculator</button>
+</main>
+
+<footer class="foot"><span>Coastline Painting · Free estimates</span><button class="link" type="button" id="reset">Reset demo</button></footer>
+
+<div class="mini" id="mini" hidden><div class="mini-in"><p><small>Estimate</small><b id="mini-range">R0 – R0</b></p><button type="button" id="mini-btn">Firm quote</button></div></div>
+<div class="toasts" role="status" aria-live="polite" id="toasts"></div>
+<div id="print" aria-hidden="true"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- the painter's rates ---------- */
+  var RATE = { walls: 45, premiumExtra: 20, ceilings: 35 };
+  var WALL_HEIGHT = 2.4;           // wall area = rooms x floor area x 2.4
+  var PATCHING = 1.15;             // +15% on walls
+  var SIZES = { 12: 'Small', 18: 'Medium', 25: 'Large' };
+  var STORE = 'fds-demo-quotes';
+  var FIRST = 2047;
+  var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var ICONS = {
+    roller: '<rect x="3.5" y="3.5" width="14" height="6" rx="1.5"/><path d="M17.5 6.5h3v5.5h-9v3"/><rect x="10" y="15" width="3" height="6" rx="1"/>',
+    minus: '<path d="M5.5 12h13"/>',
+    plus: '<path d="M12 5.5v13M5.5 12h13"/>',
+    check: '<path d="m5 12.5 4.3 4.3L19 7.2"/>',
+    download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+    left: '<path d="M19.5 12h-15M10.5 6l-6 6 6 6"/>',
+    lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"/>',
+    chat: '<path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.4L3.5 20.5l1.6-4.4a8.4 8.4 0 1 1 15.4-4.5z"/><path d="M8.6 11.8h.01M12 11.8h.01M15.4 11.8h.01"/>',
+    chev: '<path d="m6 9 6 6 6-6"/>',
+    phone: '<path d="M8.6 3.5H6.2A2.2 2.2 0 0 0 4 5.8c.4 8 6.2 13.8 14.2 14.2a2.2 2.2 0 0 0 2.3-2.2v-2.4a1 1 0 0 0-.7-1l-3-1a1 1 0 0 0-1.1.3l-1.3 1.6a12 12 0 0 1-5.5-5.5l1.6-1.3a1 1 0 0 0 .3-1.1l-1-3a1 1 0 0 0-1-.7z"/>'
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function icon(n) { return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + ICONS[n] + '</svg>'; }
+  function paintIcons() {
+    var els = document.querySelectorAll('[data-icon]');
+    for (var i = 0; i < els.length; i++) { els[i].innerHTML = icon(els[i].getAttribute('data-icon')); els[i].removeAttribute('data-icon'); }
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function rand(n) { return 'R' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  function area(n) { return (Math.round(n * 10) / 10).toString() + ' m²'; }
+  function focus(el) { if (!el) return; try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); } }
+  function radio(name) { return document.querySelector('input[name="' + name + '"]:checked').value; }
+
+  /* ---------- the sums ---------- */
+  var rooms = 3;
+  function job() {
+    var floor = Number(radio('size'));
+    var ceilings = $('ceilings').getAttribute('aria-checked') === 'true';
+    var patch = radio('walls') === 'patch';
+    var premium = radio('finish') === 'premium';
+    var wallArea = rooms * floor * WALL_HEIGHT;
+    var ceilingArea = ceilings ? rooms * floor : 0;
+    var wallRate = RATE.walls + (premium ? RATE.premiumExtra : 0);
+    var wallsBase = wallArea * wallRate;
+    var walls = wallsBase * (patch ? PATCHING : 1);
+    var ceilingCost = ceilingArea * RATE.ceilings;
+    var estimate = walls + ceilingCost;
+    return {
+      rooms: rooms, floor: floor, ceilings: ceilings, patch: patch, premium: premium,
+      wallArea: wallArea, ceilingArea: ceilingArea, wallRate: wallRate, wallsBase: wallsBase, walls: walls,
+      ceilingCost: ceilingCost, estimate: estimate,
+      // A range of 10% either side, to the nearest R10.
+      low: Math.round(estimate * 0.9 / 10) * 10,
+      high: Math.round(estimate * 1.1 / 10) * 10
+    };
+  }
+  function rangeText(j) { return rand(j.low) + ' – ' + rand(j.high); }
+  function jobText(j) {
+    return j.rooms + ' ' + SIZES[j.floor].toLowerCase() + ' room' + (j.rooms === 1 ? '' : 's') + ' (' + j.floor + ' m²)' + (j.ceilings ? ', ceilings too' : ', walls only') +
+      '. Walls ' + (j.patch ? 'need patching' : 'in good condition') + ', ' + (j.premium ? 'premium' : 'standard') + ' finish.';
+  }
+
+  function paint() {
+    var j = job();
+    $('rooms').textContent = rooms;
+    $('rooms-down').disabled = rooms <= 1;
+    $('rooms-up').disabled = rooms >= 12;
+    $('range').textContent = rangeText(j);
+    $('mini-range').textContent = rangeText(j);
+    var rows = [
+      ['Wall area', area(j.wallArea), j.rooms + ' × ' + j.floor + ' m² × ' + WALL_HEIGHT + ' m high'],
+      ['Walls', rand(j.wallsBase), area(j.wallArea) + ' × ' + rand(j.wallRate) + '/m²' + (j.premium ? ' (premium)' : '')]
+    ];
+    if (j.patch) rows.push(['Patching', '+' + rand(j.walls - j.wallsBase), '15% on walls']);
+    if (j.ceilings) {
+      rows.push(['Ceiling area', area(j.ceilingArea), j.rooms + ' × ' + j.floor + ' m²']);
+      rows.push(['Ceilings', rand(j.ceilingCost), area(j.ceilingArea) + ' × ' + rand(RATE.ceilings) + '/m²']);
+    }
+    rows.push(['Estimate', rand(j.estimate), 'Shown as a range of 10% either side', 'total']);
+    $('breakdown').innerHTML = rows.map(function (r) {
+      return '<tr' + (r[3] ? ' class="' + r[3] + '"' : '') + '><th scope="row">' + esc(r[0]) + '<small>' + esc(r[2]) + '</small></th><td>' + esc(r[1]) + '</td></tr>';
+    }).join('');
+  }
+
+  $('rooms-down').addEventListener('click', function () { rooms = Math.max(1, rooms - 1); paint(); });
+  $('rooms-up').addEventListener('click', function () { rooms = Math.min(12, rooms + 1); paint(); });
+  $('inputs').addEventListener('change', paint);
+  $('ceilings').addEventListener('click', function () {
+    var on = this.getAttribute('aria-checked') !== 'true';
+    this.setAttribute('aria-checked', String(on));
+    $('ceil-state').textContent = on ? 'Yes' : 'No';
+    paint();
+  });
+
+  /* ---------- the sticky summary on phones ---------- */
+  var resultSeen = true;
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      resultSeen = entries[0].isIntersecting;
+      $('mini').hidden = resultSeen || $('calc-view').hidden;
+    }, { threshold: 0.15 }).observe($('result'));
+  }
+
+  /* ---------- views ---------- */
+  function view(name) {
+    ['calc-view', 'form-view', 'done-view'].forEach(function (v) { $(v).hidden = v !== name; });
+    $('mini').hidden = name !== 'calc-view' || resultSeen;
+    window.scrollTo(0, 0);
+  }
+  function openForm() {
+    var j = job();
+    $('recap-range').textContent = rangeText(j);
+    $('recap-job').textContent = jobText(j);
+    view('form-view');
+    focus($('form-h'));
+  }
+  $('firm').addEventListener('click', openForm);
+  $('mini-btn').addEventListener('click', openForm);
+  $('back').addEventListener('click', function () { view('calc-view'); focus($('firm')); });
+
+  // The next six weeks, starting next Monday.
+  (function weeks() {
+    var now = new Date();
+    var mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() + ((8 - now.getDay()) % 7 || 7));
+    var html = '<option value="">Choose a week</option>';
+    for (var i = 0; i < 6; i++) {
+      var d = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + i * 7);
+      var label = 'Week of ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
+      html += '<option>' + label + '</option>';
+    }
+    $('f-week').innerHTML = html;
+  })();
+
+  function mobileOk(v) { var d = v.replace(/[\s()-]/g, ''); return /^0[6-8]\d{8}$/.test(d) || /^\+?27[6-8]\d{8}$/.test(d); }
+  function niceMobile(v) { var d = v.replace(/[\s()-]/g, '').replace(/^\+?27/, '0'); return d.length === 10 ? d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6) : v.trim(); }
+  var MESSAGES = { 'f-name': 'Please add your name.', 'f-suburb': 'Which suburb is the house in?', 'f-week': 'Please choose a week.' };
+  function setError(input, text) {
+    var id = input.id + '-err';
+    var msg = $(id);
+    if (text) {
+      if (!msg) { msg = document.createElement('p'); msg.className = 'err'; msg.id = id; input.parentNode.appendChild(msg); }
+      msg.textContent = text;
+      input.setAttribute('aria-invalid', 'true');
+      input.setAttribute('aria-describedby', id);
+    } else {
+      if (msg) msg.remove();
+      input.removeAttribute('aria-invalid');
+      input.removeAttribute('aria-describedby');
+    }
+    return !text;
+  }
+  function validate(input) {
+    var v = input.value.trim();
+    if (input.id === 'f-mobile') return setError(input, !v ? 'Please add your mobile number.' : mobileOk(v) ? '' : 'That doesn’t look like a South African mobile number, e.g. 082 123 4567.');
+    return setError(input, v ? '' : MESSAGES[input.id]);
+  }
+  $('quote-form').addEventListener('input', function (e) { if (e.target.getAttribute('aria-invalid') === 'true') validate(e.target); });
+  $('quote-form').addEventListener('change', function (e) { if (e.target.getAttribute('aria-invalid') === 'true') validate(e.target); });
+
+  function nextRef() { try { var n = Number(sessionStorage.getItem(STORE)); return n >= FIRST ? n : FIRST; } catch (e) { return FIRST; } }
+  var ref = nextRef();
+
+  $('quote-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var bad = null;
+    ['f-name', 'f-mobile', 'f-suburb', 'f-week'].forEach(function (id) { if (!validate($(id)) && !bad) bad = $(id); });
+    if (bad) { focus(bad); return; }
+    var j = job();
+    var name = $('f-name').value.trim();
+    var r = 'CP-' + ref;
+    ref += 1;
+    try { sessionStorage.setItem(STORE, String(ref)); } catch (err) { /* memory only */ }
+    var lines = [
+      'New quote request ' + r,
+      'Name: ' + name + ' · ' + niceMobile($('f-mobile').value),
+      'Suburb: ' + $('f-suburb').value.trim(),
+      'Preferred: ' + $('f-week').value,
+      '',
+      'Job: ' + jobText(j),
+      'Walls: ' + area(j.wallArea) + (j.ceilings ? ' · Ceilings: ' + area(j.ceilingArea) : ''),
+      'Estimate shown: ' + rangeText(j)
+    ];
+    $('owner-msg').textContent = lines.join('\n');
+    $('owner-from').textContent = name;
+    $('owner-av').textContent = name.charAt(0).toUpperCase();
+    var now = new Date();
+    $('owner-time').textContent = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+    $('done-text').textContent = 'Thanks, ' + name.split(' ')[0] + '. We’ll WhatsApp you to set up a quick visit in the ' + $('f-week').value.replace(/^Week/, 'week') + ', then send a fixed price.';
+    $('done-ref').textContent = r;
+    $('owner').hidden = true;
+    $('owner-btn').setAttribute('aria-expanded', 'false');
+    view('done-view');
+    focus($('done-h'));
+  });
+  $('owner-btn').addEventListener('click', function () {
+    var open = $('owner').hidden;
+    $('owner').hidden = !open;
+    this.setAttribute('aria-expanded', String(open));
+  });
+  $('again').addEventListener('click', function () { $('quote-form').reset(); view('calc-view'); focus($('range')); });
+
+  /* ---------- the printable estimate ---------- */
+  $('print-btn').addEventListener('click', function () {
+    var j = job();
+    var now = new Date();
+    var date = now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+    var rows = [['Wall area', area(j.wallArea)], ['Walls at ' + rand(j.wallRate) + '/m²' + (j.premium ? ' (premium)' : ''), rand(j.wallsBase)]];
+    if (j.patch) rows.push(['Patching (+15% on walls)', rand(j.walls - j.wallsBase)]);
+    if (j.ceilings) { rows.push(['Ceiling area', area(j.ceilingArea)]); rows.push(['Ceilings at ' + rand(RATE.ceilings) + '/m²', rand(j.ceilingCost)]); }
+    rows.push(['Estimate', rand(j.estimate)]);
+    $('print').innerHTML = '<div class="p-head"><div><b>Coastline Painting</b>Interiors · Fixed prices</div><div class="p-meta">Estimate<br>' + date + '</div></div>' +
+      '<h1>Painting estimate</h1><p>' + esc(jobText(j)) + '</p>' +
+      '<p class="p-range">' + rangeText(j) + '</p><p>A range of 10% either side of the estimate. We confirm a fixed price after a quick look at the rooms.</p>' +
+      '<table class="p-table"><tbody>' + rows.map(function (r) { return '<tr><th>' + esc(r[0]) + '</th><td>' + esc(r[1]) + '</td></tr>'; }).join('') + '</tbody></table>' +
+      '<p class="p-small">Includes labour and paint, excludes moving furniture.</p>' +
+      '<p class="p-small">Demo: Coastline Painting is a made-up business. This estimate was made in a demo tool by Front Door Sites.</p>';
+    window.print();
+  });
+
+  /* ---------- reset ---------- */
+  var toastTimer = null;
+  function toast(text) {
+    var box = $('toasts');
+    clearTimeout(toastTimer);
+    box.innerHTML = '';
+    var p = document.createElement('p');
+    p.className = 'toast';
+    p.textContent = text;
+    box.appendChild(p);
+    toastTimer = setTimeout(function () { box.innerHTML = ''; }, 3000);
+  }
+  $('reset').addEventListener('click', function () {
+    try { sessionStorage.removeItem(STORE); } catch (e) { /* memory only */ }
+    ref = FIRST;
+    rooms = 3;
+    document.querySelector('input[name="size"][value="18"]').checked = true;
+    document.querySelector('input[name="walls"][value="good"]').checked = true;
+    document.querySelector('input[name="finish"][value="standard"]').checked = true;
+    $('ceilings').setAttribute('aria-checked', 'true');
+    $('ceil-state').textContent = 'Yes';
+    $('quote-form').reset();
+    view('calc-view');
+    paint();
+    toast('Demo reset.');
+  });
+
+  paintIcons();
+  paint();
+})();
+</script>
+</body>
+</html>

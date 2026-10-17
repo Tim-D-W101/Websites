@@ -15,18 +15,20 @@ content.json            ← edit this: prices, website options, terms, FAQ, indu
 content/pages/          ← privacy.html and terms.html (drafts: review before launch)
 content/guides/         ← guide articles (none yet)
 src/styles.css          ← all styles
-src/site.js             ← menu, calculators, enquiry form, examples filter, open/closed sign,
+src/site.js             ← menu, calculators, enquiry form, open/closed sign, the Examples page,
                           the home page's front door and tour, things rising into view
 src/calc.js             ← calculator maths (shared by the build and the browser)
 src/svg.js              ← logo, the front door, illustrations and icons
 src/fonts/              ← Fraunces + Figtree, self-hosted (SIL Open Font Licence)
-src/img/examples/       ← screenshots for the Examples page (.webp)
+src/img/examples/       ← screenshots for the example cards (.webp)
+src/examples/           ← the demos on /examples (see "The Examples page and the demos")
 src/static/             ← favicon, share image, touch icon (copied as-is)
 tools/make-images.mjs   ← optional: regenerates the share image and icons
+tools/shoot-examples.mjs ← optional: retakes the example card screenshots
 build.js                ← the build
 ```
 
-Pages: Home, `/websites`, `/business-tools`, `/guesthouses`, `/salons`, `/restaurants`, `/examples`, `/pricing`, `/faq`, `/start` (how it works), `/privacy`, `/terms`, a 404 page, `sitemap.xml` and `robots.txt`.
+Pages: Home, `/websites`, `/business-tools`, `/guesthouses`, `/salons`, `/restaurants`, `/examples`, `/pricing`, `/faq`, `/start` (how it works), `/privacy`, `/terms`, a 404 page, `sitemap.xml` and `robots.txt`. Plus the demos linked from `/examples`: a made-up café's website and four working tools (never indexed, and not in the sitemap).
 
 ## Build and preview
 
@@ -174,33 +176,114 @@ To add an idea:
   "text": "One list of what to order from each supplier, so nothing runs out on a Friday night." }
 ```
 
-## Add an example
+## The Examples page and the demos
 
-1. Take a screenshot at about 1280×800. Save it as **WebP** in `src/img/examples/`, e.g. `src/img/examples/ibis-house.webp`. [squoosh.app](https://squoosh.app) converts a PNG to WebP in your browser; aim for under 150 KB.
-2. Add it to `examples` in `content.json`:
+`/examples` is the page that shows what you build. Everything on it works in the browser, nothing anyone types is sent or stored, and every business on it is made up:
 
-```json
-"examples": [
-  {
-    "name": "Ibis House",
-    "kind": "website",
-    "status": "demo",
-    "niche": "guesthouses",
-    "url": "https://ibis-house.example.co.za",
-    "image": "img/examples/ibis-house.webp",
-    "alt": "The Ibis House home page, with rooms and a Book direct button",
-    "blurb": "A four-room guesthouse with live availability."
-  }
-]
+| Demo | Address | What it shows |
+|---|---|---|
+| Tin Kettle Kitchen (website) | `/examples/tin-kettle/` | A family café and grill: home, menu, book a table, find us and its own 404 page |
+| Bright Cuts (bookings) | `/examples/tools/bookings/` | A barber and salon's booking tool: service, barber, a free time, then a reference and a calendar file |
+| Tin Kettle ordering | `/examples/tools/ordering/` | The café's own online ordering for collection, linked from its menu |
+| Coastline Painting (quotes) | `/examples/tools/quotes/` | A painter's instant estimate, a firm-quote request and a printable estimate |
+| Khumalo Plumbing (staff app) | `/examples/tools/staff-app/` | A staff-only app: job cards, stock and a weekly report (log in with `demo` / `demo`) |
+
+On `/examples` the website shows on a laptop and a phone, and each tool runs live inside a phone. The page's words are in `examples` in `content.json` (`hero`, `website`, `tools`, `together`, `clients` and `yourTurn`).
+
+### Where the demos live
+
+```
+src/examples/tin-kettle/content.json   ← the café's words, hours, grill times, menu and prices
+src/examples/tin-kettle/tin-kettle.css ← its own look (not the Front Door Sites styles)
+src/examples/tin-kettle/tin-kettle.js  ← open/closed line, menu tabs, the table request
+src/examples/tools/<slug>/index.html   ← each tool: one file, its CSS and JavaScript inside it
+src/examples/fonts/                    ← the demos' fonts (Google Fonts, self-hosted, with their licences)
 ```
 
-- `kind` is `website` or `tool`. Website examples appear on `/websites`, tool examples on `/business-tools`.
-- `status` is `demo` for a made-up business or `client` for a real one. Demos are always labelled "Demo" with a note that the business is made up.
-- `niche` (optional) is `guesthouses`, `salons` or `restaurants`, and also shows the example on that industry page.
-- Once there are examples of both kinds, the Examples page shows an All / Websites / Tools filter.
-- **Only add a real business with its owner's permission.**
+The café's pages are made by the Tin Kettle part of `build.js`. Each tool is copied to `dist/examples/tools/<slug>/` with three things added: the demo ribbon at the top, the tags that give it a preview when the link is shared, and (for the ordering tool) the café's menu and hours from `src/examples/tin-kettle/content.json`, so prices live in one place. The build also works out each tool's security policy, so its own script and styles are allowed and nothing else is.
 
-The build reads the image size, so pictures never make the page jump.
+Every demo page carries a thin ribbon ("Demo website by Front Door Sites · … isn't a real business · See more examples") and a `noindex` tag, and has its own security headers so `/examples` can show it in a frame.
+
+### The list of examples
+
+`examples.items` in `content.json` is the one list of examples. The home page shows the first three, `/websites` shows the websites, `/business-tools` the tools, and each industry page the items with its `niche`. On `/examples` the demo tools each get a section, and client work gets a section of its own.
+
+```json
+{
+  "id": "bookings",
+  "kind": "tool",
+  "status": "demo",
+  "title": "Bright Cuts bookings",
+  "business": "Bright Cuts",
+  "summary": "A barber and salon's own booking tool: pick a service, a barber and a time that's really free.",
+  "url": "/examples/tools/bookings/",
+  "priceKey": "business-system",
+  "image": "img/examples/bookings.webp",
+  "alt": "The Bright Cuts booking demo: a list of services with prices"
+}
+```
+
+- `kind` is `website` or `tool`, and `status` is `demo` or `client`.
+- `priceKey` sets the "from" price shown with it: `website` (the business website: from R3 999 with Care Plus, or R7 500 once-off), `tools` (business tools in general), a band id like `small-tool` or `business-system`, or a website option id like `once-off`. A tool whose key matches nothing shows the general business tools price.
+- `niche` (optional: `guesthouses`, `salons` or `restaurants`) also shows it on that industry page.
+- Demo tools also have the words for their section on `/examples`: `nav` (its name in the bar at the top), `type`, `problem` (the owner's problem, in their words), `fixes`, `tryThis` and `want` (what the enquiry form is filled in with when someone taps "Get one like this").
+
+### Add real client work
+
+The "Real client work" section stays hidden until there's at least one item with `"status": "client"`. **Only add a real business with its owner's permission.**
+
+1. Take a screenshot at about 1280×800 and save it as **WebP** in `src/img/examples/`, e.g. `src/img/examples/ibis-house.webp`. [squoosh.app](https://squoosh.app) converts a PNG to WebP in your browser; aim for under 150 KB.
+2. Add it to `examples.items`:
+
+```json
+{
+  "id": "ibis-house",
+  "kind": "website",
+  "status": "client",
+  "title": "Ibis House",
+  "business": "Ibis House",
+  "summary": "A four-room guesthouse with live availability.",
+  "url": "https://ibishouse.co.za",
+  "priceKey": "website",
+  "niche": "guesthouses",
+  "image": "img/examples/ibis-house.webp",
+  "alt": "The Ibis House home page, with rooms and a Book direct button"
+}
+```
+
+It shows on `/examples` labelled **Website · Client** (or **Tool · Client**), with the screenshot, the summary and a link to the site, and on the pages for its kind and niche. A client's `url` must start with `https://`. The build reads the image size, so pictures never make the page jump.
+
+### Swap the café's placeholder photos for real ones
+
+Until it has photos, the café shows designed placeholders ("Your photo here"). To use real photos:
+
+1. Resize each photo to at most 1 600 px wide and save it as WebP (squoosh.app does both), e.g. `src/img/examples/tin-kettle/hero.webp`.
+2. In `src/examples/tin-kettle/content.json`, set `photo` on the slot to the file and write a description in `alt`:
+
+```json
+"hero": { "photo": "img/examples/tin-kettle/hero.webp", "icon": "kettle", "alt": "The Tin Kettle counter with fresh breakfast rolls" }
+```
+
+The slots are `hero`, `about` and each of `specials.items`. Photos load lazily, with their size set so the page doesn't jump.
+
+### Send one demo to a prospect
+
+Each demo has its own address, so you can send just the one that fits. For a salon owner:
+
+```
+https://frontdoorsites.co.za/examples/tools/bookings/
+```
+
+For a restaurant, send the café (`/examples/tin-kettle/`) or its ordering (`/examples/tools/ordering/`); for a tradesperson, the quote calculator (`/examples/tools/quotes/`); for a business with staff, the staff app (`/examples/tools/staff-app/`, log in with `demo` / `demo`). The link shows a proper preview on WhatsApp, the ribbon says it's a demo by Front Door Sites, and "See more examples" takes them to the rest. Each visitor's demo starts fresh, and "Reset demo" at the bottom of each tool starts it over.
+
+### Retake the example card screenshots
+
+The cards on the home page, `/websites`, `/business-tools` and the industry pages use screenshots of the demos. After changing a demo's look:
+
+```bash
+node build.js
+node tools/shoot-examples.mjs   # needs Playwright, see "Share image and icons"
+```
 
 ## Add a guide
 
@@ -263,7 +346,9 @@ The project name and settings come from `wrangler.toml`.
 
 ### Security headers
 
-`wrangler.toml` tells Cloudflare to serve `dist/` as plain files, with clean addresses (`/websites` serves `websites.html`) and `404.html` for unknown pages. The build also writes `dist/_headers`. Cloudflare reads it to set security headers (including a strict Content-Security-Policy) and long caching for fonts and assets. If you ever embed something from another website, like a map or a booking widget, add its domain to the Content-Security-Policy in `build.js`, or it will be blocked.
+`wrangler.toml` tells Cloudflare to serve `dist/` as plain files, with clean addresses (`/websites` serves `websites.html`) and `404.html` for unknown pages (the demo café has its own, in `/examples/tin-kettle/`). The build also writes `dist/_headers`. Cloudflare reads it to set security headers (including a strict Content-Security-Policy) and long caching for fonts and assets. If you ever embed something from another website, like a map or a booking widget, add its domain to the Content-Security-Policy in `build.js`, or it will be blocked.
+
+The demos get their own rules at the end of `_headers` (written by `demoHeaders()` in `build.js`): they may be shown in a frame on this site only, they're marked `noindex`, they can't send anything anywhere, and each tool's own inline script and styles are allowed by their hashes. Those hashes are worked out on every build, so edit a tool freely and rebuild.
 
 ## Connect frontdoorsites.co.za
 
@@ -307,3 +392,5 @@ node tools/make-images.mjs
 ## Fonts
 
 Headings use **Fraunces**; body text uses **Figtree**. Both are self-hosted from `src/fonts/` (no Google Fonts requests) under the SIL Open Font Licence, and the licence files are included.
+
+The demos each have their own fonts, all from Google Fonts and self-hosted the same way, so no demo loads anything from another company (as the privacy policy says): Caprasimo and Work Sans (Tin Kettle), Syne and Manrope (Bright Cuts), Barlow Condensed and Barlow (Coastline Painting) and IBM Plex Sans (Khumalo Plumbing). They're in `src/examples/fonts/`, cut down to the Latin letters, with their licences.

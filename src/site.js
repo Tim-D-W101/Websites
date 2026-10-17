@@ -1,5 +1,6 @@
-/* Front Door Sites: menu, calculators, enquiry form, examples filter, the open/closed demo,
-   and the home page's front door and tour. Also: things rising into view, cards that tilt.
+/* Front Door Sites: menu, calculators, enquiry form, the open/closed demo, the Examples page
+   (live previews, its in-page nav, buttons that fill in the form), and the home page's front door
+   and tour. Also: things rising into view, cards that tilt.
    Plain JavaScript, no libraries. FDSCalc comes from calc.js (bundled in front of this file). */
 (function () {
   'use strict';
@@ -296,20 +297,96 @@
     });
   }
 
-  /* ---------- examples filter (only shown when there are websites and tools) ---------- */
-  var filter = document.querySelector('[data-filter]');
-  if (filter) {
-    var cards = document.querySelectorAll('[data-examples] [data-kind]');
-    var buttons = filter.querySelectorAll('button');
-    filter.hidden = false;
-    filter.addEventListener('click', function (e) {
-      var b = e.target.closest('button');
-      if (!b) return;
-      var show = b.getAttribute('data-show');
-      for (var i = 0; i < buttons.length; i++) buttons[i].setAttribute('aria-pressed', String(buttons[i] === b));
-      for (var j = 0; j < cards.length; j++) cards[j].hidden = show !== 'all' && cards[j].getAttribute('data-kind') !== show;
+  /* ---------- Examples page: live previews of the demo website, scaled to fit their frames ---------- */
+  var fits = document.querySelectorAll('[data-fit]');
+  if (fits.length) initFits(fits);
+
+  function initFits(list) {
+    function size() {
+      for (var i = 0; i < list.length; i++) {
+        var w = list[i].clientWidth;
+        if (w) list[i].style.setProperty('--fit', (w / Number(list[i].getAttribute('data-fit'))).toFixed(4));
+      }
+    }
+    if ('ResizeObserver' in window) {
+      var ro = new ResizeObserver(size);
+      for (var i = 0; i < list.length; i++) ro.observe(list[i]);
+    } else {
+      loops.push({ resize: size });
+    }
+    size();
+  }
+
+  // The phones' status bars show the time.
+  var clocks = document.querySelectorAll('[data-clock]');
+  if (clocks.length) {
+    var tick = function () {
+      var d = new Date();
+      var s = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+      for (var i = 0; i < clocks.length; i++) clocks[i].textContent = s;
+    };
+    tick();
+    setInterval(tick, 15000);
+  }
+
+  /* ---------- Examples page: the in-page nav shows where you are ---------- */
+  var exnav = document.querySelector('[data-exnav]');
+  if (exnav) initExNav(exnav);
+
+  function initExNav(nav) {
+    var list = nav.querySelector('ul');
+    var links = nav.querySelectorAll('a[href^="#"]');
+    var targets = [];
+    var tops = [];
+    var current = -2;
+    for (var i = 0; i < links.length; i++) targets.push(document.getElementById(links[i].getAttribute('href').slice(1)));
+    loops.push({
+      read: function () {
+        for (var j = 0; j < targets.length; j++) tops[j] = targets[j] ? targets[j].getBoundingClientRect().top : Infinity;
+      },
+      write: function (vh) {
+        var line = Math.min(vh * 0.35, 280);
+        var active = -1;
+        for (var j = 0; j < tops.length; j++) if (tops[j] <= line) active = j;
+        if (active === current) return;
+        current = active;
+        for (var k = 0; k < links.length; k++) {
+          if (k === active) links[k].setAttribute('aria-current', 'true');
+          else links[k].removeAttribute('aria-current');
+        }
+        // On phones the chips scroll sideways: keep the current one in view.
+        if (active === -1 && list.scrollLeft) list.scrollTo({ left: 0, behavior: motion ? 'smooth' : 'auto' });
+        if (active > -1 && list.scrollWidth > list.clientWidth) {
+          var a = links[active];
+          var left = a.getBoundingClientRect().left - list.getBoundingClientRect().left + list.scrollLeft;
+          list.scrollTo({ left: left - (list.clientWidth - a.offsetWidth) / 2, behavior: motion ? 'smooth' : 'auto' });
+        }
+      }
     });
   }
+
+  /* ---------- "I want a site like this", "Get one like this": fill in the enquiry form ---------- */
+  // Only fields that are empty, or still hold what an earlier button put there, are changed.
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-prefill-need]');
+    var f = document.querySelector('form[data-enquiry]');
+    if (!b || !f) return;
+    var need = f.querySelector('input[name="need"][data-key="' + b.getAttribute('data-prefill-need') + '"]');
+    if (need && !need.checked) {
+      need.checked = true;
+      need.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    var type = b.getAttribute('data-prefill-type');
+    var typeIn = f.elements.type;
+    if (!typeIn.value.trim() || typeIn.value === f.fdsType) { typeIn.value = type || ''; f.fdsType = type || ''; }
+    var details = b.getAttribute('data-prefill-details');
+    var d = f.elements.details;
+    if (details && (!d.value.trim() || d.value === f.fdsDetails)) {
+      d.value = details;
+      f.fdsDetails = details;
+      d.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
 
   /* ---------- live "open now / closed" demo (South African time) ---------- */
   var demo = document.querySelector('[data-open-status]');
@@ -842,7 +919,8 @@
   function initReveal() {
     var selector = '.chapter-head, .tour-list > li, .help, .niche-card, .can-build > li, .idea, .mini, .flip, .fit, ' +
       '.includes > li, .point-cards > li, .plan, .example, .pt-col, .about-inner, .faq-list, .big-callout, .punch, ' +
-      '.earn, .calc, .open-demo, .points-card, .start-step, .founding, .price-group-head, .times-table';
+      '.earn, .calc, .open-demo, .points-card, .start-step, .founding, .price-group-head, .times-table, ' +
+      '.ex-website-text, .ex-shot, .ex-tool-device, .ex-tool-text, .ex-flow-step, .ex-flow-line';
     var els = document.querySelectorAll(selector);
     var vh = window.innerHeight;
     var io = new IntersectionObserver(function (entries) {

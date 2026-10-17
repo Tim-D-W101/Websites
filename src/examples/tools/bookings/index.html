@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Book an appointment | Bright Cuts (demo)</title>
+<meta name="description" content="A working demo of a barber and salon's own booking tool: pick a service, a barber and a time that's really free, then see the booking as the owner gets it.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#141210">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23141210'/%3E%3Ccircle cx='32' cy='32' r='13' fill='%23F2C4BE'/%3E%3C/svg%3E">
+<!-- demo:head -->
+<style>
+/* Bright Cuts: a made-up barber and salon's own booking tool (demo).
+   Black, warm white and one blush accent; Syne and Manrope. */
+@font-face { font-family: "Syne"; src: url("/fonts/syne-var.woff2") format("woff2"); font-weight: 400 800; font-display: swap; }
+@font-face { font-family: "Manrope"; src: url("/fonts/manrope-var.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+:root {
+  --black: #141210; --ink: #26221F; --muted: #5E5751; --white: #F7F2EC; --card: #FFFDFB; --line: #E5DBD1; --soft: #EFE7DF;
+  --blush: #F2C4BE; --blush-l: #FBE7E3; --blush-d: #9E4F47;
+  --display: "Syne", "Arial Black", system-ui, sans-serif;
+  --body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; font: 500 1rem/1.5 var(--body); color: var(--ink); background: var(--white); }
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--blush-d); outline-offset: 2px; border-radius: 8px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 700; line-height: 1.1; color: var(--black); letter-spacing: -.01em; }
+p { margin: 0; }
+.sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.i { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; }
+
+.shell { min-height: 100vh; }
+.brand { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .85rem 1rem; background: var(--black); color: var(--white); }
+.logo { display: flex; align-items: center; gap: .6rem; }
+.logo-mark { display: grid; place-items: center; width: 2.3rem; height: 2.3rem; border-radius: 50%; background: var(--blush); color: var(--black); }
+.logo-mark .i { width: 1.3rem; height: 1.3rem; }
+.logo b { display: block; font: 800 1.12rem/1 var(--display); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.logo small { display: block; margin-top: .15rem; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: #CFC4BA; }
+.hours { font-size: .78rem; color: #E6DDD4; text-align: right; line-height: 1.35; white-space: nowrap; }
+.panel { display: none; }
+@media (max-width: 379px) { .hours { display: none; } }
+
+.card { max-width: 36rem; margin: 0 auto; padding: 1.1rem 1rem 1.5rem; }
+.progress { margin-bottom: 1.1rem; }
+.progress-top { display: flex; justify-content: space-between; align-items: center; gap: .5rem; margin-bottom: .45rem; font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.track { height: 6px; border-radius: 99px; background: var(--soft); overflow: hidden; }
+.fill { height: 100%; border-radius: 99px; background: var(--black); transform-origin: left; transform: scaleX(.25); transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
+.back { display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; margin: -.35rem 0 .2rem -.35rem; padding: .3rem .4rem; border: 0; border-radius: 10px; background: none; font-weight: 700; color: var(--ink); }
+.back:hover { background: var(--soft); }
+.step h1 { font-size: 1.65rem; }
+.step-lead { margin: .35rem 0 1rem; color: var(--muted); }
+@keyframes in { from { opacity: 0; transform: translateX(18px); } }
+@media (prefers-reduced-motion: no-preference) { .step.enter { animation: in .35s cubic-bezier(.2, .8, .2, 1); } }
+
+/* step 1: services */
+.choices { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.choice { display: flex; align-items: center; gap: .85rem; width: 100%; min-height: 64px; padding: .75rem .9rem; border: 1.5px solid var(--black); border-radius: 16px; background: var(--card); text-align: left; transition: background-color .15s, transform .15s; }
+.choice:hover { background: var(--blush-l); }
+.choice:active { transform: scale(.99); }
+.choice[aria-pressed="true"] { background: var(--black); color: var(--white); }
+.choice[aria-pressed="true"] .meta { color: #D8CEC5; }
+.choice[aria-pressed="true"] .price { color: var(--blush); }
+.choice .name { display: block; font-weight: 800; font-size: 1.02rem; }
+.choice .meta { display: block; margin-top: .1rem; color: var(--muted); font-size: .88rem; }
+.choice .grow { flex: 1; min-width: 0; }
+.price { font: 800 1.02rem/1 var(--body); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.go { color: var(--muted); }
+
+/* step 2: who */
+.av { display: grid; place-items: center; flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: var(--blush); color: var(--black); font: 800 1.1rem/1 var(--display); }
+.av-any { background: var(--soft); }
+.av-any .i { width: 1.3rem; height: 1.3rem; }
+.choice[aria-pressed="true"] .av { box-shadow: 0 0 0 2px var(--white); }
+
+/* step 3: when */
+.month { margin: 0 0 .5rem; font-weight: 800; }
+.dates { display: flex; gap: .45rem; overflow-x: auto; margin: 0 -1rem; padding: .2rem 1rem .8rem; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.date { flex: none; display: grid; justify-items: center; gap: .1rem; width: 3.9rem; min-height: 72px; padding: .45rem .2rem; border: 1.5px solid var(--black); border-radius: 14px; background: var(--card); scroll-snap-align: start; }
+.date small { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.date b { font: 800 1.3rem/1.1 var(--body); font-variant-numeric: tabular-nums; }
+.date .tiny { font-size: .66rem; font-weight: 700; color: var(--muted); }
+.date:hover { background: var(--blush-l); }
+.date[aria-pressed="true"] { background: var(--black); color: var(--white); }
+.date[aria-pressed="true"] small, .date[aria-pressed="true"] .tiny { color: #D8CEC5; }
+.date:disabled { border-color: var(--line); background: var(--soft); color: #9A918A; cursor: not-allowed; }
+.date:disabled small, .date:disabled .tiny { color: #8B827B; }
+.slots-h { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; margin: .4rem 0 .6rem; font-weight: 800; }
+.slots-h span { font-weight: 600; font-size: .85rem; color: var(--muted); }
+.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: .45rem; margin: 0; padding: 0; list-style: none; }
+.slot { width: 100%; min-height: 46px; padding: .4rem; border: 1.5px solid var(--black); border-radius: 12px; background: var(--card); font-weight: 800; font-variant-numeric: tabular-nums; }
+.slot:hover { background: var(--blush); }
+.slot[aria-pressed="true"] { background: var(--black); color: var(--white); }
+.slot:disabled { border: 1.5px dashed #C9BDB1; background: transparent; color: #8E857E; text-decoration: line-through; cursor: not-allowed; font-weight: 600; }
+.empty { padding: 1rem; border-radius: 14px; background: var(--soft); color: var(--muted); text-align: center; }
+.legend { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-top: .75rem; color: var(--muted); font-size: .82rem; }
+.legend span { display: inline-flex; align-items: center; gap: .35rem; }
+.legend i { display: inline-block; width: .9rem; height: .9rem; border-radius: 4px; border: 1.5px solid var(--black); }
+.legend .x { border-style: dashed; border-color: #C9BDB1; }
+
+/* step 4: details */
+.summary { display: grid; gap: .1rem; padding: .85rem .95rem; border-radius: 16px; background: var(--black); color: var(--white); }
+.summary b { font: 800 1.08rem/1.25 var(--body); }
+.summary span { color: #D8CEC5; font-size: .92rem; }
+.summary .price { color: var(--blush); }
+.sum-top { display: flex; justify-content: space-between; gap: .75rem; align-items: baseline; }
+.nothing { display: flex; gap: .45rem; align-items: flex-start; margin: 1rem 0 0; padding: .6rem .8rem; border-radius: 12px; background: var(--blush-l); color: #5B2A24; font-size: .88rem; font-weight: 700; }
+.nothing .i { margin-top: .1rem; }
+.field { margin-top: 1rem; }
+label { display: block; margin-bottom: .35rem; font-weight: 800; color: var(--black); }
+.opt { font-weight: 500; color: var(--muted); }
+input, textarea { width: 100%; min-height: 50px; padding: .65rem .85rem; border: 1.5px solid var(--black); border-radius: 14px; background: var(--card); }
+textarea { min-height: 4.5rem; resize: vertical; }
+input:focus-visible, textarea:focus-visible { outline: 3px solid var(--blush-d); outline-offset: 1px; }
+[aria-invalid="true"] { border-color: #A3271B; border-width: 2px; }
+.err { margin-top: .35rem; color: #A3271B; font-weight: 700; font-size: .9rem; }
+.hint { margin-top: .3rem; color: var(--muted); font-size: .85rem; }
+.btn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; min-height: 54px; margin-top: 1.25rem; padding: .7rem 1rem; border: 1.5px solid var(--black); border-radius: 999px; background: var(--black); color: var(--white); font-weight: 800; font-size: 1.02rem; text-decoration: none; }
+.btn:hover { background: #2E2925; }
+.btn-blush { background: var(--blush); color: var(--black); }
+.btn-blush:hover { background: #F5D2CD; }
+.btn-line { background: transparent; color: var(--black); }
+.btn-line:hover { background: var(--soft); }
+.btn + .btn { margin-top: .6rem; }
+
+/* done */
+.booked { padding: 1.25rem 1rem; border-radius: 22px; background: var(--black); color: var(--white); text-align: center; }
+.booked h1 { color: var(--white); font-size: 1.9rem; outline: none; }
+.booked .tick { display: grid; place-items: center; width: 3.4rem; height: 3.4rem; margin: 0 auto .75rem; border-radius: 50%; background: var(--blush); color: var(--black); }
+.booked .tick .i { width: 1.9rem; height: 1.9rem; stroke-width: 2.6; }
+.ref { display: inline-block; margin-top: .55rem; padding: .25rem .8rem; border: 1.5px dashed var(--blush); border-radius: 999px; font-weight: 800; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.booked dl { display: grid; grid-template-columns: auto 1fr; gap: .45rem 1rem; margin: 1.1rem 0 0; padding-top: 1rem; border-top: 1px solid #3B3531; text-align: left; }
+.booked dt { color: #CFC4BA; font-size: .9rem; }
+.booked dd { margin: 0; font-weight: 700; text-align: right; }
+.owner-btn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; min-height: 52px; margin-top: 1rem; padding: .6rem 1rem; border: 1.5px dashed #3F6E58; border-radius: 16px; background: #EAF3EC; color: #1F4B36; font-weight: 800; }
+.owner-btn[aria-expanded="true"] { border-style: solid; }
+.chev { transition: transform .2s; }
+.owner-btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.owner { margin-top: .75rem; }
+.chat { border-radius: 18px; overflow: hidden; background: #ECE5DA; }
+.chat-top { display: flex; align-items: center; gap: .6rem; padding: .65rem .85rem; background: #1F4F46; color: #fff; font-weight: 700; line-height: 1.25; }
+.chat-top small { display: block; font-weight: 500; opacity: .82; font-size: .78rem; }
+.chat-av { display: grid; place-items: center; flex: none; width: 2.1rem; height: 2.1rem; border-radius: 50%; background: #8FB7A9; color: #173832; font-weight: 800; }
+.chat-body { padding: .8rem; }
+.bubble { position: relative; max-width: 94%; padding: .6rem .75rem 1.35rem; border-radius: 14px 14px 14px 4px; background: #fff; box-shadow: 0 1px 1px rgba(0, 0, 0, .12); white-space: pre-wrap; overflow-wrap: anywhere; font-size: .92rem; line-height: 1.45; color: #1F1C1A; }
+.bubble time { position: absolute; right: .6rem; bottom: .3rem; font-size: .7rem; color: #6F6A64; }
+.owner-note { display: flex; gap: .45rem; align-items: flex-start; margin-top: .6rem; color: #1F4B36; font-size: .92rem; font-weight: 700; }
+.owner-note .i { margin-top: .1rem; }
+
+.foot { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .25rem 1rem; padding: 1rem 1rem 1.5rem; color: var(--muted); font-size: .85rem; }
+.link { min-height: 44px; padding: .5rem .2rem; border: 0; background: none; font-weight: 800; text-decoration: underline; text-underline-offset: .2em; color: var(--black); }
+.toasts { position: fixed; left: 0; right: 0; bottom: calc(1rem + env(safe-area-inset-bottom)); z-index: 60; display: flex; justify-content: center; padding: 0 1rem; pointer-events: none; }
+.toast { max-width: 26rem; padding: .65rem 1rem; border-radius: 14px; background: var(--black); color: var(--white); font-size: .92rem; box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .5); }
+noscript p { padding: 1rem; }
+
+@media (min-width: 900px) {
+  .shell { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); min-height: calc(100vh - 2rem); }
+  .brand { display: none; }
+  .panel { position: sticky; top: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 2rem; height: 100vh; padding: 2.5rem 3rem; background: var(--black); color: var(--white); }
+  .panel .logo b { font-size: 1.6rem; }
+  .panel h2 { margin-top: 3rem; color: var(--white); font: 800 clamp(2.6rem, 4vw, 3.6rem)/1 var(--display); letter-spacing: -.02em; }
+  .panel h2 em { font-style: normal; color: var(--blush); }
+  .panel p { max-width: 24rem; margin-top: 1rem; color: #D8CEC5; font-size: 1.05rem; }
+  .panel ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .35rem; font-size: .92rem; color: #D8CEC5; }
+  .panel li { display: flex; justify-content: space-between; max-width: 18rem; border-bottom: 1px solid #3B3531; padding-bottom: .35rem; }
+  .card { width: 100%; max-width: 34rem; padding: 2.5rem 2rem; }
+  .step h1 { font-size: 2rem; }
+  .slots { grid-template-columns: repeat(4, 1fr); }
+  .dates { margin: 0; padding-inline: 0; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<!-- demo:ribbon -->
+<div class="shell">
+<aside class="panel" aria-label="About Bright Cuts">
+<div>
+<p class="logo"><span class="logo-mark" data-icon="scissors"></span><span><b>Bright Cuts</b><small>Barber &amp; salon</small></span></p>
+<h2>Book in, <em>skip the wait.</em></h2>
+<p>Pick your service, your barber and a time that’s really free. No calls, no back-and-forth.</p>
+</div>
+<ul><li><span>Tuesday to Saturday</span><span>09:00–17:30</span></li><li><span>Sunday and Monday</span><span>Closed</span></li></ul>
+</aside>
+<div>
+<header class="brand">
+<p class="logo"><span class="logo-mark" data-icon="scissors"></span><span><b>Bright Cuts</b><small>Barber &amp; salon</small></span></p>
+<p class="hours">Tue–Sat<br>09:00–17:30</p>
+</header>
+<main class="card" id="main">
+<noscript><p>This demo needs JavaScript to run.</p></noscript>
+<div class="progress" id="progress">
+<p class="progress-top"><span id="step-label">Step 1 of 4 · Service</span></p>
+<div class="track" role="progressbar" aria-labelledby="step-label" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="track"><div class="fill" id="fill"></div></div>
+</div>
+
+<section class="step" id="s1" aria-labelledby="s1-h">
+<h1 id="s1-h" tabindex="-1">What are we doing today?</h1>
+<p class="step-lead">Choose a service. Prices include everything.</p>
+<ul class="choices" id="services"></ul>
+</section>
+
+<section class="step" id="s2" aria-labelledby="s2-h" hidden>
+<button class="back" type="button" data-back="1"><span data-icon="left"></span>Back</button>
+<h1 id="s2-h" tabindex="-1">Who would you like?</h1>
+<p class="step-lead" id="s2-lead"></p>
+<ul class="choices" id="staff"></ul>
+</section>
+
+<section class="step" id="s3" aria-labelledby="s3-h" hidden>
+<button class="back" type="button" data-back="2"><span data-icon="left"></span>Back</button>
+<h1 id="s3-h" tabindex="-1">When suits you?</h1>
+<p class="step-lead" id="s3-lead"></p>
+<p class="month" id="month"></p>
+<div class="dates" id="dates" role="group" aria-label="Choose a day"></div>
+<p class="slots-h"><span class="sr">Times on </span><b id="slots-day"></b><span id="slots-count"></span></p>
+<ul class="slots" id="slots"></ul>
+<p class="legend" aria-hidden="true"><span><i></i>Free</span><span><i class="x"></i>Taken, or runs past closing</span></p>
+</section>
+
+<section class="step" id="s4" aria-labelledby="s4-h" hidden>
+<button class="back" type="button" data-back="3"><span data-icon="left"></span>Back</button>
+<h1 id="s4-h" tabindex="-1">Your details</h1>
+<p class="step-lead">So we know who’s coming, and can let you know if anything changes.</p>
+<div class="summary" id="summary"></div>
+<form id="details" novalidate>
+<p class="nothing"><span data-icon="lock"></span><span>Demo: nothing you type here is sent or stored.</span></p>
+<div class="field"><label for="d-name">First name</label><input id="d-name" name="name" type="text" autocomplete="given-name" maxlength="40" required></div>
+<div class="field"><label for="d-mobile">Mobile number</label><input id="d-mobile" name="mobile" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="e.g. 082 123 4567" required><p class="hint" id="d-mobile-hint">We’ll send a reminder the day before.</p></div>
+<div class="field"><label for="d-note">Anything we should know? <span class="opt">(optional)</span></label><textarea id="d-note" name="note" rows="2" maxlength="160" placeholder="e.g. Keep it long on top"></textarea></div>
+<button class="btn" type="submit">Confirm booking</button>
+</form>
+</section>
+
+<section class="step" id="s5" aria-labelledby="s5-h" hidden>
+<div class="booked">
+<span class="tick" data-icon="check"></span>
+<h1 id="s5-h" tabindex="-1">You’re booked</h1>
+<p>See you soon. Your reference is</p>
+<p class="ref" id="ref">BC-4821</p>
+<dl id="booked-list"></dl>
+</div>
+<button class="btn btn-blush" type="button" id="ics"><span data-icon="calendar"></span>Add to calendar</button>
+<button class="owner-btn" id="owner-btn" type="button" aria-expanded="false" aria-controls="owner"><span data-icon="chat"></span>See what the owner receives<span class="chev" data-icon="chev"></span></button>
+<div class="owner" id="owner" hidden>
+<div class="chat"><p class="chat-top"><span class="chat-av" id="owner-av">S</span><span><span id="owner-from">Client</span><small>WhatsApp · new booking</small></span></p><div class="chat-body"><p class="bubble"><span id="owner-msg"></span><time id="owner-time">12:00</time></p></div></div>
+<p class="owner-note"><span data-icon="phone"></span><span>On your system, every booking lands on your phone like this, and in your diary.</span></p>
+</div>
+<button class="btn btn-line" type="button" id="again">Make another booking</button>
+</section>
+</main>
+<footer class="foot"><span>Bright Cuts · Tue–Sat 09:00–17:30</span><button class="link" id="reset" type="button">Reset demo</button></footer>
+</div>
+</div>
+<div class="toasts" role="status" aria-live="polite" id="toasts"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- the salon: services, people, opening hours and the diary ---------- */
+  var SERVICES = [
+    { id: 'cut', name: 'Men’s cut', mins: 30, price: 160 },
+    { id: 'fade', name: 'Skin fade', mins: 45, price: 210 },
+    { id: 'beard', name: 'Beard trim', mins: 20, price: 90 },
+    { id: 'ladies', name: 'Ladies’ cut and blow-dry', mins: 60, price: 320 },
+    { id: 'consult', name: 'Colour consult', mins: 30, price: 0 }
+  ];
+  var STAFF = [
+    { id: 'sipho', name: 'Sipho', role: 'Senior barber' },
+    { id: 'lerato', name: 'Lerato', role: 'Stylist and colour' },
+    { id: 'dan', name: 'Dan', role: 'Barber' }
+  ];
+  // Open Tuesday to Saturday, 09:00-17:30. Times every 30 minutes.
+  var OPEN_DAYS = [2, 3, 4, 5, 6];
+  var OPEN = 9 * 60, CLOSE = 17 * 60 + 30, STEP = 30;
+  // The diary: the same bookings every open day, so the demo behaves the same every time.
+  var BUSY = {
+    sipho: [['10:00', '11:00'], ['14:00', '14:30']],
+    lerato: [['09:00', '10:00'], ['15:00', '16:30']],
+    dan: [['12:00', '13:00']]
+  };
+  var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var STORE = 'fds-demo-bookings';
+  var FIRST = 4821;
+  var ICONS = {
+    scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"/>',
+    left: '<path d="M19.5 12h-15M10.5 6l-6 6 6 6"/>',
+    right: '<path d="m9 6 6 6-6 6"/>',
+    users: '<path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.5"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.35M15 4.6a3.5 3.5 0 0 1 0 6.8"/>',
+    check: '<path d="m5 12.5 4.3 4.3L19 7.2"/>',
+    lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"/>',
+    calendar: '<rect x="3.8" y="5.2" width="16.4" height="15.3" rx="2.6"/><path d="M3.8 9.8h16.4M8.3 3.2v3.6M15.7 3.2v3.6"/>',
+    chat: '<path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.4L3.5 20.5l1.6-4.4a8.4 8.4 0 1 1 15.4-4.5z"/><path d="M8.6 11.8h.01M12 11.8h.01M15.4 11.8h.01"/>',
+    chev: '<path d="m6 9 6 6 6-6"/>',
+    phone: '<path d="M8.6 3.5H6.2A2.2 2.2 0 0 0 4 5.8c.4 8 6.2 13.8 14.2 14.2a2.2 2.2 0 0 0 2.3-2.2v-2.4a1 1 0 0 0-.7-1l-3-1a1 1 0 0 0-1.1.3l-1.3 1.6a12 12 0 0 1-5.5-5.5l1.6-1.3a1 1 0 0 0 .3-1.1l-1-3a1 1 0 0 0-1-.7z"/>'
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function icon(n) { return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + ICONS[n] + '</svg>'; }
+  function paintIcons(root) {
+    var els = (root || document).querySelectorAll('[data-icon]');
+    for (var i = 0; i < els.length; i++) { els[i].innerHTML = icon(els[i].getAttribute('data-icon')); els[i].removeAttribute('data-icon'); }
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function rand(n) { return n ? 'R' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : 'Free'; }
+  function mins(s) { var p = s.split(':'); return Number(p[0]) * 60 + Number(p[1]); }
+  function hhmm(m) { return ('0' + Math.floor(m / 60)).slice(-2) + ':' + ('0' + (m % 60)).slice(-2); }
+  function focus(el) { if (!el) return; try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); } }
+  function longDate(d) { return DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()]; }
+  function sameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+  var motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- availability ---------- */
+  // Free if the whole service fits before closing and doesn't overlap any of that person's bookings.
+  function personFree(staffId, start, length) {
+    if (start < OPEN || start + length > CLOSE) return false;
+    return BUSY[staffId].every(function (b) { return start + length <= mins(b[0]) || start >= mins(b[1]); });
+  }
+  // "Any available": free if any one person is. Returns who gets the booking, or null.
+  function whoIsFree(choice, start, length) {
+    var people = choice === 'any' ? STAFF : STAFF.filter(function (s) { return s.id === choice; });
+    for (var i = 0; i < people.length; i++) if (personFree(people[i].id, start, length)) return people[i];
+    return null;
+  }
+  function isOpenDay(d) { return OPEN_DAYS.indexOf(d.getDay()) > -1; }
+  // Every slot on a day: its start, and who (if anyone) is free for the whole service.
+  // Times already gone today are left out.
+  function daySlots(d) {
+    var out = [];
+    if (!isOpenDay(d)) return out;
+    var now = new Date();
+    var today = sameDay(d, now);
+    var nowM = now.getHours() * 60 + now.getMinutes();
+    for (var m = OPEN; m < CLOSE; m += STEP) {
+      if (today && m <= nowM) continue;
+      out.push({ m: m, who: whoIsFree(pick.staff, m, pick.service.mins) });
+    }
+    return out;
+  }
+
+  /* ---------- state ---------- */
+  var pick = { service: null, staff: null, date: null, time: null, who: null };
+  var step = 1;
+  function loadRefs() { try { var n = Number(sessionStorage.getItem(STORE)); return n >= FIRST ? n : FIRST; } catch (e) { return FIRST; } }
+  var nextRef = loadRefs();
+  function saveRefs() { try { sessionStorage.setItem(STORE, String(nextRef)); } catch (e) { /* memory only */ } }
+
+  var LABELS = ['Service', 'Who', 'When', 'Details', 'Booked'];
+  // quiet: on first load, don't move focus (in a frame on another page, that would pull focus away).
+  function show(n, back, quiet) {
+    step = n;
+    for (var i = 1; i <= 5; i++) {
+      var s = $('s' + i);
+      s.hidden = i !== n;
+      s.classList.remove('enter');
+    }
+    var cur = $('s' + n);
+    if (motion && !back) { void cur.offsetWidth; cur.classList.add('enter'); }
+    $('progress').hidden = n === 5;
+    $('step-label').textContent = n < 5 ? 'Step ' + n + ' of 4 · ' + LABELS[n - 1] : 'Booked';
+    $('track').setAttribute('aria-valuenow', String(Math.min(n, 4)));
+    $('fill').style.transform = 'scaleX(' + (Math.min(n, 4) / 4) + ')';
+    if (quiet) return;
+    window.scrollTo(0, 0);
+    focus($('s' + n + '-h'));
+  }
+
+  /* ---------- step 1: service ---------- */
+  function renderServices() {
+    $('services').innerHTML = SERVICES.map(function (s) {
+      return '<li><button class="choice" type="button" data-service="' + s.id + '" aria-pressed="' + !!(pick.service && pick.service.id === s.id) + '"><span class="grow"><span class="name">' + esc(s.name) + '</span><span class="meta">' + s.mins + ' min</span></span><span class="price">' + rand(s.price) + '</span><span class="go">' + icon('right') + '</span></button></li>';
+    }).join('');
+  }
+  $('services').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-service]');
+    if (!b) return;
+    pick.service = SERVICES.filter(function (s) { return s.id === b.getAttribute('data-service'); })[0];
+    pick.time = null;
+    renderServices();
+    renderStaff();
+    show(2);
+  });
+
+  /* ---------- step 2: who ---------- */
+  function renderStaff() {
+    $('s2-lead').textContent = pick.service.name + ', ' + pick.service.mins + ' minutes.';
+    var any = '<li><button class="choice" type="button" data-staff="any" aria-pressed="' + (pick.staff === 'any') + '"><span class="av av-any">' + icon('users') + '</span><span class="grow"><span class="name">Any available</span><span class="meta">The most free times</span></span><span class="go">' + icon('right') + '</span></button></li>';
+    $('staff').innerHTML = any + STAFF.map(function (p) {
+      return '<li><button class="choice" type="button" data-staff="' + p.id + '" aria-pressed="' + (pick.staff === p.id) + '"><span class="av" aria-hidden="true">' + p.name.charAt(0) + '</span><span class="grow"><span class="name">' + esc(p.name) + '</span><span class="meta">' + esc(p.role) + '</span></span><span class="go">' + icon('right') + '</span></button></li>';
+    }).join('');
+  }
+  $('staff').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-staff]');
+    if (!b) return;
+    pick.staff = b.getAttribute('data-staff');
+    pick.time = null;
+    renderStaff();
+    if (!pick.date || !isOpenDay(pick.date)) pick.date = firstDayWithTimes();
+    renderWhen();
+    show(3);
+  });
+  function staffName(id) { return id === 'any' ? 'Any available' : STAFF.filter(function (s) { return s.id === id; })[0].name; }
+
+  /* ---------- step 3: when ---------- */
+  function days14() {
+    var now = new Date();
+    var list = [];
+    for (var i = 0; i < 14; i++) list.push(new Date(now.getFullYear(), now.getMonth(), now.getDate() + i));
+    return list;
+  }
+  function firstDayWithTimes() {
+    var list = days14();
+    for (var i = 0; i < list.length; i++) if (daySlots(list[i]).some(function (s) { return s.who; })) return list[i];
+    return list[0];
+  }
+  function renderWhen() {
+    $('s3-lead').textContent = pick.service.name + ' (' + pick.service.mins + ' min) with ' + (pick.staff === 'any' ? 'whoever’s free' : staffName(pick.staff)) + '.';
+    var now = new Date();
+    $('dates').innerHTML = days14().map(function (d, i) {
+      var open = isOpenDay(d);
+      var on = !!(pick.date && sameDay(d, pick.date));
+      var tiny = !open ? 'Closed' : i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : '';
+      return '<button class="date" type="button" data-day="' + i + '"' + (open ? '' : ' disabled') + ' aria-pressed="' + on + '" aria-label="' + longDate(d) + (open ? '' : ', closed') + '"><small>' + DAYS[d.getDay()].slice(0, 3) + '</small><b>' + d.getDate() + '</b><span class="tiny">' + tiny + '</span></button>';
+    }).join('');
+    $('month').textContent = MONTHS[(pick.date || now).getMonth()] + ' ' + (pick.date || now).getFullYear();
+    renderSlots();
+  }
+  function renderSlots() {
+    var d = pick.date;
+    var list = daySlots(d);
+    var free = list.filter(function (s) { return s.who; }).length;
+    $('slots-day').textContent = longDate(d);
+    $('slots-count').textContent = free ? free + (free === 1 ? ' time free' : ' times free') : '';
+    if (!list.length || !free) {
+      $('slots').innerHTML = '<li class="empty">' + (isOpenDay(d) ? 'No free times left on this day. Try another day.' : 'We’re closed on ' + DAYS[d.getDay()] + 's.') + '</li>';
+      return;
+    }
+    $('slots').innerHTML = list.map(function (s) {
+      var on = pick.time === s.m;
+      return '<li><button class="slot" type="button" data-time="' + s.m + '"' + (s.who ? '' : ' disabled') + ' aria-pressed="' + on + '" aria-label="' + hhmm(s.m) + (s.who ? '' : ', not available') + '">' + hhmm(s.m) + '</button></li>';
+    }).join('');
+  }
+  $('dates').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-day]');
+    if (!b || b.disabled) return;
+    pick.date = days14()[Number(b.getAttribute('data-day'))];
+    pick.time = null;
+    var btns = $('dates').querySelectorAll('[data-day]');
+    for (var i = 0; i < btns.length; i++) btns[i].setAttribute('aria-pressed', String(btns[i] === b));
+    $('month').textContent = MONTHS[pick.date.getMonth()] + ' ' + pick.date.getFullYear();
+    renderSlots();
+  });
+  $('slots').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-time]');
+    if (!b || b.disabled) return;
+    pick.time = Number(b.getAttribute('data-time'));
+    pick.who = whoIsFree(pick.staff, pick.time, pick.service.mins);
+    renderSummary();
+    show(4);
+  });
+
+  /* ---------- step 4: details ---------- */
+  function renderSummary() {
+    var s = pick.service;
+    $('summary').innerHTML = '<p class="sum-top"><b>' + esc(s.name) + '</b><span class="price">' + rand(s.price) + '</span></p><span>' + longDate(pick.date) + ', ' + hhmm(pick.time) + '–' + hhmm(pick.time + s.mins) + '</span><span>With ' + esc(pick.who.name) + (pick.staff === 'any' ? ' (first available)' : '') + '</span>';
+  }
+  function mobileOk(v) { var d = v.replace(/[\s()-]/g, ''); return /^0[6-8]\d{8}$/.test(d) || /^\+?27[6-8]\d{8}$/.test(d); }
+  function niceMobile(v) { var d = v.replace(/[\s()-]/g, '').replace(/^\+?27/, '0'); return d.length === 10 ? d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6) : v.trim(); }
+  function setError(input, text) {
+    var id = input.id + '-err';
+    var msg = $(id);
+    var hint = input.id === 'd-mobile' ? ' d-mobile-hint' : '';
+    if (text) {
+      if (!msg) { msg = document.createElement('p'); msg.className = 'err'; msg.id = id; input.parentNode.insertBefore(msg, input.nextSibling); }
+      msg.textContent = text;
+      input.setAttribute('aria-invalid', 'true');
+      input.setAttribute('aria-describedby', id + hint);
+    } else {
+      if (msg) msg.remove();
+      input.removeAttribute('aria-invalid');
+      if (hint) input.setAttribute('aria-describedby', 'd-mobile-hint'); else input.removeAttribute('aria-describedby');
+    }
+    return !text;
+  }
+  function validate(input) {
+    var v = input.value.trim();
+    if (input.id === 'd-name') return setError(input, v ? '' : 'Please add your first name.');
+    if (input.id === 'd-mobile') return setError(input, !v ? 'Please add your mobile number.' : mobileOk(v) ? '' : 'That doesn’t look like a South African mobile number, e.g. 082 123 4567.');
+    return true;
+  }
+  $('d-mobile').setAttribute('aria-describedby', 'd-mobile-hint');
+  $('details').addEventListener('input', function (e) { if (e.target.getAttribute('aria-invalid') === 'true') validate(e.target); });
+  $('details').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var bad = null;
+    [$('d-name'), $('d-mobile')].forEach(function (f) { if (!validate(f) && !bad) bad = f; });
+    if (bad) { focus(bad); return; }
+    // Someone else may have taken it while you typed; in the demo it's always still free.
+    var booking = {
+      ref: 'BC-' + nextRef,
+      service: pick.service,
+      who: pick.who,
+      any: pick.staff === 'any',
+      date: pick.date,
+      start: pick.time,
+      name: $('d-name').value.trim(),
+      mobile: niceMobile($('d-mobile').value),
+      note: $('d-note').value.trim().replace(/\s+/g, ' ')
+    };
+    nextRef += 1;
+    saveRefs();
+    showBooked(booking);
+  });
+
+  /* ---------- step 5: booked ---------- */
+  var last = null;
+  function showBooked(b) {
+    last = b;
+    $('ref').textContent = b.ref;
+    var rows = [
+      ['Service', b.service.name + ' (' + b.service.mins + ' min)'],
+      ['With', b.who.name],
+      ['When', longDate(b.date) + ', ' + hhmm(b.start)],
+      ['Price', rand(b.service.price) + (b.service.price ? ', pay in the salon' : '')]
+    ];
+    $('booked-list').innerHTML = rows.map(function (r) { return '<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('');
+    var lines = [
+      'New booking ' + b.ref,
+      b.service.name + ' (' + b.service.mins + ' min) · ' + rand(b.service.price),
+      'With: ' + b.who.name + (b.any ? ' (client chose any available)' : ''),
+      'When: ' + longDate(b.date) + ', ' + hhmm(b.start) + '–' + hhmm(b.start + b.service.mins),
+      'Client: ' + b.name + ' · ' + b.mobile
+    ];
+    if (b.note) lines.push('Note: ' + b.note);
+    $('owner-msg').textContent = lines.join('\n');
+    $('owner-from').textContent = b.name;
+    $('owner-av').textContent = b.name.charAt(0).toUpperCase();
+    var now = new Date();
+    $('owner-time').textContent = hhmm(now.getHours() * 60 + now.getMinutes());
+    $('owner').hidden = true;
+    $('owner-btn').setAttribute('aria-expanded', 'false');
+    show(5);
+  }
+  $('owner-btn').addEventListener('click', function () {
+    var open = $('owner').hidden;
+    $('owner').hidden = !open;
+    this.setAttribute('aria-expanded', String(open));
+  });
+
+  // A real calendar file (.ics), made here in the browser.
+  $('ics').addEventListener('click', function () {
+    if (!last) return;
+    var b = last;
+    function stamp(d, m) { return d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2) + 'T' + ('0' + Math.floor(m / 60)).slice(-2) + ('0' + (m % 60)).slice(-2) + '00'; }
+    var now = new Date();
+    var utc = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+    var ics = [
+      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Front Door Sites//Bright Cuts demo//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      'UID:' + b.ref + '-' + utc + '@' + (location.hostname || 'localhost'),
+      'DTSTAMP:' + utc,
+      'DTSTART:' + stamp(b.date, b.start),
+      'DTEND:' + stamp(b.date, b.start + b.service.mins),
+      'SUMMARY:' + b.service.name.replace(/[,;]/g, '\\$&') + ' at Bright Cuts',
+      'DESCRIPTION:Booking ' + b.ref + ' with ' + b.who.name + '. Bright Cuts is a made-up business in a demo by Front Door Sites.',
+      'LOCATION:Bright Cuts (demo)',
+      'END:VEVENT', 'END:VCALENDAR', ''
+    ].join('\r\n');
+    var url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'bright-cuts-' + b.ref + '.ics';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    toast('Calendar file downloaded: open it to add the booking.');
+  });
+
+  function startOver() {
+    pick = { service: null, staff: null, date: null, time: null, who: null };
+    $('details').reset();
+    ['d-name', 'd-mobile'].forEach(function (id) { setError($(id), ''); });
+    renderServices();
+    show(1, true);
+  }
+  $('again').addEventListener('click', startOver);
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-back]');
+    if (b) show(Number(b.getAttribute('data-back')), true);
+  });
+
+  var toastTimer = null;
+  function toast(text) {
+    var box = $('toasts');
+    clearTimeout(toastTimer);
+    box.innerHTML = '';
+    var p = document.createElement('p');
+    p.className = 'toast';
+    p.textContent = text;
+    box.appendChild(p);
+    toastTimer = setTimeout(function () { box.innerHTML = ''; }, 3400);
+  }
+  $('reset').addEventListener('click', function () {
+    try { sessionStorage.removeItem(STORE); } catch (e) { /* memory only */ }
+    nextRef = FIRST;
+    startOver();
+    toast('Demo reset.');
+  });
+
+  paintIcons();
+  renderServices();
+  show(1, true, true);
+})();
+</script>
+</body>
+</html>
