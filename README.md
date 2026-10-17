@@ -64,8 +64,8 @@ If neither WhatsApp nor email is filled in, the enquiry form and every "Free quo
 You can use these in any text in `content.json`, and in the privacy, terms and guide pages:
 
 - **Prices:** `{onceOffBuild}` (R7 500) · `{careBuild}` (R4 999) · `{careMonthly}` (R399/month) · `{carePlusBuild}` (R3 999) · `{carePlusMonthly}` (R699/month) · `{websitesFrom}` (the lowest website build price, R3 999) · `{toolsFrom}` (R5 000) · `{careFrom}` (the cheapest monthly fee, R399/month)
-- **Terms:** `{renewalFee}` (R249) · `{changeFee}` (R250) · `{minMonths}` (6) · `{graceDays}` (30) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}`
-- **Changes per option:** `{onceOffChanges}` (R250 per change) · `{careChanges}` (3 small changes a month) · `{carePlusChanges}` (10 small changes a month)
+- **Terms:** `{renewalFee}` (R249) · `{changeFee}` (R199) · `{minMonths}` (6) · `{graceDays}` (30) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}`
+- **Changes per option:** `{onceOffChanges}` (R199 per change) · `{careChanges}` (3 changes a month) · `{carePlusChanges}` (10 changes a month)
 - **Yearly payment** (only while it's switched on): `{yearlyPaysMonths}` · `{yearlyFree}` · `{careYearly}` · `{carePlusYearly}`
 - **Everything else:** `{quoteTime}` · `{paymentMethods}` · `{spotsTotal}` · `{spotsLeft}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
 
@@ -79,9 +79,9 @@ A business website can be bought three ways. They live in `website.options`, and
 
 ```json
 { "id": "care", "name": "Build + Care", "plan": "Care", "featured": true,
-  "summary": "Pay less upfront. I keep your site online and make up to 3 small changes for you each month.",
+  "summary": "Pay less upfront. I keep your site online and make up to 3 changes for you each month.",
   "build": 4999, "monthly": 399,
-  "term": "{minMonths} months", "hosting": "Included", "changes": "3 small changes a month",
+  "term": "{minMonths} months", "hosting": "Included", "changes": "3 changes a month",
   "replies": "Standard (email or WhatsApp)", "report": "", "backups": "Yes",
   "payLabel": "Start Care", "payfast": "" }
 ```
@@ -99,7 +99,7 @@ These live in `terms`, and every page that mentions them updates when you rebuil
 |---|---|
 | `terms.renewalYearly` | The yearly hosting and domain renewal for once-off websites, from the second year, and for plans after they're cancelled (249 shows as R249) |
 | `terms.renewalGraceDays` | How long an unpaid renewal has before the site goes offline (30) |
-| `terms.changeFee` | The price of one change on a once-off website (250) |
+| `terms.changeFee` | The price of one change on a once-off website (199) |
 | `terms.minimumTermMonths` | The minimum term for Care and Care Plus (6) |
 | `terms.depositPercent` | The deposit (50) |
 | `terms.quoteValidDays` | How long quotes are valid |
