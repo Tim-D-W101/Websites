@@ -104,12 +104,12 @@
         "name": "Build + Care",
         "plan": "Care",
         "featured": true,
-        "summary": "Pay less upfront. I keep your site online and make up to 3 changes for you each month.",
+        "summary": "Pay less upfront. I keep your site online and make up to 5 free changes for you each month.",
         "build": 4999,
         "monthly": 399,
         "term": "{minMonths} months",
         "hosting": "Included",
-        "changes": "3 changes a month",
+        "changes": "5 free changes a month",
         "replies": "Standard (email or WhatsApp)",
         "report": "",
         "backups": "Yes",
@@ -120,12 +120,12 @@
         "id": "care-plus",
         "name": "Build + Care Plus",
         "plan": "Care Plus",
-        "summary": "Pay the least upfront. For businesses that want help all the time: more changes, ongoing priority support and a monthly report.",
+        "summary": "Pay the least upfront. For businesses that want help all the time: 10 free changes a month, ongoing priority support and a monthly report.",
         "build": 3999,
         "monthly": 699,
         "term": "{minMonths} months",
         "hosting": "Included",
-        "changes": "10 changes a month",
+        "changes": "10 free changes a month",
         "replies": "Priority (same or next working day)",
         "report": "Simple visitor stats report",
         "backups": "Yes",
@@ -433,7 +433,7 @@
           {
             "label": "Every month or so",
             "option": "care",
-            "text": "Build + Care suits you: {careBuild} upfront, then {careMonthly} with {careChanges} included."
+            "text": "Build + Care suits you: {careBuild} upfront, then {careMonthly} with {careChanges}."
           },
           {
             "label": "All the time",
@@ -902,7 +902,7 @@
         },
         {
           "q": "Can I change my prices?",
-          "a": "Yes. On Care or Care Plus, price changes count towards your monthly changes. Without a plan, each change is {changeFee}."
+          "a": "Yes. On Care or Care Plus, price changes count towards your free monthly changes. Without a plan, each change is {changeFee}."
         },
         {
           "q": "Can you show my Google reviews on the site?",
@@ -1038,7 +1038,7 @@
       "faq": [
         {
           "q": "Can I change my menu prices?",
-          "a": "Yes. On Care or Care Plus, menu and price updates count towards your monthly changes. Without a plan, each change is {changeFee}. Changes sent by {editsDeadline} go live by {editsLive}."
+          "a": "Yes. On Care or Care Plus, menu and price updates count towards your free monthly changes. Without a plan, each change is {changeFee}. Changes sent by {editsDeadline} go live by {editsLive}."
         },
         {
           "q": "Can people order online for collection?",
@@ -1050,7 +1050,7 @@
         },
         {
           "q": "What about public holidays and special hours?",
-          "a": "Send me your holiday hours and I'll update the site. On Care or Care Plus, that counts towards your monthly changes. Without a plan, it's one change at {changeFee}. The open/closed sign follows whatever hours are on your site."
+          "a": "Send me your holiday hours and I'll update the site. On Care or Care Plus, that counts towards your free monthly changes. Without a plan, it's one change at {changeFee}. The open/closed sign follows whatever hours are on your site."
         }
       ]
     }
