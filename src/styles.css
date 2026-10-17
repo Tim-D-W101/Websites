@@ -251,6 +251,8 @@ img, svg { max-width: 100%; }
 .more-link { margin: 1.75rem 0 0; font-weight: 700; }
 .more-link a { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; }
 .more-link .icon { width: 1.1em; height: 1.1em; }
+/* a link on a line of its own: a 44px tap area, without moving anything around it */
+.tap-area { padding-block: 13px; margin-block: -13px; }
 .with-icon { display: flex; align-items: center; gap: .75rem; }
 @media (min-width: 900px) {
   .section { padding: 5rem 0; }
@@ -1133,9 +1135,11 @@ textarea[aria-invalid="true"] { border-color: var(--bad); }
   .storybar-now { display: none; }
   .storybar-list { display: flex; flex-wrap: wrap; justify-content: center; gap: .2rem; margin: 0 auto; padding: .35rem 0; list-style: none; }
   .storybar-list a {
-    display: flex; align-items: center; gap: .45rem; padding: .3rem .7rem .3rem .35rem; border-radius: 999px;
+    position: relative; display: flex; align-items: center; gap: .45rem; padding: .3rem .7rem .3rem .35rem; border-radius: 999px;
     color: var(--muted); font-weight: 700; font-size: .92rem; text-decoration: none; transition: color .2s, background-color .2s;
   }
+  /* stretch the tap area to the top and bottom of the bar: 44px, though the pill looks smaller */
+  .storybar-list a::after { content: ""; position: absolute; inset: -.35rem 0; }
   .storybar-list a:hover { color: var(--navy-900); background: var(--sand-100); }
   .storybar-list .sb-num { width: 1.4rem; height: 1.4rem; border-radius: 6px; font-size: .8rem; background: var(--sand-200); box-shadow: none; transition: background-color .2s, color .2s; }
   .storybar-list a.is-done .sb-num { background: var(--navy-700); color: #fff; }
@@ -1431,11 +1435,12 @@ textarea[aria-invalid="true"] { border-color: var(--bad); }
 .mini .plan-price { margin: .15rem 0 .3rem; }
 .mini .plan-summary { margin: .9rem 0 1rem; }
 .mini .option-note { align-self: flex-start; }
-.mini-rows { list-style: none; margin: 0 0 1.25rem; padding: 0; border-top: 1px solid var(--line); }
+.mini-rows { list-style: none; margin: 0 0 calc(1.25rem - 9px); padding: 0; border-top: 1px solid var(--line); }
 .mini-rows li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .1rem 1rem; padding: .5rem 0; border-bottom: 1px solid var(--line); font-size: .97rem; }
 .mini-rows span { color: var(--muted); }
 .mini-rows b { margin-left: auto; color: var(--navy-900); text-align: right; }
-.mini-link { display: inline-flex; align-items: center; gap: .35rem; margin-top: auto; font-weight: 700; }
+/* the padding makes the link a 44px tap target and the rest of the 1.25rem gap above it */
+.mini-link { display: inline-flex; align-items: center; gap: .35rem; margin-top: auto; margin-bottom: -9px; padding: 9px 0; font-weight: 700; }
 .mini-fit {
   position: absolute; top: 0; right: 1.25rem; display: inline-flex; align-items: center; gap: .3rem; margin: 0; padding: .2rem .75rem;
   border-radius: 999px; background: var(--ok); color: #fff; font-weight: 700; font-size: .82rem; white-space: nowrap;

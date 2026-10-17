@@ -1094,7 +1094,7 @@ ${fit}
 <div class="minis" data-minis>${options.map(miniOption).join('')}</div>
 <p class="fine">${t(K.note)}</p>
 <div class="cost-more">
-<div class="pt-col"><h3><a href="/pricing#tools-prices">${t(BG.heading)}</a></h3><ul>${bandRows}</ul><p class="pt-note">${t(BG.intro)} ${t(BG.lead)}</p></div>
+<div class="pt-col"><h3><a class="tap-area" href="/pricing#tools-prices">${t(BG.heading)}</a></h3><ul>${bandRows}</ul><p class="pt-note">${t(BG.intro)} ${t(BG.lead)}</p></div>
 ${foundingBanner(page)}
 </div>
 <p class="more-link"><a href="/pricing">${t(K.more)} ${svg.icon('arrow')}</a></p>
@@ -1166,7 +1166,7 @@ function websitesPage() {
 </div></section>
 <section class="section section-sand" id="prices" aria-labelledby="wb-h"><div class="wrap">${sectionHead('wb', WEB.heading, WEB.lead)}${foundingBanner(page, { compact: true })}${optionsGrid(page)}
 ${bigger.length ? `<div class="bigger-web"><h3>${t(W.biggerHeading)}</h3>${bigger.map((b) => bandWide(b, page)).join('')}<p class="fine">${t(BG.lead)}</p></div>` : ''}
-<p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
+<p class="fine"><a class="tap-area" href="/pricing">How quotes and payment work</a></p></div></section>
 ${stepsSection('wsteps', W.steps.heading, '', W.steps.items, false)}
 ${examplesBlock(webExamples, 'Website examples', true)}
 ${faqSection(page, 'Questions about websites', generalFaq(['cost', 'need-plan', 'plan-cheaper', 'cancel-plan', 'hosting', 'email', 'changes', 'own', 'time']), 'websites', !webExamples.length)}
@@ -1186,7 +1186,7 @@ function toolsPage() {
 <p class="big-callout">${t(P.callout)}</p></div></section>
 ${stepsSection('tsteps', P.steps.heading, '', P.steps.items)}
 <section class="section" aria-labelledby="tp-h"><div class="wrap"><h2 id="tp-h" class="visually-hidden">Good to know</h2><ul class="point-cards">${P.points.map((p) => `<li class="card"><span class="inc-icon">${svg.icon(p.icon)}</span><h3>${t(p.title)}</h3><p>${t(p.text)}</p></li>`).join('')}</ul></div></section>
-<section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${foundingBanner(page, { compact: true })}${bandsGrid('tools', page)}<p class="fine">${t(BG.lead)} ${t(BG.toolsHosting)}</p><p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
+<section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${foundingBanner(page, { compact: true })}${bandsGrid('tools', page)}<p class="fine">${t(BG.lead)} ${t(BG.toolsHosting)}</p><p class="fine"><a class="tap-area" href="/pricing">How quotes and payment work</a></p></div></section>
 ${examplesBlock(toolExamples, 'Tool examples', false, 4)}
 ${faqSection(page, 'Questions about business tools', generalFaq(['tool-what', 'plan', 'cost', 'other-costs', 'own', 'time']), 'tools', toolExamples.length > 0)}
 ${enquirySection(page, { need: 'tool', heading: 'Get a free plan & quote', lead: 'Tell me how things work now and what you’d like to fix. I’ll send a short plan and a fixed quote. No obligation, no calls.' })}`;
@@ -1222,7 +1222,7 @@ function pricingPage() {
   const P = C.pricing;
   const page = { url: '/pricing', out: 'pricing.html', title: P.seo.title, description: P.seo.description };
   const group = (key, title, lead, body) => `<section class="price-group" id="${key}-prices" aria-labelledby="${key}-prices-h">
-<div class="price-group-head"><span class="niche-icon">${svg.icon(GROUP_ICON[key])}</span><h2 id="${key}-prices-h">${t(title)}</h2><a href="${groups[key].page}">More about ${esc(groups[key].name.toLowerCase())} ${svg.icon('arrow')}</a></div>
+<div class="price-group-head"><span class="niche-icon">${svg.icon(GROUP_ICON[key])}</span><h2 id="${key}-prices-h">${t(title)}</h2><a class="tap-area" href="${groups[key].page}">More about ${esc(groups[key].name.toLowerCase())} ${svg.icon('arrow')}</a></div>
 <p class="section-lead">${lead}</p>
 ${body}
 </section>`;
@@ -1235,7 +1235,7 @@ ${group('websites', WEB.name, t(WEB.lead), `${optionsGrid(page)}<div class="card
 ${group('tools', BG.heading, `${t(BG.intro)} ${t(BG.lead)} ${t(BG.toolsHosting)}`, `<div class="plans plans-4">${bands.map((b) => bandCard(b, page)).join('')}</div>`)}
 </div></div>
 <section class="section section-sand" aria-labelledby="terms-h"><div class="wrap two-col">
-<div>${sectionHead('terms', P.termsHeading)}${ticks(P.terms)}<h2 class="h3 terms-sub">${t(P.planTermsHeading)}</h2>${ticks(P.planTerms)}<p><a href="/terms">Read the full terms</a></p></div>
+<div>${sectionHead('terms', P.termsHeading)}${ticks(P.terms)}<h2 class="h3 terms-sub">${t(P.planTermsHeading)}</h2>${ticks(P.planTerms)}<p><a class="tap-area" href="/terms">Read the full terms</a></p></div>
 <div class="stack">
 <div class="card"><h2 class="h3">${t(P.factorsHeading)}</h2>${ticks(P.factors)}</div>
 <div class="card" id="changes"><h2 class="h3">${t(S.heading)}</h2><p>${t(S.lead)}</p>${ticks(S.examples)}<p>${t(S.notIncluded)}</p><p class="list-head">${t(S.allowanceHeading)}</p>${allowance}<p class="callout">${svg.icon('calendar')}<span>${t(S.timing)}</span></p></div>
@@ -1388,7 +1388,7 @@ function startPage() {
   const payBlock = withLinks.length
     ? `<div class="pay-buttons">${withLinks.map((o) => `<a class="btn btn-navy" href="${esc(o.url)}">${svg.icon('card')}<span>${esc(o.label)}<small>${o.price}</small></span></a>`).join('')}</div>${withLinks.length < payOptions.length && ask ? `<p>Can’t see the option you want? Message me and I’ll send you the link.</p><div class="cta-row">${ask}</div>` : ''}`
     : `<p>${shown(afterStep.noLinksText).map(t).join(' ')}</p>`;
-  const afterList = `<ul class="time-list">${options.map((o) => `<li><span>${esc(o.name)}</span><span>${o.monthly ? month(o.monthly) : t(o.hosting)}${yearlyOn && o.monthly ? ` <small>or ${rand(yearly(o.monthly))}/year</small>` : ''}</span></li>`).join('')}</ul><p><a href="/pricing#websites-prices">Compare the options ${svg.icon('arrow')}</a></p>`;
+  const afterList = `<ul class="time-list">${options.map((o) => `<li><span>${esc(o.name)}</span><span>${o.monthly ? month(o.monthly) : t(o.hosting)}${yearlyOn && o.monthly ? ` <small>or ${rand(yearly(o.monthly))}/year</small>` : ''}</span></li>`).join('')}</ul><p><a class="tap-area" href="/pricing#websites-prices">Compare the options ${svg.icon('arrow')}</a></p>`;
   const items = S.steps.map((s, i) => {
     let extra = shown(s.extra).map((x) => `<p class="callout">${svg.icon('clock')}<span>${t(x)}</span></p>`).join('');
     if (s.id === 'tell' && canEnquire) extra += `<p>${quoteButton(page, 'btn btn-gold', 'Tell me what you need')}</p>`;
