@@ -104,13 +104,13 @@
         "name": "Build + Care",
         "plan": "Care",
         "featured": true,
-        "summary": "Pay less upfront. I keep your site online and make your changes every month.",
+        "summary": "Pay less upfront. I keep your site online and make up to 3 small changes for you each month.",
         "build": 4999,
         "monthly": 399,
         "term": "{minMonths} months",
         "hosting": "Included",
-        "changes": "1 hour of changes a month",
-        "replies": "Standard",
+        "changes": "3 small changes a month",
+        "replies": "Standard (email or WhatsApp)",
         "report": "",
         "backups": "Yes",
         "payLabel": "Start Care",
@@ -120,12 +120,12 @@
         "id": "care-plus",
         "name": "Build + Care Plus",
         "plan": "Care Plus",
-        "summary": "Pay the least upfront. More changes, faster replies and a monthly report.",
+        "summary": "Pay the least upfront. For businesses that want help all the time: more changes, ongoing priority support and a monthly report.",
         "build": 3999,
         "monthly": 699,
         "term": "{minMonths} months",
         "hosting": "Included",
-        "changes": "3 hours of changes a month",
+        "changes": "10 small changes a month",
         "replies": "Priority (same or next working day)",
         "report": "Simple visitor stats report",
         "backups": "Yes",
@@ -902,7 +902,7 @@
         },
         {
           "q": "Can I change my prices?",
-          "a": "Yes. On Care or Care Plus, price changes come out of your monthly hours of changes. Without a plan, each change is {changeFee}."
+          "a": "Yes. On Care or Care Plus, price changes count towards your monthly changes. Without a plan, each change is {changeFee}."
         },
         {
           "q": "Can you show my Google reviews on the site?",
@@ -1038,7 +1038,7 @@
       "faq": [
         {
           "q": "Can I change my menu prices?",
-          "a": "Yes. On Care or Care Plus, menu and price updates come out of your monthly hours of changes. Without a plan, each change is {changeFee}. Changes sent by {editsDeadline} go live by {editsLive}."
+          "a": "Yes. On Care or Care Plus, menu and price updates count towards your monthly changes. Without a plan, each change is {changeFee}. Changes sent by {editsDeadline} go live by {editsLive}."
         },
         {
           "q": "Can people order online for collection?",
@@ -1050,7 +1050,7 @@
         },
         {
           "q": "What about public holidays and special hours?",
-          "a": "Send me your holiday hours and I'll update the site. On Care or Care Plus, that comes out of your monthly hours. Without a plan, it's one change at {changeFee}. The open/closed sign follows whatever hours are on your site."
+          "a": "Send me your holiday hours and I'll update the site. On Care or Care Plus, that counts towards your monthly changes. Without a plan, it's one change at {changeFee}. The open/closed sign follows whatever hours are on your site."
         }
       ]
     }
@@ -1082,7 +1082,7 @@
       "If the renewal isn't paid, your site goes offline after a {graceDays}-day grace period, until it's paid.",
       "Care and Care Plus have a {minMonths}-month minimum. If you cancel early, you pay the months that are left.",
       "After {minMonths} months, cancel any time. You keep your site, and it moves to the {renewalFee} yearly renewal.",
-      "Unused plan hours don't roll over.",
+      "Unused plan changes don't roll over.",
       "Email hosting isn't included. I can set it up in your name, or add it for a fee."
     ],
     "factorsHeading": "What sets the price",
@@ -1203,7 +1203,7 @@
     {
       "id": "changes",
       "q": "What counts as a change?",
-      "a": "A text, price, photo, hours or small layout update. Bigger work is quoted. Care includes {careChanges}, and Care Plus {carePlusChanges}. Unused hours don't roll over. Without a plan, each change is {changeFee}."
+      "a": "A text, price, photo, hours or small layout update. Bigger work is quoted. Care includes {careChanges}, and Care Plus {carePlusChanges}. Unused changes don't roll over. Without a plan, each change is {changeFee}."
     },
     {
       "id": "time",
