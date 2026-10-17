@@ -67,7 +67,7 @@ You can use these in any text in `content.json`, and in the privacy, terms and g
 
 - **Prices:** `{onceOffBuild}` (R7 500) · `{careBuild}` (R4 999) · `{careMonthly}` (R399/month) · `{carePlusBuild}` (R3 999) · `{carePlusMonthly}` (R699/month) · `{websitesFrom}` (the lowest website build price, R3 999) · `{toolsFrom}` (R5 000) · `{careFrom}` (the cheapest monthly fee, R399/month)
 - **Terms:** `{renewalFee}` (R249) · `{changeFee}` (R199) · `{minMonths}` (6) · `{graceDays}` (30) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}`
-- **Changes per option:** `{onceOffChanges}` (R199 per change) · `{careChanges}` (3 changes a month) · `{carePlusChanges}` (10 changes a month)
+- **Changes per option:** `{onceOffChanges}` (R199 per change) · `{careChanges}` (5 free changes a month) · `{carePlusChanges}` (10 free changes a month)
 - **Yearly payment** (only while it's switched on): `{yearlyPaysMonths}` · `{yearlyFree}` · `{careYearly}` · `{carePlusYearly}`
 - **Everything else:** `{quoteTime}` · `{paymentMethods}` · `{spotsTotal}` · `{spotsLeft}` · `{firstName}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
 
@@ -81,15 +81,15 @@ A business website can be bought three ways. They live in `website.options`, and
 
 ```json
 { "id": "care", "name": "Build + Care", "plan": "Care", "featured": true,
-  "summary": "Pay less upfront. I keep your site online and make up to 3 changes for you each month.",
+  "summary": "Pay less upfront. I keep your site online and make up to 5 free changes for you each month.",
   "build": 4999, "monthly": 399,
-  "term": "{minMonths} months", "hosting": "Included", "changes": "3 changes a month",
+  "term": "{minMonths} months", "hosting": "Included", "changes": "5 free changes a month",
   "replies": "Standard (email or WhatsApp)", "report": "", "backups": "Yes",
   "payLabel": "Start Care", "payfast": "" }
 ```
 
 - **Option prices:** change `build` (the "from" price for the build) and `monthly` (the monthly fee; `null` for once-off). Run `node build.js` and everything updates: the option cards, the price line in the hero ("Websites from R3 999 with Care Plus, or R7 500 once-off"), the home page's "What it costs" and "What it could earn you" chapters, the industry ideas, the calculators, the Start page, the FAQ, the Terms, page descriptions and the search-engine data.
-- **The card rows** (Minimum term, Hosting & domain, Changes, Replies, Monthly report, Backups & security) are listed in `website.rows`. Each row shows the option's field with the same `key`. Leave a field blank to show a dash, or write `Yes` to show a tick.
+- **The card rows** (Minimum term, Hosting & domain, Changes, Replies, Monthly report, Backups & security) are listed in `website.rows`. Each row shows the option's field with the same `key`. Leave a field blank to show a dash, or write `Yes` to show a tick. The word "free" in a row ("5 free changes a month") gets a green highlight, on the cards and in the "Changes on each option" list.
 - `"featured": true` gives an option the darker border and the "Most popular" badge (`website.badge`).
 - `website.buildTime` is the typical build time for the business website.
 

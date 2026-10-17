@@ -403,12 +403,15 @@ function bandsGrid(group, page) {
   return `<div class="plans plans-3">${bands.filter((b) => b.group === group).map((b) => bandCard(b, page)).join('')}</div>`;
 }
 
+// In a plan's rows, "free" ("5 free changes a month") gets the same green pill as "2 months free".
+const freePill = (html) => html.replace(/\bfree\b/i, '<span class="plan-free">$&</span>');
+
 // A row on an option card: blank shows a dash, "Yes" a tick.
 function optionValue(v) {
   const s = isSet(v) ? fill(v).trim() : '';
   if (!s) return '<span class="none" aria-hidden="true">–</span><span class="visually-hidden">None</span>';
   if (/^yes$/i.test(s)) return `<span class="yes">${svg.icon('check')}<span>${esc(s)}</span></span>`;
-  return esc(typo(s));
+  return freePill(esc(typo(s)));
 }
 
 function optionCard(o, page) {
@@ -1062,7 +1065,7 @@ function earnSection(n) {
 function miniOption(o) {
   const featured = o.featured === true;
   const rows = (WEB.rows || []).filter((r) => ['hosting', 'changes', 'term'].includes(r.key) && isSet(o[r.key]))
-    .map((r) => `<li><span>${t(r.label)}</span><b>${t(o[r.key])}</b></li>`).join('');
+    .map((r) => `<li><span>${t(r.label)}</span><b>${freePill(t(o[r.key]))}</b></li>`).join('');
   const monthly = o.monthly ? `<p class="option-monthly"><strong>+ ${rand(o.monthly)}</strong>/month</p>` : `<p class="option-monthly">${t(WEB.noMonthly)}</p>`;
   const founding = foundingOn && o.monthly && isSet(F.cardNote) ? `<p class="option-note">${t(F.cardNote)}</p>` : '';
   const ch = C.home.costs.chooser || {};
@@ -1227,7 +1230,7 @@ function pricingPage() {
 ${body}
 </section>`;
   const S = P.changes;
-  const allowance = `<ul class="time-list">${options.map((o) => `<li><span>${esc(planName(o))}</span><span>${t(o.changes)}</span></li>`).join('')}</ul>`;
+  const allowance = `<ul class="time-list">${options.map((o) => `<li><span>${esc(planName(o))}</span><span>${freePill(t(o.changes))}</span></li>`).join('')}</ul>`;
   page.body = `${pageHero(P.h1, P.lead)}
 <div class="section section-tight"><div class="wrap">
 ${foundingBanner(page, { compact: true })}

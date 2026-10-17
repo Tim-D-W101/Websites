@@ -405,6 +405,7 @@ img, svg { max-width: 100%; }
 .plan-yearly { margin: .35rem 0 0; color: var(--muted); }
 .plan-yearly strong { color: var(--navy-900); }
 .plan-save { display: inline-block; margin-left: .2rem; padding: 0 .5rem; border-radius: 999px; background: var(--ok-bg); color: var(--ok); font-weight: 700; font-size: .85rem; white-space: nowrap; }
+.plan-free { padding: .05rem .45rem; border-radius: 999px; background: var(--ok-bg); color: var(--ok); font-weight: 700; }
 .start-body .callout { margin-bottom: 1rem; }
 .plan .ticks { flex: 1; align-content: start; margin-bottom: 1.5rem; }
 .plan-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
