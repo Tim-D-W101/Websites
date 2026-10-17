@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Job cards | Khumalo Plumbing staff app (demo)</title>
+<meta name="description" content="A working demo of a staff-only app for a plumbing team: today's jobs, job cards with status and parts, stock levels and a weekly report.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1E2430">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232457D6'/%3E%3Cpath d='M32 14c7 9 12 15 12 22a12 12 0 0 1-24 0c0-7 5-13 12-22z' fill='%23fff'/%3E%3C/svg%3E">
+<!-- demo:head -->
+<style>
+/* Khumalo Plumbing: a made-up plumbing team's staff app (demo). Greys and one blue; IBM Plex Sans. */
+@font-face { font-family: "IBM Plex Sans"; src: url("/fonts/ibm-plex-sans-var.woff2") format("woff2"); font-weight: 400 600; font-display: swap; }
+:root {
+  --bg: #F3F4F6; --surface: #FFFFFF; --line: #E2E5EA; --line-2: #CDD2D9; --ink: #1B2130; --text: #2E3645; --muted: #5A6372;
+  --blue: #2457D6; --blue-d: #1B44AC; --blue-l: #E8EEFC;
+  --new: #46536A; --new-bg: #EDEFF3; --sched: #8A5300; --sched-bg: #FFF0D5; --site: #1B44AC; --site-bg: #E2EAFD; --done: #14632F; --done-bg: #DDF2E3;
+  --bad: #A3271B; --bad-bg: #FBE4E1;
+  --font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; font: 400 .95rem/1.45 var(--font); color: var(--text); background: var(--bg); }
+body.locked { overflow: hidden; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { margin: 0; font-weight: 600; line-height: 1.2; color: var(--ink); }
+p { margin: 0; }
+.sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.i { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; }
+.mark { display: grid; place-items: center; flex: none; width: 2rem; height: 2rem; border-radius: 8px; background: var(--blue); color: #fff; }
+.mark .i { width: 1.15rem; height: 1.15rem; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; min-height: 46px; padding: .55rem 1rem; border: 1px solid var(--blue); border-radius: 8px; background: var(--blue); color: #fff; font-weight: 600; }
+.btn:hover { background: var(--blue-d); }
+.btn-quiet { background: var(--surface); color: var(--blue); border-color: var(--line-2); }
+.btn-quiet:hover { background: var(--blue-l); }
+.btn-block { width: 100%; }
+.link { min-height: 44px; padding: .5rem .25rem; border: 0; background: none; color: var(--blue); font-weight: 600; text-decoration: underline; text-underline-offset: .18em; }
+label { display: block; margin-bottom: .3rem; font-weight: 600; color: var(--ink); font-size: .9rem; }
+input[type="text"], input[type="password"], input[type="search"], textarea { width: 100%; min-height: 46px; padding: .55rem .75rem; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); }
+textarea { min-height: 4rem; resize: vertical; }
+input:focus-visible, textarea:focus-visible { outline: 3px solid var(--blue); outline-offset: 0; border-color: var(--blue); }
+
+/* status pills */
+.st { display: inline-flex; align-items: center; gap: .35rem; padding: .1rem .55rem; border-radius: 999px; font-size: .76rem; font-weight: 600; white-space: nowrap; }
+.st::before { content: ""; width: .45rem; height: .45rem; border-radius: 50%; background: currentColor; }
+.st-new { background: var(--new-bg); color: var(--new); }
+.st-sched { background: var(--sched-bg); color: var(--sched); }
+.st-site { background: var(--site-bg); color: var(--site); }
+.st-done { background: var(--done-bg); color: var(--done); }
+
+/* login */
+.login { display: grid; place-items: center; min-height: calc(100vh - 3rem); padding: 1.5rem 1rem; }
+.login-box { width: 100%; max-width: 23rem; padding: 1.5rem 1.25rem; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 12px 30px -20px rgba(27, 33, 48, .4); }
+.login-brand { display: flex; align-items: center; gap: .6rem; margin-bottom: 1.1rem; }
+.login-brand b { display: block; color: var(--ink); }
+.login-brand small { display: block; color: var(--muted); font-size: .8rem; }
+.login h1 { font-size: 1.35rem; }
+.creds { margin: .8rem 0 0; padding: .65rem .8rem; border: 1px dashed var(--blue); border-radius: 8px; background: var(--blue-l); color: var(--ink); font-size: .88rem; }
+.creds code { padding: .05rem .35rem; border-radius: 4px; background: var(--surface); font: 600 .88rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.nothing { display: flex; gap: .4rem; align-items: flex-start; margin-top: .6rem; color: var(--muted); font-size: .82rem; }
+.nothing .i { margin-top: .1rem; }
+.login .field { margin-top: .9rem; }
+.login-err { margin-top: .9rem; padding: .6rem .75rem; border-radius: 8px; background: var(--bad-bg); color: var(--bad); font-size: .88rem; font-weight: 600; }
+.login .btn { margin-top: 1rem; }
+.login .btn-quiet { margin-top: .5rem; }
+
+/* app shell */
+.app { min-height: 100vh; padding-bottom: 4.5rem; }
+.bar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .5rem .85rem; background: var(--ink); color: #fff; }
+.bar-brand { display: flex; align-items: center; gap: .5rem; min-width: 0; font-weight: 600; }
+.bar-brand span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.who { display: flex; align-items: center; gap: .4rem; font-size: .82rem; color: #C9CFDA; }
+.who .link { color: #fff; min-height: 44px; font-size: .82rem; }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: grid; grid-template-columns: repeat(4, 1fr); padding: .2rem .25rem calc(.2rem + env(safe-area-inset-bottom)); background: var(--surface); border-top: 1px solid var(--line); }
+.tab { display: grid; justify-items: center; gap: .1rem; min-height: 52px; padding: .3rem .2rem; border: 0; border-radius: 8px; background: none; color: var(--muted); font-size: .74rem; font-weight: 600; }
+.tab .i { width: 1.35rem; height: 1.35rem; }
+.tab[aria-current="page"] { color: var(--blue); }
+.tab[aria-current="page"] .i { stroke-width: 2.2; }
+.main { padding: .9rem .85rem 1rem; max-width: 52rem; }
+.head { display: flex; align-items: flex-end; justify-content: space-between; gap: .75rem; margin-bottom: .8rem; }
+.head h1 { font-size: 1.3rem; outline: none; }
+.head p { color: var(--muted); font-size: .85rem; }
+.count { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.count b { color: var(--blue); }
+
+/* job cards */
+.jobs { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.job { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .1rem .7rem; width: 100%; padding: .7rem .75rem; border: 1px solid var(--line); border-left: 4px solid var(--line-2); border-radius: 10px; background: var(--surface); text-align: left; }
+.job:hover { border-color: var(--line-2); box-shadow: 0 6px 16px -12px rgba(27, 33, 48, .5); }
+.job.s-new { border-left-color: #8792A6; }
+.job.s-sched { border-left-color: #E2A33B; }
+.job.s-site { border-left-color: var(--blue); }
+.job.s-done { border-left-color: #2E9150; }
+.job-time { grid-row: span 3; min-width: 3.1rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; font-size: .85rem; line-height: 1.25; }
+.job-time small { display: block; color: var(--muted); font-weight: 400; }
+.job-top { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.job-who { font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.job-what { color: var(--text); font-size: .88rem; }
+.job-meta { display: flex; flex-wrap: wrap; gap: .1rem .6rem; color: var(--muted); font-size: .78rem; }
+.job-meta span { display: inline-flex; align-items: center; gap: .25rem; }
+.job-meta .i { width: .95rem; height: .95rem; }
+
+/* jobs tab */
+.tools { display: grid; gap: .5rem; margin-bottom: .8rem; }
+.search { position: relative; }
+.search .i { position: absolute; left: .7rem; top: 50%; transform: translateY(-50%); color: var(--muted); }
+.search input { padding-left: 2.2rem; }
+.filters { display: flex; gap: .35rem; overflow-x: auto; scrollbar-width: none; }
+.filters::-webkit-scrollbar { display: none; }
+.filter { flex: none; min-height: 40px; padding: .3rem .75rem; border: 1px solid var(--line-2); border-radius: 999px; background: var(--surface); font-size: .82rem; font-weight: 600; color: var(--text); }
+.filter[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.day-h { display: flex; justify-content: space-between; align-items: baseline; margin: 1rem 0 .4rem; font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.day-h:first-child { margin-top: 0; }
+.day-h.is-today { color: var(--blue); }
+.empty { padding: 1.25rem; border: 1px dashed var(--line-2); border-radius: 10px; color: var(--muted); text-align: center; }
+
+/* stock */
+.parts { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.part { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .2rem .75rem; align-items: center; padding: .65rem .75rem; border-top: 1px solid var(--line); }
+.part:first-child { border-top: 0; }
+.part-name { font-weight: 600; color: var(--ink); }
+.part-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .1rem .5rem; color: var(--muted); font-size: .8rem; }
+.low { padding: .05rem .45rem; border-radius: 999px; background: var(--bad-bg); color: var(--bad); font-size: .72rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+.adj { display: inline-flex; align-items: center; border: 1px solid var(--line-2); border-radius: 8px; }
+.adj button { display: grid; place-items: center; width: 40px; height: 40px; border: 0; background: none; color: var(--ink); }
+.adj button:hover { background: var(--bg); }
+.adj button:disabled { color: #A7AEB9; cursor: not-allowed; }
+.adj output { min-width: 2.2rem; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); }
+.part.is-low .adj output { color: var(--bad); }
+
+/* reports */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .5rem; margin: 0 0 1rem; }
+.stat { padding: .75rem .8rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.stat dt { color: var(--muted); font-size: .8rem; font-weight: 600; }
+.stat dd { margin: .2rem 0 0; font-size: 1.6rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.stat.is-bad dd { color: var(--bad); }
+.chart { padding: .85rem .85rem .6rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.chart h2 { font-size: .95rem; }
+.chart-key { display: flex; gap: .9rem; margin: .3rem 0 .6rem; color: var(--muted); font-size: .78rem; }
+.chart-key span { display: inline-flex; align-items: center; gap: .3rem; }
+.chart-key i { width: .7rem; height: .7rem; border-radius: 3px; background: var(--blue); }
+.chart-key i.k-todo { background: #B9C6E6; }
+.bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: .4rem; align-items: end; height: 9rem; margin: 0; padding: 0; list-style: none; }
+.bars li { display: grid; grid-template-rows: auto 1fr auto; justify-items: center; height: 100%; font-size: .75rem; color: var(--muted); }
+.bars b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.bar-col { position: relative; display: flex; flex-direction: column; justify-content: flex-end; width: 70%; max-width: 2.4rem; height: 100%; }
+.bar-todo, .bar-done { width: 100%; transition: height .4s cubic-bezier(.2, .8, .2, 1); }
+.bar-todo { height: 0; background: #B9C6E6; border-radius: 5px 5px 0 0; }
+.bar-done { height: 0; background: var(--blue); }
+.bar-col .bar-done:first-child { border-radius: 5px 5px 0 0; }
+.bars .is-today { color: var(--blue); font-weight: 600; }
+
+/* job detail */
+.detail { position: fixed; inset: 0; z-index: 30; display: flex; justify-content: flex-end; }
+.detail-back { position: absolute; inset: 0; background: rgba(27, 33, 48, .45); }
+.detail-box { position: relative; display: flex; flex-direction: column; width: 100%; max-width: 30rem; height: 100%; background: var(--bg); box-shadow: -20px 0 40px -30px rgba(0, 0, 0, .6); }
+.detail-top { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .45rem .6rem; background: var(--surface); border-bottom: 1px solid var(--line); }
+.detail-top .back { display: inline-flex; align-items: center; gap: .25rem; min-height: 44px; padding: .3rem .5rem; border: 0; border-radius: 8px; background: none; font-weight: 600; color: var(--blue); }
+.detail-top .back:hover { background: var(--blue-l); }
+.ref { color: var(--muted); font-size: .8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.detail-scroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: .85rem .85rem 2rem; }
+.detail h2 { font-size: 1.2rem; outline: none; }
+.sub { margin-top: .15rem; color: var(--muted); }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: .35rem .9rem; margin: .8rem 0 0; padding: .7rem .8rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: .88rem; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; font-weight: 600; color: var(--ink); }
+.block { margin-top: 1rem; }
+.block-h { margin-bottom: .45rem; font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.stepper { display: grid; grid-template-columns: repeat(4, 1fr); gap: .3rem; margin: 0; padding: 0; list-style: none; }
+.stepper button { position: relative; width: 100%; min-height: 48px; padding: .35rem .2rem; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); color: var(--muted); font-size: .76rem; font-weight: 600; line-height: 1.2; }
+.stepper button::before { content: ""; display: block; width: .55rem; height: .55rem; margin: 0 auto .2rem; border-radius: 50%; border: 2px solid currentColor; }
+.stepper button.is-past { color: var(--blue); border-color: #B9C8F2; background: var(--blue-l); }
+.stepper button.is-past::before { background: currentColor; }
+.stepper button[aria-pressed="true"] { color: #fff; background: var(--blue); border-color: var(--blue); }
+.stepper button[aria-pressed="true"]::before { background: #fff; border-color: #fff; }
+.next { margin-top: .5rem; }
+.hint { margin-top: .35rem; color: var(--muted); font-size: .8rem; }
+.notes { margin: 0; padding: 0; list-style: none; display: grid; gap: .4rem; }
+.notes li { padding: .55rem .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: .88rem; }
+.notes time { display: block; margin-bottom: .1rem; color: var(--muted); font-size: .75rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.add-note { display: grid; gap: .4rem; margin-top: .5rem; }
+.add-note .btn { justify-self: start; }
+.used { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.used li { display: flex; justify-content: space-between; gap: .75rem; padding: .5rem .7rem; border-top: 1px solid var(--line); font-size: .88rem; }
+.used li:first-child { border-top: 0; }
+.used b { font-variant-numeric: tabular-nums; color: var(--ink); }
+.photo { display: grid; place-items: center; gap: .2rem; width: 100%; min-height: 84px; margin-top: .5rem; border: 2px dashed var(--line-2); border-radius: 10px; background: var(--surface); color: var(--muted); font-weight: 600; font-size: .88rem; }
+.photo:hover { border-color: var(--blue); color: var(--blue); }
+.photo .i { width: 1.5rem; height: 1.5rem; }
+@keyframes slide { from { transform: translateX(100%); } }
+@media (prefers-reduced-motion: no-preference) { .detail:not([hidden]) .detail-box { animation: slide .3s cubic-bezier(.2, .8, .2, 1); } }
+
+.foot { display: flex; flex-wrap: wrap; justify-content: center; gap: .25rem 1rem; padding: .75rem .85rem 1rem; color: var(--muted); font-size: .8rem; }
+.toasts { position: fixed; left: 0; right: 0; bottom: calc(4.6rem + env(safe-area-inset-bottom)); z-index: 60; display: flex; justify-content: center; padding: 0 1rem; pointer-events: none; }
+.toast { max-width: 26rem; padding: .6rem .9rem; border-radius: 8px; background: var(--ink); color: #fff; font-size: .88rem; box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .5); }
+noscript p { padding: 1rem; }
+
+@media (min-width: 820px) {
+  .app { display: grid; grid-template-columns: 13.5rem minmax(0, 1fr); grid-template-rows: auto 1fr; padding-bottom: 0; }
+  .bar { grid-column: 1 / -1; padding: .55rem 1.1rem; }
+  .tabs { position: sticky; top: 3.1rem; align-self: start; display: grid; grid-template-columns: 1fr; gap: .2rem; height: auto; padding: 1rem .6rem; border: 0; border-right: 1px solid var(--line); background: transparent; }
+  .tab { grid-template-columns: auto 1fr; justify-items: start; align-items: center; gap: .6rem; min-height: 44px; padding: .4rem .7rem; font-size: .9rem; }
+  .tab[aria-current="page"] { background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
+  .main { padding: 1.25rem 1.5rem 1.5rem; }
+  .head h1 { font-size: 1.5rem; }
+  .jobs { grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); }
+  .foot { grid-column: 2; justify-content: flex-start; padding-left: 1.5rem; }
+  .toasts { bottom: 1.5rem; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<!-- demo:ribbon -->
+<noscript><p>This demo needs JavaScript to run.</p></noscript>
+
+<main class="login" id="login" aria-labelledby="login-h">
+<form class="login-box" id="login-form" novalidate>
+<p class="login-brand"><span class="mark" data-icon="drop"></span><span><b>Khumalo Plumbing</b><small>Job cards · staff only</small></span></p>
+<h1 id="login-h">Sign in</h1>
+<p class="creds">Demo login: user <code>demo</code>, password <code>demo</code></p>
+<p class="nothing"><span data-icon="lock"></span><span>Demo: nothing you type here is sent or stored.</span></p>
+<div class="field"><label for="l-user">Username</label><input id="l-user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
+<div class="field"><label for="l-pass">Password</label><input id="l-pass" type="password" autocomplete="current-password" required></div>
+<p class="login-err" id="login-err" role="alert" hidden></p>
+<button class="btn btn-block" type="submit">Sign in</button>
+<button class="btn btn-quiet btn-block" type="button" id="skip">Skip login</button>
+<p class="foot"><button class="link" type="button" data-reset>Reset demo</button></p>
+</form>
+</main>
+
+<div class="app" id="app" hidden>
+<header class="bar">
+<p class="bar-brand"><span class="mark" data-icon="drop"></span><span>Khumalo Plumbing</span></p>
+<p class="who"><span>Demo user</span><button class="link" type="button" id="logout">Sign out</button></p>
+</header>
+<nav class="tabs" aria-label="Sections">
+<button class="tab" type="button" data-tab="today"><span data-icon="sun"></span>Today</button>
+<button class="tab" type="button" data-tab="jobs"><span data-icon="list"></span>Jobs</button>
+<button class="tab" type="button" data-tab="stock"><span data-icon="box"></span>Stock</button>
+<button class="tab" type="button" data-tab="reports"><span data-icon="chart"></span>Reports</button>
+</nav>
+<main class="main">
+<section id="v-today" aria-labelledby="today-h">
+<div class="head"><div><h1 id="today-h" tabindex="-1">Today</h1><p id="today-date"></p></div><p class="count" id="today-count" aria-live="polite"></p></div>
+<ul class="jobs" id="today-list"></ul>
+</section>
+<section id="v-jobs" aria-labelledby="jobs-h" hidden>
+<div class="head"><div><h1 id="jobs-h" tabindex="-1">This week</h1><p id="week-range"></p></div><p class="count" id="jobs-count"></p></div>
+<div class="tools">
+<label class="search"><span class="sr">Search jobs</span><span data-icon="search"></span><input type="search" id="q" placeholder="Search name, suburb, job or plumber" autocomplete="off"></label>
+<div class="filters" role="group" aria-label="Status" id="filters"></div>
+</div>
+<div id="week-list"></div>
+</section>
+<section id="v-stock" aria-labelledby="stock-h" hidden>
+<div class="head"><div><h1 id="stock-h" tabindex="-1">Stock</h1><p>Van and store, counted together.</p></div><p class="count" id="stock-count" aria-live="polite"></p></div>
+<ul class="parts" id="parts"></ul>
+</section>
+<section id="v-reports" aria-labelledby="reports-h" hidden>
+<div class="head"><div><h1 id="reports-h" tabindex="-1">This week</h1><p>Updates as jobs and stock change.</p></div></div>
+<dl class="stats" id="stats"></dl>
+<div class="chart"><h2>Jobs per day</h2><p class="chart-key" aria-hidden="true"><span><i></i>Done</span><span><i class="k-todo"></i>Still to do</span></p><ol class="bars" id="bars"></ol></div>
+</section>
+</main>
+<footer class="foot"><span>Khumalo Plumbing · staff app</span><button class="link" type="button" data-reset>Reset demo</button></footer>
+</div>
+
+<div class="detail" id="detail" hidden>
+<div class="detail-back" data-close></div>
+<div class="detail-box" role="dialog" aria-modal="true" aria-labelledby="d-title">
+<div class="detail-top"><button class="back" type="button" data-close><span data-icon="left"></span>Back</button><span class="ref" id="d-ref"></span></div>
+<div class="detail-scroll" id="d-body"></div>
+</div>
+</div>
+<div class="toasts" role="status" aria-live="polite" id="toasts"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORE = 'fds-demo-staff';
+  var STATUSES = [['new', 'New'], ['sched', 'Scheduled'], ['site', 'On site'], ['done', 'Done']];
+  var LABEL = { new: 'New', sched: 'Scheduled', site: 'On site', done: 'Done' };
+  var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var ICONS = {
+    drop: '<path d="M12 3.5c3.4 4.3 6 7.6 6 10.8a6 6 0 0 1-12 0c0-3.2 2.6-6.5 6-10.8z"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
+    list: '<path d="M8.5 6.5h11M8.5 12h11M8.5 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/>',
+    box: '<path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/>',
+    chart: '<path d="M3.5 3.5v17h17"/><path d="M8 16.5v-5M12.5 16.5V8M17 16.5v-8"/>',
+    lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"/>',
+    search: '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',
+    left: '<path d="M15 6l-6 6 6 6"/>',
+    pin: '<path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0c0 5.3-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+    user: '<circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/>',
+    camera: '<path d="M4 8.5h3.2l1.6-2.5h6.4l1.6 2.5H20v10H4z"/><circle cx="12" cy="13.2" r="3.2"/>',
+    minus: '<path d="M6 12h12"/>',
+    plus: '<path d="M12 6v12M6 12h12"/>'
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function icon(n) { return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + ICONS[n] + '</svg>'; }
+  function paintIcons(root) {
+    var els = (root || document).querySelectorAll('[data-icon]');
+    for (var i = 0; i < els.length; i++) { els[i].innerHTML = icon(els[i].getAttribute('data-icon')); els[i].removeAttribute('data-icon'); }
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function focus(el) { if (!el) return; try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); } }
+  function hhmm(d) { return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function dayName(d) { return DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()]; }
+  function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+  function duration(m) { m = Math.round(m); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + m % 60 + ' min' : ''); }
+
+  /* ---------- the week's jobs and the stock list (made up) ---------- */
+  // This week runs Monday to Sunday. Today always has six jobs, two of them done; the other eight
+  // are spread over the rest of the week: done on earlier days, booked in on later ones.
+  var TODAY_JOBS = [
+    { t: ['07:30', '09:00'], st: 'done', name: 'Thandiwe', sub: 'Weaver Park', what: 'Burst pipe in the roof, above the geyser', by: 'Sizwe', mins: 75, parts: [['22 mm compression fitting', 2], ['PTFE tape', 1]], notes: [['07:42', 'Sizwe', 'Water off at the mains. Pipe split at the elbow.'], ['08:51', 'Sizwe', 'New section in, tested, all dry.']] },
+    { t: ['08:00', '10:00'], st: 'done', name: 'Johan', sub: 'Driftwood Bay', what: 'Leaking kitchen tap', by: 'Ruan', mins: 45, parts: [['Ball valve 15 mm', 1], ['PTFE tape', 1]], notes: [['09:20', 'Ruan', 'Replaced the valve under the sink.']] },
+    { t: ['10:00', '12:00'], st: 'site', name: 'Fatima', sub: 'Coral Ridge', what: 'Geyser not heating', by: 'Sizwe', mins: 90, parts: [['Geyser element 3 kW', 1]], notes: [['10:14', 'Sizwe', 'Element tested and it’s gone. Fitting a new one.']] },
+    { t: ['12:00', '14:00'], st: 'sched', name: 'Lindiwe', sub: 'Baobab Hill', what: 'Blocked shower drain', by: 'Zanele', mins: 50, parts: [], notes: [] },
+    { t: ['14:00', '16:00'], st: 'sched', name: 'Pieter', sub: 'Silverleaf', what: 'Fit an outside tap by the garage', by: 'Ruan', mins: 70, parts: [], notes: [] },
+    { t: ['15:00', '17:00'], st: 'new', name: 'Grace', sub: 'Mopani Rise', what: 'Toilet cistern running non-stop', by: '', mins: 40, parts: [], notes: [['08:05', 'Office', 'Booked by phone. Client home after 15:00.']] }
+  ];
+  var OTHER_JOBS = [
+    { t: ['08:00', '10:00'], name: 'Ayanda', sub: 'Tidewater', what: 'Replace bathroom mixer', by: 'Zanele', mins: 60, parts: [['15 mm copper elbow', 2]] },
+    { t: ['10:30', '12:30'], name: 'Mark', sub: 'Kingsbury Heights', what: 'Low water pressure upstairs', by: 'Ruan', mins: 95, parts: [['22 mm compression fitting', 1]] },
+    { t: ['08:00', '09:30'], name: 'Busi', sub: 'Weaver Park', what: 'New kitchen sink waste', by: 'Sizwe', mins: 40, parts: [['Silicone', 1]] },
+    { t: ['13:00', '15:00'], name: 'Lerato', sub: 'Pebble Creek', what: 'Leak under the bath', by: 'Zanele', mins: 75, parts: [['Silicone', 1], ['PTFE tape', 1]] },
+    { t: ['09:00', '11:00'], name: 'Andre', sub: 'Coral Ridge', what: 'Drip through the ceiling below the shower', by: 'Ruan', mins: 110, parts: [['15 mm copper elbow', 1]] },
+    { t: ['10:00', '12:00'], name: 'Nomsa', sub: 'Mopani Rise', what: 'Unblock the outside drain', by: 'Sizwe', mins: 50, parts: [] },
+    { t: ['08:30', '10:30'], name: 'Kevin', sub: 'Silverleaf', what: 'Burst pipe in the garden', by: 'Zanele', mins: 85, parts: [['15 mm copper elbow', 2], ['PTFE tape', 1]] },
+    { t: ['12:00', '13:30'], name: 'Precious', sub: 'Baobab Hill', what: 'Replace the cistern valve', by: 'Ruan', mins: 65, parts: [['Ball valve 15 mm', 1]] }
+  ];
+  var STOCK = [
+    { id: 'elbow', name: '15 mm copper elbow', unit: 'each', on: 24, min: 10 },
+    { id: 'comp', name: '22 mm compression fitting', unit: 'each', on: 9, min: 6 },
+    { id: 'element', name: 'Geyser element 3 kW', unit: 'each', on: 4, min: 2 },
+    { id: 'valve', name: 'Ball valve 15 mm', unit: 'each', on: 5, min: 4 },
+    { id: 'ptfe', name: 'PTFE tape', unit: 'rolls', on: 3, min: 6 },
+    { id: 'silicone', name: 'Silicone', unit: 'tubes', on: 7, min: 4 }
+  ];
+
+  function weekDays() {
+    var now = new Date();
+    var mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+    var list = [];
+    for (var i = 0; i < 7; i++) list.push(new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + i));
+    return list;
+  }
+  function todayIndex() { return (new Date().getDay() + 6) % 7; }
+
+  function seed() {
+    var jobs = [];
+    var n = 1040;
+    var t = todayIndex();
+    TODAY_JOBS.forEach(function (j) {
+      jobs.push({ id: 'KP-' + (n++), day: t, from: j.t[0], to: j.t[1], status: j.st, name: j.name, suburb: j.sub, what: j.what, by: j.by, est: j.mins, onsite: j.st === 'done' ? j.mins : null, parts: j.parts.slice(), notes: j.notes.map(function (x) { return { at: x[0], by: x[1], text: x[2] }; }) });
+    });
+    // The other days of the week, with how many jobs each gets.
+    var others = [0, 1, 2, 3, 4, 5, 6].filter(function (d) { return d !== t; });
+    var perDay = [2, 1, 2, 1, 1, 1];
+    var k = 0;
+    others.forEach(function (d, i) {
+      for (var c = 0; c < perDay[i]; c++) {
+        var j = OTHER_JOBS[k++];
+        var past = d < t;
+        var status = past ? 'done' : (k % 2 ? 'sched' : 'new');
+        jobs.push({ id: 'KP-' + (n++), day: d, from: j.t[0], to: j.t[1], status: status, name: j.name, suburb: j.sub, what: j.what, by: status === 'new' ? '' : j.by, plan: j.by, est: j.mins, onsite: past ? j.mins : null, parts: past ? j.parts.slice() : [], notes: past ? [{ at: j.t[0], by: j.by, text: 'Job done and signed off by the client.' }] : [] });
+      }
+    });
+    jobs.sort(function (a, b) { return a.day - b.day || a.from.localeCompare(b.from); });
+    return { auth: false, jobs: jobs, stock: STOCK.map(function (s) { return { id: s.id, name: s.name, unit: s.unit, on: s.on, min: s.min }; }), tab: 'today', filter: 'all', q: '' };
+  }
+
+  var state = load();
+  function load() {
+    try { var s = JSON.parse(sessionStorage.getItem(STORE)); if (s && s.jobs && s.stock) return s; } catch (e) { /* memory only */ }
+    return seed();
+  }
+  function save() { try { sessionStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { /* memory only */ } }
+  function job(id) { return state.jobs.filter(function (j) { return j.id === id; })[0]; }
+
+  /* ---------- login ---------- */
+  function showApp(focusIt) {
+    $('login').hidden = true;
+    $('app').hidden = false;
+    tab(state.tab || 'today', focusIt);
+  }
+  function showLogin() {
+    $('app').hidden = true;
+    $('login').hidden = false;
+  }
+  $('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var u = $('l-user').value.trim().toLowerCase();
+    var p = $('l-pass').value;
+    var err = $('login-err');
+    if (u === 'demo' && p === 'demo') {
+      err.hidden = true;
+      state.auth = true;
+      save();
+      showApp(true);
+      return;
+    }
+    err.textContent = !u || !p ? 'Please fill in your username and password. For this demo, both are demo.' : 'Sorry, that username and password don’t match. For this demo, use demo and demo.';
+    err.hidden = false;
+    focus(!u ? $('l-user') : $('l-pass'));
+  });
+  $('skip').addEventListener('click', function () { state.auth = true; save(); showApp(true); });
+  $('logout').addEventListener('click', function () { state.auth = false; save(); $('l-pass').value = ''; showLogin(); focus($('l-user')); });
+
+  /* ---------- tabs ---------- */
+  function tab(name, focusIt) {
+    state.tab = name;
+    save();
+    ['today', 'jobs', 'stock', 'reports'].forEach(function (t) { $('v-' + t).hidden = t !== name; });
+    var tabs = document.querySelectorAll('[data-tab]');
+    for (var i = 0; i < tabs.length; i++) {
+      if (tabs[i].getAttribute('data-tab') === name) tabs[i].setAttribute('aria-current', 'page'); else tabs[i].removeAttribute('aria-current');
+    }
+    render();
+    if (focusIt) { window.scrollTo(0, 0); focus($(name + '-h')); }
+  }
+  document.querySelector('.tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-tab]');
+    if (b) tab(b.getAttribute('data-tab'), true);
+  });
+
+  /* ---------- rendering ---------- */
+  function pill(st) { return '<span class="st st-' + st + '">' + LABEL[st] + '</span>'; }
+  function card(j, withDay) {
+    var days = weekDays();
+    return '<li><button class="job s-' + j.status + '" type="button" data-job="' + j.id + '">' +
+      '<span class="job-time">' + j.from + '<small>' + (withDay ? DAYS[days[j.day].getDay()].slice(0, 3) : 'to ' + j.to) + '</small></span>' +
+      '<span class="job-top"><span class="job-who">' + esc(j.name) + ' · ' + esc(j.suburb) + '</span>' + pill(j.status) + '</span>' +
+      '<span class="job-what">' + esc(j.what) + '</span>' +
+      '<span class="job-meta"><span>' + icon('user') + (j.by ? esc(j.by) : 'Not assigned yet') + '</span><span>' + esc(j.id) + '</span></span>' +
+      '</button></li>';
+  }
+
+  function render() {
+    var days = weekDays();
+    var t = todayIndex();
+    var today = state.jobs.filter(function (j) { return j.day === t; });
+    var doneToday = today.filter(function (j) { return j.status === 'done'; }).length;
+    if (state.tab === 'today') {
+      $('today-date').textContent = dayName(days[t]);
+      $('today-count').innerHTML = '<b>' + plural(today.length, 'job', 'jobs') + '</b> · ' + doneToday + ' done';
+      $('today-list').innerHTML = today.map(function (j) { return card(j, false); }).join('');
+    }
+    if (state.tab === 'jobs') renderWeek(days, t);
+    if (state.tab === 'stock') renderStock();
+    if (state.tab === 'reports') renderReports(days, t);
+  }
+
+  function renderWeek(days, t) {
+    $('week-range').textContent = days[0].getDate() + ' ' + MONTHS[days[0].getMonth()] + ' to ' + days[6].getDate() + ' ' + MONTHS[days[6].getMonth()];
+    $('filters').innerHTML = [['all', 'All']].concat(STATUSES).map(function (s) {
+      var n = s[0] === 'all' ? state.jobs.length : state.jobs.filter(function (j) { return j.status === s[0]; }).length;
+      return '<button class="filter" type="button" data-filter="' + s[0] + '" aria-pressed="' + (state.filter === s[0]) + '">' + s[1] + ' (' + n + ')</button>';
+    }).join('');
+    var q = (state.q || '').trim().toLowerCase();
+    var list = state.jobs.filter(function (j) {
+      if (state.filter !== 'all' && j.status !== state.filter) return false;
+      if (!q) return true;
+      return [j.name, j.suburb, j.what, j.by, j.id].join(' ').toLowerCase().indexOf(q) > -1;
+    });
+    $('jobs-count').textContent = plural(list.length, 'job', 'jobs');
+    var html = '';
+    days.forEach(function (d, i) {
+      var dayJobs = list.filter(function (j) { return j.day === i; });
+      if (!dayJobs.length) return;
+      html += '<h2 class="day-h' + (i === t ? ' is-today' : '') + '"><span>' + dayName(d) + (i === t ? ' · today' : '') + '</span><span>' + plural(dayJobs.length, 'job', 'jobs') + '</span></h2><ul class="jobs">' + dayJobs.map(function (j) { return card(j, false); }).join('') + '</ul>';
+    });
+    $('week-list').innerHTML = html || '<p class="empty">No jobs match. Try another search or status.</p>';
+  }
+
+  function isLow(p) { return p.on < p.min; }
+  function renderStock() {
+    var low = state.stock.filter(isLow).length;
+    $('stock-count').textContent = low ? plural(low, 'part', 'parts') + ' below minimum' : 'All parts above minimum';
+    $('parts').innerHTML = state.stock.map(function (p) {
+      return '<li class="part' + (isLow(p) ? ' is-low' : '') + '"><div><p class="part-name">' + esc(p.name) + '</p><p class="part-meta"><span>Minimum ' + p.min + ' ' + (p.unit === 'each' ? '' : p.unit) + '</span>' + (isLow(p) ? '<span class="low">Low</span>' : '') + '</p></div>' +
+        '<span class="adj" role="group" aria-label="' + esc(p.name) + ' on hand"><button type="button" data-adj="' + p.id + ':-1"' + (p.on <= 0 ? ' disabled' : '') + '>' + icon('minus') + '<span class="sr">One less</span></button><output aria-live="polite">' + p.on + '</output><button type="button" data-adj="' + p.id + ':1">' + icon('plus') + '<span class="sr">One more</span></button></span></li>';
+    }).join('');
+  }
+  $('parts').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-adj]');
+    if (!b || b.disabled) return;
+    var v = b.getAttribute('data-adj').split(':');
+    var p = state.stock.filter(function (x) { return x.id === v[0]; })[0];
+    p.on = Math.max(0, p.on + Number(v[1]));
+    save();
+    renderStock();
+    focus(document.querySelector('[data-adj="' + v[0] + ':' + v[1] + '"]:not(:disabled)') || document.querySelector('[data-adj="' + v[0] + ':1"]'));
+  });
+
+  function renderReports(days, t) {
+    var done = state.jobs.filter(function (j) { return j.status === 'done'; });
+    var timed = done.filter(function (j) { return j.onsite; });
+    var avg = timed.length ? timed.reduce(function (s, j) { return s + j.onsite; }, 0) / timed.length : 0;
+    var low = state.stock.filter(isLow).length;
+    $('stats').innerHTML =
+      '<div class="stat"><dt>Jobs done this week</dt><dd>' + done.length + '</dd></div>' +
+      '<div class="stat"><dt>Average time on site</dt><dd>' + (timed.length ? duration(avg) : '–') + '</dd></div>' +
+      '<div class="stat' + (low ? ' is-bad' : '') + '"><dt>Parts below minimum</dt><dd>' + low + '</dd></div>';
+    var most = Math.max.apply(null, days.map(function (d, i) { return state.jobs.filter(function (j) { return j.day === i; }).length; }).concat([1]));
+    $('bars').innerHTML = days.map(function (d, i) {
+      var all = state.jobs.filter(function (j) { return j.day === i; });
+      var dn = all.filter(function (j) { return j.status === 'done'; }).length;
+      return '<li' + (i === t ? ' class="is-today"' : '') + '><b>' + all.length + '</b><span class="bar-col" data-all="' + all.length + '" data-done="' + dn + '"><span class="bar-todo"></span><span class="bar-done"></span></span><span>' + DAYS[d.getDay()].slice(0, 3) + '<span class="sr">: ' + plural(all.length, 'job', 'jobs') + ', ' + dn + ' done</span></span></li>';
+    }).join('');
+    // Heights are set through the style object: the page's security policy blocks inline style attributes.
+    var cols = $('bars').querySelectorAll('.bar-col');
+    for (var i = 0; i < cols.length; i++) {
+      var a = Number(cols[i].getAttribute('data-all'));
+      var dn = Number(cols[i].getAttribute('data-done'));
+      cols[i].querySelector('.bar-todo').style.height = ((a - dn) / most * 100) + '%';
+      cols[i].querySelector('.bar-done').style.height = (dn / most * 100) + '%';
+    }
+  }
+
+  $('q').addEventListener('input', function () { state.q = this.value; save(); renderWeek(weekDays(), todayIndex()); });
+  $('filters').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-filter]');
+    if (!b) return;
+    state.filter = b.getAttribute('data-filter');
+    save();
+    renderWeek(weekDays(), todayIndex());
+    focus(document.querySelector('[data-filter="' + state.filter + '"]'));
+  });
+
+  /* ---------- a job card ---------- */
+  var openId = null;
+  var lastTrigger = null;
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-job]');
+    if (b) openJob(b.getAttribute('data-job'), b);
+  });
+  function openJob(id, trigger) {
+    openId = id;
+    lastTrigger = trigger;
+    renderJob(true);
+    $('detail').hidden = false;
+    document.body.classList.add('locked');
+    $('d-body').scrollTop = 0;
+    focus($('d-title'));
+  }
+  function closeJob() {
+    if ($('detail').hidden) return;
+    $('detail').hidden = true;
+    document.body.classList.remove('locked');
+    var t = lastTrigger && document.querySelector('[data-job="' + openId + '"]');
+    openId = null;
+    if (t) focus(t);
+  }
+  $('detail').addEventListener('click', function (e) { if (e.target.closest('[data-close]')) closeJob(); });
+  document.addEventListener('keydown', function (e) {
+    if ($('detail').hidden) return;
+    if (e.key === 'Escape') { closeJob(); return; }
+    if (e.key !== 'Tab') return;
+    var f = Array.prototype.filter.call($('detail').querySelectorAll('button, input, textarea, [tabindex="-1"]'), function (el) { return !el.disabled; });
+    var a = f[0], z = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); focus(z); }
+    else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); focus(a); }
+  });
+
+  function renderJob() {
+    var j = job(openId);
+    if (!j) return;
+    var days = weekDays();
+    var idx = STATUSES.map(function (s) { return s[0]; }).indexOf(j.status);
+    var next = STATUSES[idx + 1];
+    $('d-ref').textContent = j.id;
+    $('d-body').innerHTML =
+      '<h2 id="d-title" tabindex="-1">' + esc(j.what) + '</h2>' +
+      '<p class="sub">' + esc(j.name) + ' · ' + esc(j.suburb) + '</p>' +
+      '<dl class="facts"><dt>When</dt><dd>' + dayName(days[j.day]) + ', ' + j.from + '–' + j.to + '</dd><dt>Plumber</dt><dd>' + (j.by ? esc(j.by) : 'Not assigned yet') + '</dd><dt>Status</dt><dd>' + pill(j.status) + '</dd>' + (j.onsite ? '<dt>On site</dt><dd>' + duration(j.onsite) + '</dd>' : '') + '</dl>' +
+      '<div class="block"><p class="block-h" id="d-status-h">Status</p><ol class="stepper" aria-labelledby="d-status-h">' + STATUSES.map(function (s, i) {
+        return '<li><button type="button" data-status="' + s[0] + '" aria-pressed="' + (i === idx) + '"' + (i < idx ? ' class="is-past"' : '') + '>' + s[1] + '</button></li>';
+      }).join('') + '</ol>' +
+      (next ? '<button class="btn btn-block next" type="button" data-status="' + next[0] + '">Mark as ' + next[1].toLowerCase() + '</button>' : '<p class="hint">Done. Tap an earlier step to reopen the job.</p>') + '</div>' +
+      '<div class="block"><p class="block-h">Notes</p><ul class="notes">' + (j.notes.length ? j.notes.map(function (n) { return '<li><time>' + esc(n.at) + ' · ' + esc(n.by) + '</time>' + esc(n.text) + '</li>'; }).join('') : '<li>No notes yet.</li>') + '</ul>' +
+      '<form class="add-note" id="note-form"><label class="sr" for="d-note">Add a note</label><textarea id="d-note" maxlength="200" placeholder="Add a note for the office"></textarea><button class="btn btn-quiet" type="submit">Add note</button></form></div>' +
+      '<div class="block"><p class="block-h">Parts used</p>' + (j.parts.length ? '<ul class="used">' + j.parts.map(function (p) { return '<li><span>' + esc(p[0]) + '</span><b>× ' + p[1] + '</b></li>'; }).join('') + '</ul>' : '<p class="hint">No parts logged yet.</p>') +
+      '<button class="photo" type="button" data-photo>' + icon('camera') + 'Add photo</button></div>';
+    $('note-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = $('d-note').value.trim();
+      if (!v) { focus($('d-note')); return; }
+      j.notes.push({ at: hhmm(new Date()), by: 'You', text: v });
+      save();
+      renderJob();
+      focus($('d-note'));
+      toast('Note added.');
+    });
+  }
+  $('d-body').addEventListener('click', function (e) {
+    var s = e.target.closest('[data-status]');
+    if (s) {
+      var j = job(openId);
+      var to = s.getAttribute('data-status');
+      if (to === j.status) return;
+      j.status = to;
+      // Time on site counts once a job is done; reopening it clears that.
+      j.onsite = to === 'done' ? (j.onsite || j.est) : null;
+      if (to !== 'new' && !j.by) j.by = j.plan || 'Sizwe';
+      save();
+      renderJob();
+      render();
+      focus(document.querySelector('#d-body .stepper [data-status="' + to + '"]'));
+      toast(j.id + ' is now ' + LABEL[to].toLowerCase() + '.');
+      return;
+    }
+    if (e.target.closest('[data-photo]')) toast('Demo: in your app, this opens the camera and saves the photo to the job.');
+  });
+
+  /* ---------- toasts and reset ---------- */
+  var toastTimer = null;
+  function toast(text) {
+    var box = $('toasts');
+    clearTimeout(toastTimer);
+    box.innerHTML = '';
+    var p = document.createElement('p');
+    p.className = 'toast';
+    p.textContent = text;
+    box.appendChild(p);
+    toastTimer = setTimeout(function () { box.innerHTML = ''; }, 3000);
+  }
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('[data-reset]')) return;
+    try { sessionStorage.removeItem(STORE); } catch (err) { /* memory only */ }
+    state = seed();
+    closeJob();
+    $('q').value = '';
+    $('l-user').value = '';
+    $('l-pass').value = '';
+    $('login-err').hidden = true;
+    showLogin();
+    toast('Demo reset. Sign in with demo / demo, or skip.');
+  });
+
+  paintIcons();
+  $('q').value = state.q || '';
+  if (state.auth) showApp(false); else showLogin();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+{
+  "_readme": [
+    "Tin Kettle Kitchen: the made-up cafe on /examples/tin-kettle/. Every word on its pages lives here.",
+    "The ordering tool (/examples/tools/ordering/) reads the same name, hours, grill times, menu and extras, so change them here and both update when you run node build.js.",
+    "Photos: leave \"photo\" blank for a styled placeholder, or set it to a .webp in src/img/examples/tin-kettle/ (see README.md)."
+  ],
+  "name": "Tin Kettle Kitchen",
+  "short": "Tin Kettle",
+  "kind": "Family café & grill",
+  "town": "Seaview, KZN North Coast",
+  "address": "Corner of Harbour Road and Third Street",
+  "promise": "Proper breakfasts, honest lunches and a weekend grill, on the corner of Harbour Road.",
+  "seo": {
+    "title": "Tin Kettle Kitchen | Family café & grill in Seaview (demo)",
+    "description": "Tin Kettle Kitchen is a made-up family café and grill, built by Front Door Sites to show what a restaurant website can do."
+  },
+  "hours": {
+    "mon": ["07:30", "16:00"],
+    "tue": ["07:30", "16:00"],
+    "wed": ["07:30", "16:00"],
+    "thu": ["07:30", "16:00"],
+    "fri": ["07:30", "21:00"],
+    "sat": ["07:30", "21:00"],
+    "sun": ["08:00", "14:00"]
+  },
+  "grill": {
+    "_note": "Grill items can only be ordered on these days, from this time until closing.",
+    "days": ["fri", "sat"],
+    "from": "17:00",
+    "label": "Fri–Sat evenings only",
+    "note": "The grill is Friday and Saturday evenings only, from 17:00 until we close."
+  },
+  "rating": {
+    "text": "4.8 stars from 212 reviews",
+    "stars": 4.8,
+    "tip": "Demo figures. On your site, these come from your Google reviews."
+  },
+  "menuIntro": "Everything's made in our kitchen, and you can order any of it for collection.",
+  "menu": [
+    {
+      "id": "breakfast",
+      "name": "Breakfast",
+      "extras": true,
+      "items": [
+        { "id": "kettle-roll", "name": "Kettle breakfast roll", "price": 65, "text": "Crispy bacon and tomato relish on a toasted roll." },
+        { "id": "farm-breakfast", "name": "Farm breakfast", "price": 95, "text": "Two eggs, bacon, boerewors, grilled tomato and toast." },
+        { "id": "oats", "name": "Oats with honey and banana", "price": 48, "text": "Warm oats, local honey and sliced banana.", "tags": ["V"] }
+      ]
+    },
+    {
+      "id": "lunch",
+      "name": "Lunch",
+      "extras": true,
+      "items": [
+        { "id": "chicken-toastie", "name": "Chicken mayo toastie", "price": 68, "text": "Pulled chicken and mayo, toasted on white or brown." },
+        { "id": "lamb-burger", "name": "Lamb burger with chips", "price": 125, "text": "Lamb patty, tomato, onion and mint mayo, with chips." },
+        { "id": "line-fish", "name": "Grilled line fish of the day", "price": 145, "text": "Whatever came in this morning, with chips or salad.", "tags": ["GF"] },
+        { "id": "garden-bowl", "name": "Garden bowl", "price": 88, "text": "Roast veg, chickpeas, greens and a lemon dressing.", "tags": ["V", "GF"] }
+      ]
+    },
+    {
+      "id": "grill",
+      "name": "Grill",
+      "grill": true,
+      "items": [
+        { "id": "rump", "name": "300 g rump", "price": 189, "text": "Grilled over the coals, with chips or pap.", "tags": ["GF"] },
+        { "id": "peri-chicken", "name": "Half peri-peri chicken", "price": 135, "text": "Basted with our own peri-peri sauce.", "tags": ["GF"] },
+        { "id": "pap-chakalaka", "name": "Pap and chakalaka side", "price": 35, "text": "Soft pap with a mild chakalaka.", "tags": ["V", "GF"] }
+      ]
+    },
+    {
+      "id": "drinks",
+      "name": "Drinks",
+      "items": [
+        { "id": "flat-white", "name": "Flat white", "price": 38 },
+        { "id": "rooibos-cappuccino", "name": "Rooibos cappuccino", "price": 36 },
+        { "id": "orange-juice", "name": "Fresh orange juice", "price": 42 },
+        { "id": "lemonade", "name": "Seaview lemonade", "price": 34 }
+      ]
+    }
+  ],
+  "extras": [
+    { "id": "egg", "name": "Add egg", "price": 12 },
+    { "id": "cheese", "name": "Add cheese", "price": 12 },
+    { "id": "avo", "name": "Add avo", "price": 18 }
+  ],
+  "tags": {
+    "V": "Vegetarian",
+    "GF": "Gluten-free"
+  },
+  "specials": {
+    "heading": "Today's specials",
+    "items": [
+      { "item": "line-fish", "note": "Today's catch, grilled with lemon butter.", "icon": "fish", "alt": "Grilled line fish with lemon and chips" },
+      { "item": "kettle-roll", "note": "Our most-ordered breakfast. Add an egg for R12.", "icon": "plate", "alt": "A breakfast roll with bacon and tomato relish" },
+      { "item": "lemonade", "note": "Squeezed fresh every morning.", "icon": "cup", "alt": "A glass of lemonade with ice and mint" }
+    ]
+  },
+  "why": {
+    "heading": "Why people come back",
+    "items": [
+      { "icon": "cup", "title": "Coffee worth the stop", "text": "Flat whites and rooibos cappuccinos from 07:30, made properly every time." },
+      { "icon": "fish", "title": "Fish off the morning boats", "text": "The line fish changes every day, depending on what came in." },
+      { "icon": "flame", "title": "A weekend grill", "text": "Rump, peri-peri chicken and pap over the coals, Friday and Saturday nights." }
+    ]
+  },
+  "about": {
+    "heading": "A family kitchen",
+    "text": [
+      "Tin Kettle is run by Nandi and her family. It started as a coffee counter with one old tin kettle, and grew into the café and grill it is today.",
+      "Almost everything on the menu is made in the kitchen at the back, the same way every day."
+    ],
+    "photo": "",
+    "icon": "kettle",
+    "alt": "Nandi in the Tin Kettle kitchen"
+  },
+  "hero": {
+    "photo": "",
+    "icon": "kettle",
+    "alt": "The Tin Kettle counter with fresh breakfast rolls"
+  },
+  "reviews": {
+    "heading": "What people say",
+    "items": [
+      { "name": "Thandi", "stars": 5, "text": "Lovely spot for breakfast. The kettle roll is the best in town, and the coffee is always hot. Friendly staff too." },
+      { "name": "Pieter", "stars": 5, "text": "Went for the Friday grill with the family. Good rump, decent portions, and the kids loved the lemonade." },
+      { "name": "Ayesha", "stars": 4, "text": "Quick, friendly and good value. The garden bowl is a winner. It gets busy on Saturdays, so go early." }
+    ]
+  },
+  "find": {
+    "heading": "Hours and where to find us",
+    "lead": "On the corner of Harbour Road and Third Street, a short walk from the beach.",
+    "parking": "Free parking on Third Street, with two bays right outside the door.",
+    "directionsToast": "Demo: on your site, this opens Google Maps with directions.",
+    "callToast": "Demo: on your site, this phones the café.",
+    "whatsappToast": "Demo: on your site, this opens WhatsApp with a message ready."
+  },
+  "book": {
+    "heading": "Book a table",
+    "lead": "Tell us when you're coming and we'll keep a table for you. We confirm every request on WhatsApp.",
+    "maxPeople": 12,
+    "panelHeading": "This is the message Nandi would get on WhatsApp",
+    "panelNote": "On your site this goes straight to your phone."
+  },
+  "notFound": {
+    "heading": "This page has gone cold",
+    "lead": "We couldn't find that page. Try one of these instead:"
+  }
+}

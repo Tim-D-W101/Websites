@@ -165,13 +165,24 @@ effective['terms.yearlyPaysMonths'] = yearlyOn ? 'on' : '';
 const F = C.founding || {};
 const foundingOn = F.enabled === true && Number(F.spotsLeft) > 0;
 
-const examples = (C.examples || []).filter((e) => {
-  if (!isSet(e.name)) { warn('An example has no name, so it was skipped.'); return false; }
+// One list of examples (examples.items): the Examples page, the home page strip, /websites,
+// /business-tools and the industry pages all read from it.
+const EXP = Array.isArray(C.examples) ? { items: C.examples } : (C.examples || {});
+const examples = (EXP.items || []).filter((e) => {
+  if (!isSet(e.title || e.name)) { warn('An example has no title, so it was skipped.'); return false; }
   return true;
-}).map((e) => {
+}).map((e, i) => {
   // "kind": website | tool, "status": demo | client (older entries used kind for demo/client).
   const legacy = e.kind === 'demo' || e.kind === 'client';
-  return { ...e, kind: e.kind === 'tool' ? 'tool' : 'website', status: (legacy ? e.kind : e.status) === 'client' ? 'client' : 'demo' };
+  const title = e.title || e.name;
+  return {
+    ...e,
+    id: isSet(e.id) ? e.id : `example-${i + 1}`,
+    title,
+    summary: e.summary || e.blurb || '',
+    kind: e.kind === 'tool' ? 'tool' : 'website',
+    status: (legacy ? e.kind : e.status) === 'client' ? 'client' : 'demo'
+  };
 });
 const guides = (C.guides || []).filter((g) => {
   if (!isSet(g.slug) || !isSet(g.title)) { warn('A guide is missing its slug or title, so it was skipped.'); return false; }
@@ -482,34 +493,63 @@ function exampleImage(e) {
   if (!isSet(e.image)) return '';
   const rel = String(e.image).replace(/^\/+/, '');
   const file = path.join(ROOT, 'src', rel);
-  if (!fs.existsSync(file)) { warn(`Example "${e.name}": image not found at src/${rel}`); return ''; }
-  if (!/\.webp$/i.test(rel)) { warn(`Example "${e.name}": use a .webp image for speed (src/${rel})`); return ''; }
+  if (!fs.existsSync(file)) { warn(`Example "${e.title}": image not found at src/${rel}`); return ''; }
+  if (!/\.webp$/i.test(rel)) { warn(`Example "${e.title}": use a .webp image for speed (src/${rel})`); return ''; }
   const size = webpSize(file);
-  if (!size) { warn(`Example "${e.name}": couldn't read the WebP image size (src/${rel})`); return ''; }
-  return `<img src="/${esc(rel)}" width="${size.w}" height="${size.h}" loading="lazy" decoding="async" alt="${esc(e.alt || `Screenshot of ${e.name}`)}">`;
+  if (!size) { warn(`Example "${e.title}": couldn't read the WebP image size (src/${rel})`); return ''; }
+  return `<img src="/${esc(rel)}" width="${size.w}" height="${size.h}" loading="lazy" decoding="async" alt="${esc(e.alt || `Screenshot of ${e.title}`)}">`;
+}
+
+// An example's "from" price. priceKey is "website" (the business website), "tools" (business
+// tools in general), a band id or a website option id. A tool whose key matches nothing gets
+// the general business tools price.
+function examplePrice(e) {
+  const k = e.priceKey;
+  const site = () => `From <strong>${rand(cheapestPlan.build)}</strong> with ${esc(planName(cheapestPlan))}, or <strong>${rand(onceOff.build)}</strong> ${t(BG.priceNote)}`;
+  const tools = () => `From <strong>${rand(toolsFrom)}</strong> ${t(BG.priceNote)} · ${esc(groups.tools.name)}`;
+  if (k === 'website') return site();
+  if (k === 'tools') return tools();
+  const b = bandById[k];
+  if (b) return hasPrice(b) ? `From <strong>${rand(b.from)}</strong> ${t(BG.priceNote)} · ${esc(b.name)}` : `Quoted · ${esc(b.name)}`;
+  const o = optionById[k];
+  if (o) return `From <strong>${rand(o.build)}</strong>${o.monthly ? ` + ${month(o.monthly)}` : ` ${t(BG.priceNote)}`} · ${esc(WEB.name)}`;
+  if (isSet(k)) warn(`Example "${e.title}": priceKey "${k}" isn't "website", "tools", a band or a website option, so it shows the ${e.kind === 'tool' ? 'business tools' : 'website'} price.`);
+  return e.kind === 'tool' ? tools() : site();
+}
+
+// Where a card leads: a demo to its section on /examples, client work to the client's site.
+const exampleAnchor = (e) => (e.id === (EXP.website || {}).item ? 'website' : e.id);
+function exampleHref(e) {
+  if (e.status === 'client') return isSet(e.url) && isUrl(e.url) ? e.url : '';
+  return `/examples#${exampleAnchor(e)}`;
 }
 
 function exampleCard(e) {
   const niche = niches.find((n) => n.id === e.niche);
-  const url = isSet(e.url) && isUrl(e.url) ? e.url : '';
-  if (isSet(e.url) && !url) warn(`Example "${e.name}": url must start with https://`);
   const isDemo = e.status !== 'client';
+  const href = exampleHref(e);
+  if (!isDemo && isSet(e.url) && !href) warn(`Example "${e.title}": a client's url must start with https://`);
   const img = exampleImage(e);
-  const shot = img || `<div class="example-placeholder" aria-hidden="true">${niche ? nicheIcon(niche, 'icon icon-xl') : svg.icon(e.kind === 'tool' ? 'grid' : 'globe', 'icon icon-xl')}</div>`;
+  const icon = e.icon ? svg.icon(e.icon, 'icon icon-xl') : niche ? nicheIcon(niche, 'icon icon-xl') : svg.icon(e.kind === 'tool' ? 'grid' : 'globe', 'icon icon-xl');
+  const shot = img || `<div class="example-placeholder" aria-hidden="true">${icon}</div>`;
+  const external = href && !href.startsWith('/');
+  const name = href ? `<a class="stretched" href="${esc(href)}"${external ? ext : ''}>${t(e.title)}${external ? newTab : ''}</a>` : t(e.title);
   return `<article class="example" data-kind="${e.kind}">
-<div class="example-shot"><div class="browser-bar" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span></div>${shot}</div>
+<div class="example-shot"><div class="browser-bar" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url">${esc(isSet(e.business) ? e.business : e.title)}</span></div>${shot}</div>
 <div class="example-body">
 <p class="tags">${kindTag(e.kind)}<span class="tag ${isDemo ? 'tag-demo' : 'tag-client'}">${isDemo ? 'Demo' : 'Client'}</span></p>
-<h3>${url ? `<a href="${esc(url)}"${ext}>${t(e.name)}${newTab}</a>` : t(e.name)}</h3>
-${niche ? `<p class="example-niche">${esc(niche.name)}</p>` : ''}
-${isSet(e.blurb) ? `<p>${t(e.blurb)}</p>` : ''}
+<h3>${name}</h3>
+${isSet(e.summary) ? `<p>${t(e.summary)}</p>` : ''}
+<p class="example-price">${examplePrice(e)}</p>
 ${isDemo ? '<p class="example-note">A made-up business, built to show what’s possible.</p>' : ''}
+${href && isDemo ? `<span class="example-more" aria-hidden="true">Try it ${svg.icon('arrow')}</span>` : ''}
 </div></article>`;
 }
 
-function examplesBlock(list, heading, sand = false) {
+function examplesBlock(list, heading, sand = false, max = 3) {
   if (!list.length) return '';
-  return `<section class="section${sand ? ' section-sand' : ''}" aria-labelledby="ex-h"><div class="wrap">${sectionHead('ex', heading)}<div class="examples">${list.slice(0, 3).map(exampleCard).join('')}</div><p class="more-link"><a href="/examples">See all examples ${svg.icon('arrow')}</a></p></div></section>`;
+  const cards = list.slice(0, max);
+  return `<section class="section${sand ? ' section-sand' : ''}" aria-labelledby="ex-h"><div class="wrap">${sectionHead('ex', heading)}<div class="examples examples-n${cards.length}">${cards.map(exampleCard).join('')}</div><p class="more-link"><a href="/examples">See all examples ${svg.icon('arrow')}</a></p></div></section>`;
 }
 
 /* ---------- enquiry form ---------- */
@@ -1147,7 +1187,7 @@ function toolsPage() {
 ${stepsSection('tsteps', P.steps.heading, '', P.steps.items)}
 <section class="section" aria-labelledby="tp-h"><div class="wrap"><h2 id="tp-h" class="visually-hidden">Good to know</h2><ul class="point-cards">${P.points.map((p) => `<li class="card"><span class="inc-icon">${svg.icon(p.icon)}</span><h3>${t(p.title)}</h3><p>${t(p.text)}</p></li>`).join('')}</ul></div></section>
 <section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${foundingBanner(page, { compact: true })}${bandsGrid('tools', page)}<p class="fine">${t(BG.lead)} ${t(BG.toolsHosting)}</p><p class="fine"><a href="/pricing">How quotes and payment work</a></p></div></section>
-${examplesBlock(toolExamples, 'Tool examples')}
+${examplesBlock(toolExamples, 'Tool examples', false, 4)}
 ${faqSection(page, 'Questions about business tools', generalFaq(['tool-what', 'plan', 'cost', 'other-costs', 'own', 'time']), 'tools', toolExamples.length > 0)}
 ${enquirySection(page, { need: 'tool', heading: 'Get a free plan & quote', lead: 'Tell me how things work now and what you’d like to fix. I’ll send a short plan and a fixed quote. No obligation, no calls.' })}`;
   return page;
@@ -1219,18 +1259,113 @@ ${contactBtns || canEnquire ? `<section class="section section-sand" aria-labell
   return page;
 }
 
+/* ---------- examples: a demo website and four working tools, each running live in a frame ---------- */
+
+// The phone's status bar: signal, Wi-Fi and battery. site.js keeps the clock beside it live.
+const statusIcons = '<svg class="ex-sb-icons" viewBox="0 0 64 14" aria-hidden="true" focusable="false"><g fill="currentColor"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6.5" width="3" height="7.5" rx="1"/><rect x="10" y="4" width="3" height="10" rx="1"/><rect x="15" y="1.5" width="3" height="12.5" rx="1"/><path d="M30 13.4a1.7 1.7 0 1 0 0-3.4 1.7 1.7 0 0 0 0 3.4zm-4.7-5.2a6.7 6.7 0 0 1 9.4 0l-1.4 1.4a4.7 4.7 0 0 0-6.6 0zm-2.9-2.9a10.8 10.8 0 0 1 15.2 0l-1.4 1.4a8.8 8.8 0 0 0-12.4 0z"/><rect x="44.5" y="4" width="12" height="6" rx="1.4"/></g><rect x="42.6" y="2" width="16" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".5" stroke-width="1.2"/><path d="M60.6 5.6v2.8" stroke="currentColor" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/></svg>';
+const statusBar = `<p class="ex-statusbar" aria-hidden="true"><span data-clock>09:41</span><i class="ex-island"></i>${statusIcons}</p>`;
+
+// "Website · Demo", "Tool · Client"...
+function exLabel(e) {
+  return `<p class="ex-label"><span>${e.kind === 'tool' ? 'Tool' : 'Website'}</span><i aria-hidden="true">·</i><span>${e.status === 'client' ? 'Client' : 'Demo'}</span></p>`;
+}
+
+// A phone running a tool, live and interactive. The frame shrinks to fit; the tool inside
+// lays itself out for the space it gets, as it would on a real phone.
+function phoneFrame(e) {
+  return `<div class="ex-phone"><div class="ex-phone-screen">${statusBar}<iframe src="${esc(e.url)}" title="${esc(typo(`${e.title}: working demo`))}" loading="lazy"></iframe><i class="ex-homebar" aria-hidden="true"></i></div></div>`;
+}
+
+// The demo website on a laptop and a phone: real pages, scaled down (site.js sets the scale).
+function deviceShot(e) {
+  const where = `${site.domain}${e.url.replace(/\/$/, '')}`;
+  return `<div class="ex-shot" inert>
+<div class="ex-laptop"><div class="ex-laptop-lid"><div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">${esc(where)}</span></div><div class="ex-fit ex-fit-wide" data-fit="1280"><iframe src="${esc(e.url)}" width="1280" height="800" loading="lazy" tabindex="-1" title="${esc(typo(`${e.title} on a computer (preview)`))}"></iframe></div></div><div class="ex-laptop-base"></div></div>
+<div class="ex-phone ex-phone-mini"><div class="ex-phone-screen">${statusBar}<div class="ex-fit ex-fit-tall" data-fit="390"><iframe src="${esc(e.url)}" width="390" height="780" loading="lazy" tabindex="-1" title="${esc(typo(`${e.title} on a phone (preview)`))}"></iframe></div></div></div>
+</div>`;
+}
+
+// Buttons that fill in the enquiry form (site.js); without JavaScript they just go to it.
+function prefillLink(cls, label, need, details, type) {
+  if (!canEnquire) return '';
+  return `<a class="${cls}" href="#enquiry" data-prefill-need="${esc(need)}"${type ? ` data-prefill-type="${esc(type)}"` : ''}${details ? ` data-prefill-details="${esc(typo(fill(details)))}"` : ''}>${t(label)}</a>`;
+}
+
 function examplesPage() {
-  const E = C.examplesPage;
-  const page = { url: '/examples', out: 'examples.html', title: E.seo.title, description: E.seo.description };
-  const both = examples.some((e) => e.kind === 'website') && examples.some((e) => e.kind === 'tool');
-  const legend = '<ul class="legend"><li><span class="tag tag-demo">Demo</span> A made-up business, built to show what’s possible.</li><li><span class="tag tag-client">Client</span> A real business’s work, shown with permission.</li></ul>';
-  const filter = both ? '<div class="filter" role="group" aria-label="Show" data-filter hidden><button type="button" aria-pressed="true" data-show="all">All</button><button type="button" aria-pressed="false" data-show="website">Websites</button><button type="button" aria-pressed="false" data-show="tool">Tools</button></div>' : '';
-  const list = examples.length
-    ? `<div class="examples" data-examples>${examples.map(exampleCard).join('')}</div>`
-    : `<div class="empty card">${svg.stepDoor(2)}<p>${t(E.empty)}</p>${ctaRow(page)}</div>`;
-  page.body = `${pageHero(E.h1, E.lead)}
-<section class="section section-tight"><div class="wrap">${examples.length ? legend : ''}${filter}${list}</div></section>
-${examples.length && canEnquire ? `<section class="section section-sand"><div class="wrap narrow center">${sectionHead('see', 'Want to see yours?', 'Get a free mock-up of your website, or a free plan for your tool.')}${ctaRow(page)}</div></section>` : ''}`;
+  const E = EXP;
+  const H = E.hero;
+  const W = E.website;
+  const T = E.tools;
+  const G = E.together;
+  const page = { url: '/examples', out: 'examples.html', hasForm: true, jsonLd: true, title: E.seo.title, description: E.seo.description, bodyClass: 'page-examples' };
+  const demos = examples.filter((e) => e.status === 'demo');
+  const siteDemo = demos.find((e) => e.id === W.item) || demos.find((e) => e.kind === 'website');
+  const tools = demos.filter((e) => e.kind === 'tool');
+  const clients = examples.filter((e) => e.status === 'client');
+  if (!siteDemo) warn(`examples.website.item: no demo website "${W.item}" in examples.items.`);
+
+  const links = [
+    ...(siteDemo ? [{ href: '#website', label: W.nav }] : []),
+    ...tools.map((e) => ({ href: `#${e.id}`, label: e.nav || e.title })),
+    ...(clients.length ? [{ href: '#clients', label: 'Client work' }] : []),
+    ...(canEnquire ? [{ href: '#enquiry', label: E.yourTurn.heading }] : [])
+  ];
+  const nav = `<nav class="ex-nav" aria-label="${esc(E.navLabel)}" data-exnav><div class="wrap"><ul class="ex-nav-list">${links.map((l) => `<li><a href="${l.href}">${t(l.label)}</a></li>`).join('')}</ul></div></nav>`;
+
+  const hero = `<section class="hero ex-hero" aria-labelledby="ex-hero-h"><div class="wrap narrow center">
+<p class="eyebrow">${t(H.eyebrow)}</p>
+<h1 id="ex-hero-h">${tHl(H.h1)}</h1>
+<p class="lead">${t(H.lead)}</p>
+<div class="cta-row cta-center">${siteDemo ? `<a class="btn btn-gold btn-lg" href="#website">${t(H.websiteButton)}</a>` : ''}${tools.length ? `<a class="btn btn-ghost btn-lg" href="#tools">${t(H.toolButton)}${svg.icon('down')}</a>` : ''}</div>
+<p class="ex-hero-note">${svg.icon('lock')}<span>${t(H.note)}</span></p>
+</div></section>`;
+
+  const website = siteDemo ? `<section class="section ex-website" id="website" aria-labelledby="website-h"><div class="wrap ex-website-grid">
+<div class="ex-website-shot">${deviceShot(siteDemo)}</div>
+<div class="ex-website-text">
+${exLabel(siteDemo)}
+<h2 id="website-h">${t(W.heading)}</h2>
+<p class="section-lead">${t(W.lead)}</p>
+${ticks(W.points)}
+<p class="ex-price">${examplePrice(siteDemo)}</p>
+<div class="cta-row"><a class="btn btn-gold btn-lg" href="${esc(siteDemo.url)}"${ext}>${t(W.openButton)}${newTab}</a>${prefillLink('btn btn-ghost btn-lg', W.wantButton, 'website', W.details, W.businessType)}</div>
+</div>
+</div></section>` : '';
+
+  const toolSections = tools.map((e, i) => `<article class="ex-tool${i % 2 ? ' ex-tool-flip' : ''}" id="${esc(e.id)}" aria-labelledby="${esc(e.id)}-h">
+<div class="ex-tool-device">${phoneFrame(e)}${isSet(e.tryThis) ? `<p class="ex-try"><strong>${t(T.tryLabel)}</strong> ${t(e.tryThis)}</p>` : ''}</div>
+<div class="ex-tool-text">
+${exLabel(e)}
+<h3 id="${esc(e.id)}-h">${t(e.nav || e.title)}: ${t(e.business || e.title)}</h3>
+${isSet(e.type) ? `<p class="ex-type">${t(e.type)}</p>` : ''}
+${isSet(e.problem) ? `<p class="ex-problem"><span class="visually-hidden">The problem, in the owner’s words: </span>${t(`“${e.problem}”`)}</p>` : ''}
+${e.fixes ? `<p class="ex-fix-h">${t(T.fixHeading)}</p>${ticks(e.fixes)}` : ''}
+<p class="ex-price">${examplePrice(e)}</p>
+<div class="cta-row"><a class="btn btn-navy" href="${esc(e.url)}"${ext}>${t(T.fullScreen)}${newTab}</a>${prefillLink('btn btn-ghost', T.want, 'tool', e.want || `I'd like a tool like the ${e.title} demo.`)}</div>
+</div>
+</article>`).join('');
+  const toolsSection = tools.length ? `<section class="section section-sand ex-tools" id="tools" aria-labelledby="tools-h"><div class="wrap">
+<div class="ex-tools-head">${sectionHead('tools', T.heading, T.lead)}</div>
+<div class="ex-tool-list">${toolSections}</div>
+</div></section>` : '';
+
+  const flow = `<section class="section ex-together" id="together" aria-labelledby="together-h"><div class="wrap">
+<div class="center">${sectionHead('together', G.heading, G.lead)}</div>
+<ol class="ex-flow">${G.steps.map((s, i) => `<li class="ex-flow-step"><span class="ex-flow-icon">${s.icon === 'chat' ? svg.whatsapp() : svg.icon(s.icon)}</span><p class="ex-flow-num">Step ${i + 1}</p><h3>${t(s.title)}</h3><p>${t(s.text)}</p></li>`).join('')}</ol>
+<p class="ex-flow-line">${t(G.line)}</p>
+<p class="ex-flow-data">${svg.icon('lock')}<span>${t(G.data)}</span></p>
+</div></section>`;
+
+  // Real client work, only once there is some: no empty section, no apology.
+  const clientSection = clients.length ? `<section class="section section-sand" id="clients" aria-labelledby="clients-h"><div class="wrap">${sectionHead('clients', E.clients.heading, E.clients.lead)}<div class="examples examples-n${Math.min(clients.length, 3)}">${clients.map(exampleCard).join('')}</div></div></section>` : '';
+
+  page.body = `${hero}
+${nav}
+${website}
+${toolsSection}
+${flow}
+${clientSection}
+${enquirySection(page, { heading: E.yourTurn.heading, lead: E.yourTurn.lead })}`;
   return page;
 }
 
@@ -1312,6 +1447,375 @@ ${canEnquire ? `<section class="section section-sand"><div class="wrap narrow ce
   return [index, ...articles];
 }
 
+/* =====================================================================
+   Demos: the Tin Kettle Kitchen website and the four tools on /examples.
+   Sources are in src/examples/. They're made-up businesses with their own look; the only
+   Front Door Sites branding is the demo ribbon. Never indexed, never in the sitemap.
+   ===================================================================== */
+
+const EX_DIR = path.join(ROOT, 'src/examples');
+function readJson(file) {
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch (err) {
+    console.error(`\nCould not read ${path.relative(ROOT, file)}:\n  ${err.message}\n`);
+    process.exit(1);
+  }
+}
+const TK = readJson(path.join(EX_DIR, 'tin-kettle/content.json'));
+const TK_URL = '/examples/tin-kettle/';
+const TK_ORDER = '/examples/tools/ordering/';
+
+// The thin bar at the top of every demo page. Its style is inlined into each tool, and
+// added to the Tin Kettle stylesheet.
+const RIBBON_CSS = '.fds-ribbon{position:relative;margin:0;padding:.42rem .8rem;background:#0A2A44;color:#EEF3F7;font:500 12.5px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.01em;text-align:center}.fds-ribbon p{margin:0}.fds-ribbon a{color:#FEC458;font-weight:700;text-decoration:underline;text-underline-offset:.18em}.fds-ribbon a:hover{color:#FFE58E}.fds-ribbon a:focus-visible{outline:2px solid #FEC458;outline-offset:2px;border-radius:3px}.fds-ribbon .fds-sep{margin:0 .45em;opacity:.55}.fds-ribbon .fds-mark{display:inline-block;width:15px;height:15px;margin-right:.4em;vertical-align:-3px}@media print{.fds-ribbon{display:none}}';
+function demoRibbon(what, business) {
+  return `<aside class="fds-ribbon" aria-label="About this demo"><p>${svg.logo('fds-mark')}Demo ${what} by ${esc(site.name)}<span class="fds-sep" aria-hidden="true">·</span>${esc(business)} isn’t a real business<span class="fds-sep" aria-hidden="true">·</span><a href="/examples" target="_top">See more examples</a></p></aside>`;
+}
+// So a demo link sent on WhatsApp shows a proper preview.
+function demoShareTags(title, description, url) {
+  return `<meta property="og:type" content="website">
+<meta property="og:site_name" content="${esc(site.name)}">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${esc(site.url + url)}">
+<meta property="og:image" content="${esc(site.url)}/og-image.png">
+<meta name="twitter:card" content="summary_large_image">`;
+}
+
+/* ---------- Tin Kettle Kitchen ---------- */
+
+const TK_ICONS = {
+  kettle: '<path d="M8 11.2c-.1-3.7 1.7-6.2 4-6.2s4.1 2.5 4 6.2"/><path d="M6.6 19.5c-.7-3.5 0-6.3 1.9-8.3h7c1.9 2 2.6 4.8 1.9 8.3z"/><path d="M7.4 14.4 3.6 12l.9 3.2 2.3 1.6"/><path d="M10 11.2a2 2 0 0 1 4 0M12 9.2V8"/><path d="M5.5 19.5h13"/>',
+  plate: '<circle cx="12" cy="12.5" r="6.4"/><circle cx="12" cy="12.5" r="3.4"/><path d="M2.8 4.5v4.3a1.4 1.4 0 0 0 1.4 1.4v9.3M4.2 4.5v4.3M21.2 4.5c-1.3.9-1.8 2.6-1.8 4.6 0 1.6.5 2.3 1.8 2.3v8.1"/>',
+  cup: '<path d="M4.5 9.5h12v4.2a5.3 5.3 0 0 1-5.3 5.3H9.8a5.3 5.3 0 0 1-5.3-5.3z"/><path d="M16.5 10.8h1.4a2.4 2.4 0 0 1 0 4.8h-1.6"/><path d="M8.2 3.2c-.9 1.1.9 2.2 0 3.3M12.2 3.2c-.9 1.1.9 2.2 0 3.3"/><path d="M3.5 21h15"/>',
+  fish: '<path d="M21.2 12c-2.1 3.4-5 5.3-8.4 5.3-3.1 0-5.6-1.9-7.6-5.3 2-3.4 4.5-5.3 7.6-5.3 3.4 0 6.3 1.9 8.4 5.3z"/><path d="M5.2 12 2.4 8.6v6.8z"/><path d="M16.8 11.2h.01"/><path d="M10.6 9.4c.9.8 1.4 1.7 1.4 2.6s-.5 1.8-1.4 2.6"/>',
+  flame: '<path d="M12 21.2c-3.8 0-6.6-2.7-6.6-6.3 0-3.4 2.4-5.4 3.7-7.6.4 1.9 1.3 3 2.4 3.4-.2-3.3 1.3-6.2 3.9-7.9-.2 2.9 1 4.7 2.3 6.4 1 1.4 1.9 3.1 1.9 5.2 0 3.8-3.1 6.8-7.6 6.8z"/><path d="M12 21.2c-1.6 0-2.7-1.1-2.7-2.6 0-1.6 1.2-2.5 2.2-3.8.9 1.4 3.2 2 3.2 3.9 0 1.4-1.2 2.5-2.7 2.5z"/>',
+  star: '<path d="m12 2.8 2.8 5.8 6.3.9-4.6 4.5 1.1 6.3L12 17.3l-5.6 3 1.1-6.3-4.6-4.5 6.3-.9z"/>',
+  pin: '<path d="M12 21.5s-6.6-5.8-6.6-11.2a6.6 6.6 0 0 1 13.2 0c0 5.4-6.6 11.2-6.6 11.2z"/><circle cx="12" cy="10.2" r="2.5"/>',
+  phone: '<path d="M8.6 3.5H6.2A2.2 2.2 0 0 0 4 5.8c.4 8 6.2 13.8 14.2 14.2a2.2 2.2 0 0 0 2.3-2.2v-2.4a1 1 0 0 0-.7-1l-3-1a1 1 0 0 0-1.1.3l-1.3 1.6a12 12 0 0 1-5.5-5.5l1.6-1.3a1 1 0 0 0 .3-1.1l-1-3a1 1 0 0 0-1-.7z"/>',
+  chat: '<path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.4L3.5 20.5l1.6-4.4a8.4 8.4 0 1 1 15.4-4.5z"/><path d="M8.6 11.8h.01M12 11.8h.01M15.4 11.8h.01"/>',
+  clock: '<circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 1.9"/>',
+  arrow: '<path d="M4.5 12h15M13.5 6l6 6-6 6"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h10"/>',
+  bag: '<path d="M5.4 8.5h13.2l-1 11a1.6 1.6 0 0 1-1.6 1.5H8a1.6 1.6 0 0 1-1.6-1.5z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/>',
+  calendar: '<rect x="3.8" y="5.2" width="16.4" height="15.3" rx="2.6"/><path d="M3.8 9.8h16.4M8.3 3.2v3.6M15.7 3.2v3.6"/>',
+  parking: '<rect x="3.8" y="3.8" width="16.4" height="16.4" rx="3.4"/><path d="M10 16.5v-9h3a2.8 2.8 0 0 1 0 5.6h-3"/>',
+  info: '<circle cx="12" cy="12" r="8.6"/><path d="M12 11v5.2M12 7.9h.01"/>',
+  close: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"/>'
+};
+const tkIcon = (name, cls = 'tk-i') => `<svg class="${cls}${name === 'star' ? ' tk-i-fill' : ''}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${TK_ICONS[name] || TK_ICONS.kettle}</svg>`;
+const tkT = (s) => esc(typo(s));
+const tkItems = Object.fromEntries(TK.menu.flatMap((c) => c.items.map((i) => [i.id, { ...i, cat: c }])));
+
+// A real photo when one is set, or a designed placeholder until then.
+function tkPhoto(slot, cls = '', tone = '') {
+  if (isSet(slot.photo)) {
+    const rel = String(slot.photo).replace(/^\/+/, '');
+    const file = path.join(ROOT, 'src', rel);
+    const size = fs.existsSync(file) && /\.webp$/i.test(rel) ? webpSize(file) : null;
+    if (size) return `<div class="tk-photo ${cls}"><img src="/${esc(rel)}" width="${size.w}" height="${size.h}" loading="lazy" decoding="async" alt="${esc(slot.alt || '')}"></div>`;
+    warn(`Tin Kettle photo ${rel}: use a .webp file in src/${path.dirname(rel)}/. Showing the placeholder.`);
+  }
+  return `<div class="tk-photo tk-ph${tone ? ` tk-ph-${tone}` : ''} ${cls}" aria-hidden="true">${tkIcon(slot.icon || 'kettle')}<span class="tk-ph-cap">Your photo here</span></div>`;
+}
+
+function tkStars(n, label) {
+  const stars = Array.from({ length: 5 }, (_, i) => tkIcon('star', `tk-i${i < Math.round(n) ? '' : ' is-half'}`)).join('');
+  return `<span class="tk-stars" role="img" aria-label="${esc(label || `${n} out of 5 stars`)}">${stars}</span>`;
+}
+
+function tkHoursTable(caption) {
+  return `<table class="tk-hours"><caption class="tk-sr">${esc(caption)}</caption><tbody>${DAYS.map(([k, label]) => {
+    const h = TK.hours[k];
+    return `<tr data-day="${k}"><th scope="row">${label}</th><td>${h ? `${esc(h[0])}–${esc(h[1])}` : 'Closed'}</td></tr>`;
+  }).join('')}</tbody></table>`;
+}
+
+// A drawn map of the (made-up) corner: no Google Maps embed, nothing loaded from elsewhere.
+function tkMap() {
+  return `<svg class="tk-map" viewBox="0 0 360 230" role="img" aria-labelledby="tk-map-t"><title id="tk-map-t">Map: ${esc(TK.name)} is on the ${esc(TK.address.toLowerCase())}, near the beach, with parking on Third Street</title>
+<rect width="360" height="230" fill="#EFE3CB"/>
+<g fill="#E4D3B5"><rect x="12" y="12" width="118" height="70" rx="10"/><rect x="166" y="12" width="84" height="70" rx="10"/><rect x="12" y="132" width="52" height="86" rx="10"/><rect x="166" y="132" width="84" height="86" rx="10"/></g>
+<rect x="76" y="132" width="54" height="86" rx="10" fill="#D6DBB6"/>
+<g fill="#B6BD86"><circle cx="92" cy="152" r="6"/><circle cx="112" cy="166" r="7"/><circle cx="94" cy="190" r="6.5"/><circle cx="116" cy="200" r="5.5"/></g>
+<path d="M276 0c-8 22 6 40-2 62s8 40 0 62 8 42-2 64 4 28 0 42h88V0z" fill="#F3DCAE"/>
+<path d="M300 0c-8 22 6 40-2 62s8 40 0 62 8 42-2 64 4 28 0 42h64V0z" fill="#B9D4CC"/>
+<g fill="none" stroke="#7EA79D" stroke-width="2" stroke-linecap="round"><path d="M318 34q5-4 10 0t10 0"/><path d="M326 92q5-4 10 0t10 0"/><path d="M316 150q5-4 10 0t10 0"/><path d="M328 200q5-4 10 0t10 0"/></g>
+<path d="M0 107h290" stroke="#FFFBF4" stroke-width="24"/>
+<path d="M148 0v230" stroke="#FFFBF4" stroke-width="20"/>
+<path d="M0 107h290M148 0v230" stroke="#D8C7A8" stroke-width="1.2" stroke-dasharray="6 7"/>
+<path d="M262 0v230" stroke="#FFFBF4" stroke-width="10"/>
+<text class="tk-map-t" x="16" y="110.5">Harbour Road</text>
+<text class="tk-map-t" transform="translate(151.5 222) rotate(-90)">Third Street</text>
+<text class="tk-map-sea" transform="translate(337 70) rotate(90)">BEACH</text>
+<g transform="translate(152 150)"><rect width="22" height="22" rx="5" fill="#515830"/><path d="M8.5 17V6h4a3.3 3.3 0 0 1 0 6.6h-4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g transform="translate(168 66)"><path d="M14 38S0 25.5 0 13.5a14 14 0 0 1 28 0C28 25.5 14 38 14 38z" fill="#C2603C" stroke="#7E3418" stroke-width="2"/><circle cx="14" cy="13.5" r="5.5" fill="#FFFBF4"/></g>
+<g transform="translate(200 62)"><rect width="78" height="24" rx="12" fill="#2B2724"/><text class="tk-map-you" x="39" y="16.5" text-anchor="middle" fill="#FFFBF4">Tin Kettle</text></g>
+<g transform="translate(26 182)" fill="none" stroke="#5B524B" stroke-width="1.6"><circle r="13" fill="#FFFBF4"/><path d="M0-8l4 9H-4z" fill="#2B2724" stroke="none"/></g><text class="tk-map-t" x="26" y="208" text-anchor="middle">N</text>
+</svg>`;
+}
+
+const TK_NAV = [
+  { key: 'home', href: TK_URL, label: 'Home' },
+  { key: 'menu', href: `${TK_URL}menu`, label: 'Menu' },
+  { key: 'book', href: `${TK_URL}book`, label: 'Book a table' },
+  { key: 'find', href: `${TK_URL}find-us`, label: 'Find us' }
+];
+
+function tkLogo(cls = '') {
+  return `<a class="tk-logo ${cls}" href="${TK_URL}"><span class="tk-logo-mark">${tkIcon('kettle')}</span><span class="tk-logo-name"><b>${esc(TK.short)}</b><small>Kitchen</small></span><span class="tk-sr"> home</span></a>`;
+}
+
+function tkHeader(p) {
+  const items = (list) => list.map((n) => `<li><a href="${n.href}"${p.key === n.key ? ' aria-current="page"' : ''}>${esc(n.label)}</a></li>`).join('');
+  const order = `<a class="tk-btn tk-btn-main tk-btn-sm" href="${TK_ORDER}">${tkIcon('bag')}Order</a>`;
+  return `<header class="tk-header"><div class="tk-wrap tk-header-in">
+${tkLogo()}
+<nav class="tk-nav" aria-label="Main"><ul>${items(TK_NAV.filter((n) => n.key !== 'home'))}</ul>${order}</nav>
+<details class="tk-menu"><summary>${tkIcon('menu')}<span>Menu</span></summary><nav class="tk-menu-panel" aria-label="Menu"><ul>${items(TK_NAV)}</ul>${order}</nav></details>
+</div></header>`;
+}
+
+function tkFooter() {
+  const F = TK.find;
+  const hoursList = DAYS.map(([k, label]) => `<li><span>${label.slice(0, 3)}</span><span>${TK.hours[k] ? `${TK.hours[k][0]}–${TK.hours[k][1]}` : 'Closed'}</span></li>`).join('');
+  return `<footer class="tk-footer"><div class="tk-wrap">
+<div class="tk-footer-grid">
+<div>${tkLogo()}<p class="tk-footer-about">${tkT(TK.promise)}</p><p class="tk-address">${tkIcon('pin')}<span>${tkT(TK.address)}<br>${tkT(TK.town)}</span></p></div>
+<div><h2>Hours</h2><ul class="tk-footer-hours">${hoursList}</ul></div>
+<div><h2>Visit</h2><ul>${TK_NAV.map((n) => `<li><a href="${n.href}">${esc(n.label)}</a></li>`).join('')}<li><a href="${TK_ORDER}">Order for collection</a></li></ul><p class="tk-parking">${tkIcon('parking')}<span>${tkT(F.parking)}</span></p></div>
+</div>
+<div class="tk-footer-base"><p>A demo website by <a href="/examples">${esc(site.name)}</a>. ${esc(TK.name)} isn’t a real business, and nothing here is sent or stored.</p></div>
+</div></footer>`;
+}
+
+function tkBar() {
+  const F = TK.find;
+  return `<nav class="tk-bar" aria-label="Quick actions">
+<button class="tk-btn tk-btn-line" type="button" data-tk-toast="${esc(typo(F.callToast))}">${tkIcon('phone')}Call</button>
+<button class="tk-btn tk-btn-olive" type="button" data-tk-toast="${esc(typo(F.whatsappToast))}">${tkIcon('chat')}WhatsApp</button>
+<a class="tk-btn tk-btn-main" href="${TK_ORDER}">${tkIcon('bag')}Order</a>
+</nav>`;
+}
+
+function tkLayout(p, assets) {
+  const data = JSON.stringify({ short: TK.short, hours: TK.hours }).replace(/</g, '\\u003c');
+  return `<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(typo(p.title))}</title>
+<meta name="description" content="${esc(typo(p.description))}">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#C2603C">
+<link rel="stylesheet" href="${assets.css}">
+<script src="${assets.js}" defer></script>
+<link rel="icon" href="${TK_URL}favicon.svg" type="image/svg+xml">
+${demoShareTags(typo(p.title), typo(p.description), p.url)}
+<script type="application/json" id="tk-data">${data}</script>
+</head>
+<body class="tk-has-bar">
+<a class="tk-skip" href="#main">Skip to content</a>
+${demoRibbon('website', TK.name)}
+${tkHeader(p)}
+<main id="main">
+${p.body}
+</main>
+${tkFooter()}
+${tkBar()}
+<div class="tk-toasts" role="status" aria-live="polite" data-tk-toasts></div>
+</body>
+</html>
+`;
+}
+
+function tkHome() {
+  const S = TK.specials;
+  const Y = TK.why;
+  const A = TK.about;
+  const R = TK.reviews;
+  const F = TK.find;
+  const specials = S.items.map((s, i) => {
+    const it = tkItems[s.item];
+    if (!it) { warn(`Tin Kettle special: no menu item "${s.item}"`); return ''; }
+    return `<li class="tk-special">${tkPhoto(s, '', ['', 'sun', 'olive'][i % 3])}<div class="tk-special-body"><div class="tk-special-top"><h3>${tkT(it.name)}</h3><span class="tk-price">${rand(it.price)}</span></div><p>${tkT(s.note)}</p><a class="tk-btn tk-btn-line tk-btn-sm" href="${TK_ORDER}?add=${esc(it.id)}">Order this<span class="tk-sr">: ${tkT(it.name)}</span></a></div></li>`;
+  }).join('');
+  const reviews = R.items.map((r) => `<li><figure class="tk-review">${tkStars(r.stars, `${r.stars} out of 5 stars`)}<blockquote><p>${tkT(r.text)}</p></blockquote><figcaption><span class="tk-avatar" aria-hidden="true">${esc(r.name[0])}</span>${esc(r.name)}<span class="tk-review-src">Demo review</span></figcaption></figure></li>`).join('');
+  const tip = `<span class="tk-tip"><button class="tk-tip-btn" type="button" aria-describedby="tk-rating-tip" aria-expanded="false">${tkIcon('info')}<span class="tk-sr">About these figures</span></button><span class="tk-tip-text" id="tk-rating-tip" role="tooltip">${tkT(TK.rating.tip)}</span></span>`;
+  return `<div class="tk-awning" aria-hidden="true"></div>
+<section class="tk-hero" aria-labelledby="tk-hero-h"><div class="tk-wrap tk-hero-grid">
+<div>
+<p class="tk-kind">${tkT(TK.kind)} · ${tkT(TK.town.split(',')[0])}</p>
+<hgroup>
+<h1 id="tk-hero-h">${tkT(TK.name)}</h1>
+<p class="tk-status" data-tk-status><span class="tk-status-dot" aria-hidden="true"></span><span data-tk-status-text>Open every day. Our hours are below.</span></p>
+</hgroup>
+<p class="tk-promise">${tkT(TK.promise)}</p>
+<div class="tk-btns"><a class="tk-btn tk-btn-main" href="${TK_URL}menu">See the menu</a><a class="tk-btn tk-btn-line" href="${TK_ORDER}">${tkIcon('bag')}Order for collection</a></div>
+<p class="tk-rating">${tkStars(TK.rating.stars, TK.rating.text)}<span>${tkT(TK.rating.text)}</span>${tip}</p>
+</div>
+${tkPhoto(TK.hero, 'tk-hero-photo')}
+</div></section>
+<section class="tk-section tk-section-olive" aria-labelledby="tk-specials-h"><div class="tk-wrap">
+<p class="tk-eyebrow">Fresh today</p>
+<h2 id="tk-specials-h">${tkT(S.heading)}</h2>
+<ul class="tk-specials">${specials}</ul>
+<p class="tk-more"><a href="${TK_URL}menu">See the full menu ${tkIcon('arrow')}</a></p>
+</div></section>
+<section class="tk-section tk-section-paper" aria-labelledby="tk-why-h"><div class="tk-wrap">
+<h2 id="tk-why-h">${tkT(Y.heading)}</h2>
+<ul class="tk-why">${Y.items.map((w) => `<li><span class="tk-why-icon">${tkIcon(w.icon)}</span><h3>${tkT(w.title)}</h3><p>${tkT(w.text)}</p></li>`).join('')}</ul>
+</div></section>
+<section class="tk-section" aria-labelledby="tk-about-h"><div class="tk-wrap tk-about">
+${tkPhoto(A, '', 'olive')}
+<div><p class="tk-eyebrow">About us</p><h2 id="tk-about-h">${tkT(A.heading)}</h2>${A.text.map((x) => `<p>${tkT(x)}</p>`).join('')}<p class="tk-more"><a href="${TK_URL}book">Book a table ${tkIcon('arrow')}</a></p></div>
+</div></section>
+<section class="tk-section tk-section-sand" aria-labelledby="tk-reviews-h"><div class="tk-wrap">
+<h2 id="tk-reviews-h">${tkT(R.heading)}</h2>
+<p class="tk-reviews-sum">${tkStars(TK.rating.stars, TK.rating.text)}<span>${tkT(TK.rating.text)}</span></p>
+<ul class="tk-reviews">${reviews}</ul>
+</div></section>
+<section class="tk-section tk-section-paper" aria-labelledby="tk-find-h"><div class="tk-wrap">
+<h2 id="tk-find-h">${tkT(F.heading)}</h2>
+<p class="tk-lead">${tkT(F.lead)}</p>
+<div class="tk-find">
+<div class="tk-card"><h3>${tkIcon('clock')}Opening hours</h3>${tkHoursTable(`${TK.name} opening hours`)}<p class="tk-hours-note">${tkT(TK.grill.note)}</p></div>
+<div class="tk-card">${tkMap()}<p class="tk-address">${tkIcon('pin')}<span>${tkT(TK.address)}, ${tkT(TK.town)}</span></p><p class="tk-parking">${tkIcon('parking')}<span>${tkT(F.parking)}</span></p><div class="tk-btns"><button class="tk-btn tk-btn-main" type="button" data-tk-toast="${esc(typo(F.directionsToast))}">${tkIcon('pin')}Get directions</button><a class="tk-btn tk-btn-line" href="${TK_URL}find-us">More about finding us</a></div></div>
+</div>
+</div></section>`;
+}
+
+function tkMenu() {
+  const M = TK.menu;
+  const tags = (it) => (it.tags || []).map((g) => `<abbr class="tk-tag" title="${esc(TK.tags[g] || g)}">${esc(g)}</abbr>`).join('');
+  const extras = `<p class="tk-extras"><strong>Extras:</strong> ${TK.extras.map((x) => `${esc(x.name)} ${rand(x.price)}`).join(' · ')}</p>`;
+  const tabs = M.map((c) => `<button class="tk-tab" type="button" role="tab" id="tab-${esc(c.id)}" aria-controls="${esc(c.id)}" data-tk-tab="${esc(c.id)}">${esc(c.name)}</button>`).join('');
+  const panels = M.map((c) => `<section class="tk-cat" id="${esc(c.id)}" aria-labelledby="tab-${esc(c.id)} ${esc(c.id)}-h" data-tk-panel>
+<div class="tk-cat-head"><h2 id="${esc(c.id)}-h">${esc(c.name)}</h2>${c.grill ? `<span class="tk-tag">${tkT(TK.grill.label)}</span>` : ''}</div>
+${c.grill ? `<p class="tk-cat-note">${tkIcon('flame')}<span>${tkT(TK.grill.note)}</span></p>` : ''}
+<ul class="tk-dishes">${c.items.map((it) => `<li class="tk-dish">
+<h3 class="tk-dish-name"><span>${tkT(it.name)}</span><span class="tk-leader" aria-hidden="true"></span></h3>
+<span class="tk-price">${rand(it.price)}</span>
+${it.text ? `<p class="tk-dish-text">${tkT(it.text)}</p>` : ''}
+<div class="tk-dish-foot"><span class="tk-tags">${tags(it)}</span><a class="tk-btn tk-btn-line tk-btn-sm" href="${TK_ORDER}?add=${esc(it.id)}">Order this<span class="tk-sr">: ${tkT(it.name)}</span></a></div>
+</li>`).join('')}</ul>
+${c.extras ? extras : ''}
+</section>`).join('');
+  return `<section class="tk-pagehead" aria-labelledby="tk-menu-h"><div class="tk-wrap"><p class="tk-eyebrow">Menu</p><h1 id="tk-menu-h">What we’re cooking</h1><p class="tk-lead">${tkT(TK.menuIntro)}</p></div></section>
+<section class="tk-section tk-section-tight"><div class="tk-wrap" data-tk-tabs>
+<div class="tk-tabs" role="tablist" aria-label="Menu sections" data-tk-tablist hidden>${tabs}</div>
+${panels}
+<ul class="tk-legend">${Object.entries(TK.tags).map(([k, v]) => `<li><span class="tk-tag">${esc(k)}</span> ${esc(v)}</li>`).join('')}</ul>
+<div class="tk-menu-cta"><h2>Hungry now?</h2><p>Order for collection and skip the queue. Pay when you pick it up.</p><a class="tk-btn tk-btn-main" href="${TK_ORDER}">${tkIcon('bag')}Start an order</a></div>
+</div></section>`;
+}
+
+function tkBook() {
+  const B = TK.book;
+  const people = Array.from({ length: Number(B.maxPeople) || 12 }, (_, i) => `<option value="${i + 1}"${i === 1 ? ' selected' : ''}>${i + 1}</option>`).join('');
+  return `<section class="tk-pagehead" aria-labelledby="tk-book-h"><div class="tk-wrap"><p class="tk-eyebrow">Tables</p><h1 id="tk-book-h">${tkT(B.heading)}</h1><p class="tk-lead">${tkT(B.lead)}</p></div></section>
+<section class="tk-section tk-section-tight"><div class="tk-wrap tk-book">
+<form class="tk-form" data-tk-book novalidate>
+<p class="tk-nothing">${tkIcon('lock')}<span>Demo: nothing you type here is sent or stored.</span></p>
+<div class="tk-row">
+<div class="tk-field"><label for="bk-date">Date</label><input id="bk-date" name="date" type="date" required></div>
+<div class="tk-field"><label for="bk-time">Time</label><select id="bk-time" name="time" required><option value="">Choose a date first</option></select></div>
+</div>
+<div class="tk-row">
+<div class="tk-field"><label for="bk-people">Number of people</label><select id="bk-people" name="people" required>${people}</select></div>
+<div class="tk-field"><label for="bk-name">Your name</label><input id="bk-name" name="name" type="text" autocomplete="given-name" maxlength="60" required></div>
+</div>
+<div class="tk-field"><label for="bk-note">A note for us <span class="tk-opt">(optional)</span></label><textarea id="bk-note" name="note" rows="3" maxlength="300" placeholder="e.g. A high chair, please"></textarea></div>
+<button class="tk-btn tk-btn-main" type="submit">${tkIcon('calendar')}Request a table</button>
+</form>
+<aside class="tk-book-side" aria-label="Opening hours">
+<div class="tk-card"><h2>${tkIcon('clock')}When we’re open</h2>${tkHoursTable(`${TK.name} opening hours`)}<p class="tk-hours-note">Tables can be booked up to an hour before closing.</p></div>
+<div class="tk-card"><h2>${tkIcon('bag')}Just want food?</h2><p>Order for collection instead, and we’ll have it ready.</p><a class="tk-btn tk-btn-line" href="${TK_ORDER}">Order for collection</a></div>
+</aside>
+</div></section>
+<div class="tk-sheet" role="dialog" aria-modal="true" aria-labelledby="tk-sheet-h" data-tk-sheet hidden>
+<div class="tk-sheet-back" data-tk-close></div>
+<div class="tk-sheet-box">
+<button class="tk-sheet-close" type="button" data-tk-close>${tkIcon('close')}<span class="tk-sr">Close</span></button>
+<h2 id="tk-sheet-h" tabindex="-1">${tkT(B.panelHeading)}</h2>
+<div class="tk-chat"><p class="tk-chat-top"><span class="tk-chat-av" data-tk-initial>S</span><span><span data-tk-from>New customer</span><small>WhatsApp · from your website</small></span></p><p class="tk-bubble"><span data-tk-message></span><span class="tk-bubble-time" data-tk-stamp></span></p></div>
+<p class="tk-sheet-note">${tkIcon('phone')}<span>${tkT(B.panelNote)}</span></p>
+<button class="tk-btn tk-btn-main" type="button" data-tk-close>Close and start again</button>
+</div>
+</div>`;
+}
+
+function tkFind() {
+  const F = TK.find;
+  return `<section class="tk-pagehead" aria-labelledby="tk-findus-h"><div class="tk-wrap"><p class="tk-eyebrow">Find us</p><h1 id="tk-findus-h">${tkT(TK.address)}</h1><p class="tk-lead">${tkT(F.lead)}</p></div></section>
+<section class="tk-section tk-section-tight"><div class="tk-wrap tk-find">
+<div class="tk-card">${tkMap()}<p class="tk-address">${tkIcon('pin')}<span>${tkT(TK.address)}, ${tkT(TK.town)}</span></p><p class="tk-parking">${tkIcon('parking')}<span>${tkT(F.parking)}</span></p>
+<div class="tk-btns"><button class="tk-btn tk-btn-main" type="button" data-tk-toast="${esc(typo(F.directionsToast))}">${tkIcon('pin')}Get directions</button><button class="tk-btn tk-btn-olive" type="button" data-tk-toast="${esc(typo(F.whatsappToast))}">${tkIcon('chat')}WhatsApp us</button><button class="tk-btn tk-btn-line" type="button" data-tk-toast="${esc(typo(F.callToast))}">${tkIcon('phone')}Call us</button></div></div>
+<div class="tk-card"><h2>${tkIcon('clock')}Opening hours</h2>${tkHoursTable(`${TK.name} opening hours`)}<p class="tk-hours-note">${tkT(TK.grill.note)}</p><p class="tk-status" data-tk-status><span class="tk-status-dot" aria-hidden="true"></span><span data-tk-status-text>Open every day.</span></p></div>
+</div></section>`;
+}
+
+function tkNotFound() {
+  const N = TK.notFound;
+  return `<section class="tk-404" aria-labelledby="tk-404-h"><div class="tk-wrap"><div class="tk-404-mark">${tkIcon('kettle')}</div><h1 id="tk-404-h">${tkT(N.heading)}</h1><p class="tk-lead">${tkT(N.lead)}</p><div class="tk-btns"><a class="tk-btn tk-btn-main" href="${TK_URL}">Home</a><a class="tk-btn tk-btn-line" href="${TK_URL}menu">Menu</a><a class="tk-btn tk-btn-line" href="${TK_URL}book">Book a table</a><a class="tk-btn tk-btn-line" href="${TK_URL}find-us">Find us</a></div></div></section>`;
+}
+
+function tinKettlePages() {
+  const desc = TK.seo.description;
+  return [
+    { key: 'home', url: TK_URL, out: 'examples/tin-kettle/index.html', title: TK.seo.title, description: desc, body: tkHome() },
+    { key: 'menu', url: `${TK_URL}menu`, out: 'examples/tin-kettle/menu.html', title: `Menu | ${TK.name} (demo)`, description: desc, body: tkMenu() },
+    { key: 'book', url: `${TK_URL}book`, out: 'examples/tin-kettle/book.html', title: `Book a table | ${TK.name} (demo)`, description: desc, body: tkBook() },
+    { key: 'find', url: `${TK_URL}find-us`, out: 'examples/tin-kettle/find-us.html', title: `Find us | ${TK.name} (demo)`, description: desc, body: tkFind() },
+    { key: '404', url: `${TK_URL}404`, out: 'examples/tin-kettle/404.html', title: `Page not found | ${TK.name} (demo)`, description: desc, body: tkNotFound() }
+  ];
+}
+
+function tkFavicon() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#C2603C"/><g transform="translate(12 11) scale(1.7)" fill="none" stroke="#FFFBF4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${TK_ICONS.kettle}</g></svg>\n`;
+}
+
+/* ---------- the four tools: one self-contained HTML file each ---------- */
+
+// Each tool's source has <!-- demo:head --> and <!-- demo:ribbon --> where the share tags
+// and the ribbon go. The ordering tool also gets Tin Kettle's menu at <!-- demo:tin-kettle -->,
+// so the menu, prices and hours live in one place.
+function demoTools() {
+  const dir = path.join(EX_DIR, 'tools');
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => {
+    const slug = d.name;
+    const file = path.join(dir, slug, 'index.html');
+    if (!fs.existsSync(file)) { warn(`src/examples/tools/${slug}/ has no index.html, so it was skipped.`); return null; }
+    const url = `/examples/tools/${slug}/`;
+    const item = examples.find((e) => e.url === url);
+    if (!item) warn(`The tool at ${url} isn't in examples.items in content.json.`);
+    const business = item ? item.business || item.title : slug;
+    let html = fs.readFileSync(file, 'utf8');
+    const title = (/<title>([^<]*)<\/title>/.exec(html) || [])[1] || business;
+    const description = (/<meta name="description" content="([^"]*)"/.exec(html) || [])[1] || '';
+    const tkData = JSON.stringify({ name: TK.name, short: TK.short, site: TK_URL, menu: `${TK_URL}menu`, hours: TK.hours, grill: TK.grill, menuCats: TK.menu, extras: TK.extras, tags: TK.tags }).replace(/</g, '\\u003c');
+    html = html
+      .replace('<!-- demo:head -->', `${demoShareTags(title.replace(/&amp;/g, '&'), description.replace(/&amp;/g, '&'), url)}\n<style>${RIBBON_CSS}</style>`)
+      .replace('<!-- demo:ribbon -->', demoRibbon('tool', business))
+      .replace('<!-- demo:tin-kettle -->', `<script type="application/json" id="tk-data">${tkData}</script>`);
+    // Lighter to load: comments and indentation out of the inline style and script.
+    html = html
+      .replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => `<style>${minifyCss(css)}</style>`)
+      .replace(/<script>([\s\S]*?)<\/script>/g, (m, js) => `<script>${js.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('//')).join('\n')}</script>`);
+    if (!/<meta name="robots" content="noindex">/.test(html)) warn(`${url}: add <meta name="robots" content="noindex"> to the tool's <head>.`);
+    if (/<script[^>]+src=|<link[^>]+rel="stylesheet"/i.test(html)) warn(`${url}: tools load no outside scripts or stylesheets; inline them.`);
+    if (/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\s*\(/.test(html)) warn(`${url}: tools never send anything (found a network call).`);
+    if (/\son[a-z]+="/i.test(html) || /\sstyle="/i.test(html)) warn(`${url}: no inline event handlers or style="" attributes (the security policy blocks them).`);
+    // Hashes of the inline <script> and <style> blocks, for the page's security policy.
+    const sha = (s) => `'sha256-${crypto.createHash('sha256').update(s, 'utf8').digest('base64')}'`;
+    const scripts = [...html.matchAll(/<script(?![^>]*type="application\/(?:ld\+)?json")[^>]*>([\s\S]*?)<\/script>/g)].map((m) => sha(m[1]));
+    const styles = [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => sha(m[1]));
+    return { slug, url, out: `examples/tools/${slug}/index.html`, html, scripts, styles };
+  }).filter(Boolean);
+}
+
 /* ---------- write files ---------- */
 
 function hash(s) { return crypto.createHash('sha256').update(s).digest('hex').slice(0, 10); }
@@ -1349,8 +1853,25 @@ function build() {
   write(assets.css, css);
   write(assets.js, js);
   copyDir(path.join(ROOT, 'src/fonts'), path.join(OUT, 'fonts'), (f) => f.endsWith('.woff2'));
+  copyDir(path.join(EX_DIR, 'fonts'), path.join(OUT, 'fonts'), (f) => f.endsWith('.woff2'));
   copyDir(path.join(ROOT, 'src/img'), path.join(OUT, 'img'));
   copyDir(path.join(ROOT, 'src/static'), OUT);
+
+  // The demo website (its own stylesheet and script) and the four tools.
+  const tkCss = `${minifyCss(fs.readFileSync(path.join(EX_DIR, 'tin-kettle/tin-kettle.css'), 'utf8'))}\n${RIBBON_CSS}`;
+  const tkJs = fs.readFileSync(path.join(EX_DIR, 'tin-kettle/tin-kettle.js'), 'utf8');
+  const tkAssets = { css: `/assets/tin-kettle.${hash(tkCss)}.css`, js: `/assets/tin-kettle.${hash(tkJs)}.js` };
+  write(tkAssets.css, tkCss);
+  write(tkAssets.js, tkJs);
+  write('examples/tin-kettle/favicon.svg', tkFavicon());
+  const demoPages = tinKettlePages();
+  for (const p of demoPages) write(p.out, tkLayout(p, tkAssets));
+  const tools = demoTools();
+  for (const tool of tools) {
+    write(tool.out, tool.html);
+    const kb = Buffer.byteLength(tool.html) / 1024;
+    if (kb > 120) warn(`${tool.url} is ${Math.round(kb)} KB; keep each tool under 120 KB.`);
+  }
 
   const pages = [
     homePage(),
@@ -1387,13 +1908,13 @@ function build() {
 
 /img/*
   Cache-Control: public, max-age=86400
-`);
+${demoHeaders(tools)}`);
 
   checkOutput();
 
   const n = pages.length;
   const where = OUT.startsWith(ROOT + path.sep) ? path.relative(ROOT, OUT) : OUT;
-  console.log(`Built ${n} pages into ${where}/ in ${Date.now() - started} ms.`);
+  console.log(`Built ${n} pages, the ${TK.name} demo (${demoPages.length} pages) and ${tools.length} demo tools into ${where}/ in ${Date.now() - started} ms.`);
   const todo = placeholderReport();
   if (todo.length) console.log(`Still to fill in (hidden on the site until then): ${todo.join(', ')}`);
   if (warnings.size) {
@@ -1401,6 +1922,25 @@ function build() {
     for (const w of warnings) console.log(`  - ${w}`);
     process.exitCode = 1;
   }
+}
+
+// The demos may be shown in a frame on /examples (same site only), are never indexed, and can't
+// send anything anywhere. Each tool's inline script and style are allowed by their hashes.
+// These rules come after "/*", so they replace its frame and security policy for these paths.
+function demoHeaders(tools) {
+  const base = "img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; frame-ancestors 'self'; base-uri 'none'; object-src 'none'";
+  const rule = (pathPattern, csp) => `
+${pathPattern}
+  ! X-Frame-Options
+  ! Content-Security-Policy
+  X-Frame-Options: SAMEORIGIN
+  X-Robots-Tag: noindex
+  Content-Security-Policy: ${csp}
+`;
+  return [
+    rule(`${TK_URL}*`, `default-src 'self'; script-src 'self'; style-src 'self'; ${base}`),
+    ...tools.map((tool) => rule(`${tool.url}*`, `default-src 'self'; script-src ${tool.scripts.join(' ') || "'none'"}; style-src ${tool.styles.join(' ') || "'none'"}; ${base}`))
+  ].join('');
 }
 
 function placeholderReport() {
@@ -1444,6 +1984,7 @@ function checkOutput() {
     for (const m of visible.matchAll(/\s(href|src|action)="([^"]*)"/g)) {
       const v = m[2].replace(/&amp;/g, '&');
       if (v === '' || v === '#') { warn(`${rel}: empty ${m[1]}`); continue; }
+      if (/^data:/i.test(v)) continue;
       if (/^(https?:|mailto:|tel:)/i.test(v)) {
         if (/^https:\/\/wa\.me\/(\?|$)/.test(v) || /^mailto:(\?|$)/.test(v) || /TODO/i.test(v)) warn(`${rel}: broken link ${v}`);
         continue;
@@ -1468,10 +2009,22 @@ function checkOutput() {
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.webp': 'image/webp', '.woff2': 'font/woff2', '.xml': 'application/xml', '.txt': 'text/plain' };
 
+// Like Cloudflare: an unknown address gets the nearest 404.html (e.g. the demo cafe's own).
+function nearest404(urlPath) {
+  let dir = path.posix.dirname(urlPath.endsWith('/') ? `${urlPath}x` : urlPath);
+  for (;;) {
+    const file = path.join(OUT, dir, '404.html');
+    if (!dir.includes('..') && fs.existsSync(file)) return file;
+    if (dir === '/' || dir === '.') return path.join(OUT, '404.html');
+    dir = path.posix.dirname(dir);
+  }
+}
+
 function serve(port) {
   http.createServer((req, res) => {
-    const target = resolveLocal(new URL(req.url, 'http://localhost').pathname);
-    const file = target ? path.join(OUT, target) : path.join(OUT, '404.html');
+    const urlPath = new URL(req.url, 'http://localhost').pathname;
+    const target = resolveLocal(urlPath);
+    const file = target ? path.join(OUT, target) : nearest404(urlPath);
     res.writeHead(target ? 200 : 404, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream' });
     fs.createReadStream(file).pipe(res);
   }).listen(port, () => console.log(`\nPreview: http://localhost:${port}  (Ctrl+C to stop)`));

@@ -505,7 +505,7 @@
       "text": "Hi, I'm {firstName}, the person behind Front Door Sites. I build and look after every website and tool myself, so you deal with me directly, on WhatsApp or email.",
       "areaText": "I'm based in {serviceArea}. Because everything happens on WhatsApp and email, I can work with businesses anywhere in South Africa."
     },
-    "examplesHeading": "Recent examples",
+    "examplesHeading": "Demos you can try",
     "faqTeaser": {
       "heading": "Common questions",
       "ids": [
@@ -1238,16 +1238,175 @@
       "a": "Things like booking software, payment fees or SMS are paid by you, and I list them in your quote. Email hosting isn't included, but I can add it. Hosting and upkeep for a business tool is quoted with the tool."
     }
   ],
-  "examplesPage": {
+  "examples": {
+    "_note": "The /examples page. items is the one list of examples: the home page strip, /websites (websites only), /business-tools (tools only) and the industry pages (by niche) all read from it. Add real client work with \"status\": \"client\" (see README.md).",
     "seo": {
-      "title": "Website & Business Tool Examples | Front Door Sites",
-      "description": "Example websites and business tools for South African businesses. Demos are clearly labelled, and client work is shown with permission."
+      "title": "Working Demos: Websites & Business Tools | Front Door Sites",
+      "description": "Tap around a demo restaurant website and four working business tools: bookings, online ordering, a quote calculator and a staff app. Every business is made up."
     },
-    "h1": "Examples",
-    "lead": "Demos are made-up businesses, built to show what's possible. Client work is shown with the owner's permission.",
-    "empty": "There are no examples here yet. The best example is your own business: ask for a free mock-up or plan, and see it before you decide."
+    "navLabel": "On this page",
+    "hero": {
+      "eyebrow": "Examples",
+      "h1": "See what I build, then *tap it*",
+      "lead": "Everything here is a working demo of a made-up business, built the same way I'd build yours.",
+      "websiteButton": "Browse the demo website",
+      "toolButton": "Try a tool",
+      "note": "Nothing you type here is sent or stored."
+    },
+    "website": {
+      "item": "tin-kettle",
+      "nav": "Website",
+      "heading": "A full website: Tin Kettle Kitchen",
+      "lead": "A family café and grill, with its own menu, table requests and online ordering. Browse it like a real client's site.",
+      "points": [
+        "Shows whether the café is open right now, so nobody drives over to a locked door",
+        "The full menu with prices, easy to keep up to date",
+        "Table requests arrive on WhatsApp, neatly written out",
+        "Online ordering for collection, straight from the menu"
+      ],
+      "openButton": "Open the demo site",
+      "wantButton": "I want a site like this",
+      "businessType": "Restaurant",
+      "details": "I'd like a website like the Tin Kettle Kitchen demo."
+    },
+    "tools": {
+      "heading": "Tools that run your business",
+      "lead": "Each one is a working demo. Tap around in the phone, or open it full screen.",
+      "fixHeading": "How the tool fixes it",
+      "fullScreen": "Try it full screen",
+      "want": "Get one like this",
+      "tryLabel": "Try this:"
+    },
+    "together": {
+      "heading": "How they fit together",
+      "lead": "A website gets you found. A tool runs the business.",
+      "steps": [
+        { "icon": "globe", "title": "Your website brings the customer in", "text": "They find you on Google, see your prices and decide." },
+        { "icon": "calendar", "title": "A tool takes the booking or order", "text": "They pick a time or build an order, without waiting for you to reply." },
+        { "icon": "chat", "title": "You get a tidy WhatsApp message", "text": "Every detail written out, instead of a phone call while your hands are full." }
+      ],
+      "line": "Start with one, and add the other when you're ready.",
+      "data": "Every tool is built so your data is yours. Export it any time; nothing is locked behind me."
+    },
+    "clients": {
+      "heading": "Real client work",
+      "lead": "Shown with each owner's permission."
+    },
+    "yourTurn": {
+      "heading": "Your turn",
+      "lead": "Tell me what wastes your time and I'll show you what I'd build. Free mock-up or plan, fixed quote, no calls needed."
+    },
+    "items": [
+      {
+        "id": "tin-kettle",
+        "kind": "website",
+        "status": "demo",
+        "title": "Tin Kettle Kitchen",
+        "business": "Tin Kettle Kitchen",
+        "summary": "A family café and grill: a live open/closed sign, the menu, table requests and online ordering.",
+        "url": "/examples/tin-kettle/",
+        "image": "img/examples/tin-kettle.webp",
+        "alt": "The Tin Kettle Kitchen demo home page: an awning, the café name, an open-now line and buttons to see the menu or order",
+        "priceKey": "website",
+        "niche": "restaurants",
+        "icon": "cup"
+      },
+      {
+        "id": "bookings",
+        "kind": "tool",
+        "status": "demo",
+        "title": "Bright Cuts bookings",
+        "business": "Bright Cuts",
+        "type": "A barber and salon",
+        "summary": "A barber and salon's own booking tool: pick a service, a barber and a time that's really free.",
+        "url": "/examples/tools/bookings/",
+        "image": "img/examples/bookings.webp",
+        "alt": "The Bright Cuts booking demo: a black panel saying Book in, skip the wait, beside a list of services with prices",
+        "priceKey": "business-system",
+        "niche": "salons",
+        "icon": "calendar",
+        "nav": "Bookings",
+        "problem": "Clients WhatsApp me at ten at night to ask what's free on Saturday.",
+        "fixes": [
+          "Clients see your real free times and book themselves, day or night.",
+          "Every booking checks that barber's diary, so nothing double-books.",
+          "You get each booking as a tidy message, with a reference number."
+        ],
+        "tryThis": "Pick a Skin fade with Sipho, then choose a day. Times that would run into his other bookings are greyed out.",
+        "want": "I'd like a booking tool like the Bright Cuts demo."
+      },
+      {
+        "id": "ordering",
+        "kind": "tool",
+        "status": "demo",
+        "title": "Tin Kettle ordering",
+        "business": "Tin Kettle Kitchen",
+        "type": "The demo café's own ordering",
+        "summary": "Online ordering for collection, with extras, notes and a collection time.",
+        "url": "/examples/tools/ordering/",
+        "image": "img/examples/ordering.webp",
+        "alt": "The Tin Kettle ordering demo: the breakfast menu with prices and Add buttons",
+        "priceKey": "bookings-shop",
+        "niche": "restaurants",
+        "icon": "cart",
+        "nav": "Ordering",
+        "problem": "On Saturday mornings the phone rings non-stop, and orders end up on the wrong slip.",
+        "fixes": [
+          "Customers order from your menu on their phone and choose when to collect.",
+          "Every order arrives the same way, with extras and notes written out.",
+          "Grill items can only be ordered while the grill is on."
+        ],
+        "tryThis": "Add two breakfast rolls and a flat white, then add an egg to one roll. The total updates as you go.",
+        "want": "I'd like online ordering like the Tin Kettle Kitchen demo."
+      },
+      {
+        "id": "quotes",
+        "kind": "tool",
+        "status": "demo",
+        "title": "Coastline Painting quotes",
+        "business": "Coastline Painting",
+        "type": "A house painter",
+        "summary": "A painter's instant estimate: rooms, sizes and finish in, a price range out.",
+        "url": "/examples/tools/quotes/",
+        "image": "img/examples/quotes.webp",
+        "alt": "The Coastline Painting quote demo: room options beside a green estimate card showing R6 950 to R8 490",
+        "priceKey": "small-tool",
+        "icon": "form",
+        "nav": "Quotes",
+        "problem": "I spend my evenings working out quotes for people who never reply.",
+        "fixes": [
+          "Customers get a ballpark price in seconds, worked out from your own rates.",
+          "You only measure up for people who already know the range.",
+          "Firm-quote requests arrive with the rooms, suburb and week they want."
+        ],
+        "tryThis": "Add a room, switch ceilings on or off and change the finish. The estimate updates straight away.",
+        "want": "I'd like a quote calculator like the Coastline Painting demo."
+      },
+      {
+        "id": "staff-app",
+        "kind": "tool",
+        "status": "demo",
+        "title": "Khumalo Plumbing job cards",
+        "business": "Khumalo Plumbing",
+        "type": "A plumbing team",
+        "summary": "A staff-only app for job cards, stock levels and a weekly report.",
+        "url": "/examples/tools/staff-app/",
+        "image": "img/examples/staff-app.webp",
+        "alt": "The Khumalo Plumbing staff app demo: today’s six job cards with colour-coded status pills",
+        "priceKey": "business-system",
+        "icon": "clipboard",
+        "nav": "Staff app",
+        "problem": "Job details live on paper, in a WhatsApp group and in my head.",
+        "fixes": [
+          "Every job in one place: who, where, what was done and what was used.",
+          "Your team updates a job from their phone in one tap.",
+          "You see today, the week and low stock at a glance."
+        ],
+        "tryThis": "Log in with demo / demo, open a New job and tap it through to Done. Watch the count at the top.",
+        "want": "I'd like a staff app like the Khumalo Plumbing job cards demo."
+      }
+    ]
   },
-  "examples": [],
   "startPage": {
     "seo": {
       "title": "How It Works: From Quote to Go-Live | Front Door Sites",
