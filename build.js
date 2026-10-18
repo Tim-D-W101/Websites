@@ -444,12 +444,11 @@ function priceAnchor(s, cls = '') {
   return `<p class="price-anchor${cls}">${s.split(' · ').map((part) => `<span><span>${t(part)}</span></span>`).join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
 }
 
-// opts.chapter: { id, n, label } makes it a numbered chapter of the home page tour.
-function stepsSection(id, heading, lead, items, sand = true, opts = {}) {
-  const list = items.map((s, i) => `<li class="step"><div class="step-art">${svg.stepDoor(Math.min(i + 1, 4))}</div><p class="step-num">Step ${i + 1}</p><h3>${t(s.title)}</h3><p>${t(s.text)}</p></li>`).join('');
-  const ch = opts.chapter;
-  const head = ch ? `<div class="chapter-head">${kicker(ch.n, ch.label)}${sectionHead(id, heading, lead)}</div>` : sectionHead(id, heading, lead);
-  return `<section class="section${sand ? ' section-sand' : ''}${ch ? ' chapter' : ''}"${ch ? ` id="${ch.id}"` : ''} aria-labelledby="${id}-h"><div class="wrap">${head}<ol class="steps steps-${items.length}" data-steps>${list}</ol></div></section>`;
+// The steps of a project, each with its little door: closed, ajar, open, then open and done.
+const stepItems = (items) => items.map((s, i) => `<li class="step"><div class="step-art">${svg.stepDoor(Math.min(i + 1, 4))}</div><p class="step-num">Step ${i + 1}</p><h3>${t(s.title)}</h3><p>${t(s.text)}</p></li>`).join('');
+
+function stepsSection(id, heading, lead, items, sand = true) {
+  return `<section class="section${sand ? ' section-sand' : ''}" aria-labelledby="${id}-h"><div class="wrap">${sectionHead(id, heading, lead)}<ol class="steps steps-${items.length}" data-steps>${stepItems(items)}</ol></div></section>`;
 }
 
 // The numbered plaque and label above a home page chapter's heading.
@@ -868,7 +867,7 @@ function iconGrid(items, cls = 'includes') {
   return `<ul class="${cls}">${items.map((i) => `<li><span class="inc-icon">${svg.icon(i.icon)}</span><div><h3>${t(i.title)}</h3><p>${t(i.text)}</p></div></li>`).join('')}</ul>`;
 }
 
-/* ---------- home: the front door, then a guided tour in seven chapters ---------- */
+/* ---------- home: the front door, then a guided tour in five chapters ---------- */
 
 // "Open the door to *more customers*": words between stars are highlighted.
 const tHl = (s) => t(s).replace(/\*([^*]+)\*/g, '<span class="hl">$1</span>');
@@ -928,8 +927,18 @@ function tourSection(chapters) {
 </div></section>`;
 }
 
-// 1. Why: a customer's search, step by step, on a phone that follows along (site.js).
-function whySection(n) {
+// A scene: a part of the home page that plays as you scroll. site.js makes its track tall,
+// sticks the stage to the screen and sets --p on the section from 0 to 1 as you scroll
+// through. Without JavaScript, with reduced motion, or on a screen too small for the stage,
+// it shows its finished state instead. after: anything under the stage; it scrolls as usual.
+function scene(name, cls, attrs, stage, after = '') {
+  return `<section class="section scene ${name}${cls ? ` ${cls}` : ''}" ${attrs} data-scene="${name}">
+<div class="scene-track" data-track><div class="scene-stage" data-stage>${stage}</div></div>${after}
+</section>`;
+}
+
+// 1. Why, part 1: a customer's search, step by step, on a phone that follows along (site.js).
+function whySection(ch) {
   const W = C.home.why;
   const P = W.phone;
   const ph = (s) => esc(typo(s));
@@ -940,8 +949,8 @@ function whySection(n) {
 <div class="ps ps-site"><p class="ps-site-top"><b>${ph(P.siteName)}</b><i></i></p><div class="ps-site-hero">${icon}<span>${ph(P.siteTagline)}</span></div><p class="ps-site-h">${ph(P.pricesHeading)}</p><ul class="ps-prices">${P.prices.map(([a, b]) => `<li><span>${ph(a)}</span><b>${ph(b)}</b></li>`).join('')}</ul><p class="ps-btn">${ph(P.button)}</p><p class="ps-gallery"><i></i><i></i><i></i></p><span class="ps-wa">${svg.whatsapp()}</span></div>
 <div class="ps ps-chat"><p class="ps-chat-top"><span class="ps-avatar">${icon}</span><b>${ph(P.siteName)}</b></p><div class="ps-msgs">${P.messages.map((m, i) => `<p class="ps-msg ${i % 2 ? 'ps-in' : 'ps-out'}">${ph(m)}</p>`).join('')}<p class="ps-done">${svg.icon('check')}<span>${ph(P.notice)}</span></p></div></div>`;
   const steps = W.steps.map((s, i) => `<li class="journey-step"><div class="journey-card"><span class="journey-num" aria-hidden="true">${i + 1}</span><div><h3>${t(s.title)}</h3><p>${t(s.text)}</p></div></div></li>`).join('');
-  return `<section class="section section-sand chapter" id="why" aria-labelledby="why-h"><div class="wrap">
-<div class="chapter-head">${kicker(n, W.kicker)}${sectionHead('why', W.heading, W.lead)}</div>
+  return `<section class="section section-sand chapter" id="${ch.id}" aria-labelledby="why-h"><div class="wrap">
+<div class="chapter-head">${kicker(ch.n, ch.kicker)}${sectionHead('why', W.heading, W.lead)}</div>
 <div class="journey" data-journey>
 <div class="journey-phone" aria-hidden="true"><div class="phone"><div class="phone-screen">${screens}</div></div></div>
 <ol class="journey-steps">${steps}</ol>
@@ -950,59 +959,127 @@ function whySection(n) {
 </div></section>`;
 }
 
-// 2. How it helps.
-function helpsSection(n) {
-  const Hp = C.home.helps;
-  return `<section class="section chapter" id="helps" aria-labelledby="helps-h"><div class="wrap">
-<div class="chapter-head">${kicker(n, Hp.kicker)}${sectionHead('helps', Hp.heading, Hp.lead)}</div>
-<ul class="helps">${Hp.items.map((i) => `<li class="help tilt"><span class="help-icon">${svg.icon(i.icon)}</span><h3>${t(i.title)}</h3><p>${t(i.text)}</p></li>`).join('')}</ul>
-</div></section>`;
+// 1. Why, part 2: without and with a website. A dark, closed shop lights up as you scroll and
+// the rows turn over one at a time (site.js). Without that, the shop is lit and each row shows
+// both sides.
+function lightsSection(page) {
+  const L = C.home.lights;
+  const rows = L.rows.map((r) => `<li class="flip-row"><span class="flip-a">${svg.icon('x')}<span><span class="visually-hidden">${t(L.without)}: </span>${t(r.without)}</span></span><span class="flip-b">${svg.icon('check')}<span><span class="visually-hidden">${t(L.with)}: </span>${t(r.with)}</span></span></li>`).join('');
+  const wa = contact.wa ? [{ href: esc(waGeneral()), label: `${svg.whatsapp()}WhatsApp us`, cls: 'btn-light' }] : [];
+  const stage = `<div class="wrap lights-grid">
+<div class="lights-head">${sectionHead('lights', L.heading, L.lead)}<p class="scene-hint" aria-hidden="true">${t(L.hint)}${svg.icon('down')}</p></div>
+<div class="shop">${svg.shop({ sign: fill(L.sign), closed: fill(L.closed), open: fill(L.open), address: fill(C.home.hero.address) })}</div>
+<div class="lights-rows"><p class="flip-heads" aria-hidden="true"><span class="flip-a">${t(L.without)}</span><span class="flip-b">${t(L.with)}</span></p><ul class="flip-rows">${rows}</ul></div>
+</div>`;
+  const cta = ctaRow(page, wa);
+  return scene('lights', 'section-night', 'aria-labelledby="lights-h"', stage, cta ? `<div class="wrap center scene-after">${cta}</div>` : '');
 }
 
-// 3. What I build: websites and business tools, then ideas for each kind of business.
-// The ideas are tabs (site.js); without JavaScript every panel shows, one under the other.
-function buildSection(page, n) {
-  const S = C.home.services;
-  const I = C.home.industries;
-  const B = C.home.canBuild;
-  const serviceCards = S.cards.map((c) => {
+// 2. What you get, part 1: the two things we build. A website builds itself on screen (the
+// salon from chapter 1), then a business tool beside it (site.js). Without that, both show
+// finished. Each "mk-p" is a piece that flies into place.
+function buildSection(ch) {
+  const B = C.home.build;
+  const P = C.home.why.phone;
+  const Q = B.tool || {};
+  const ph = (s) => esc(typo(s));
+  const card = (group) => B.cards.find((c) => c.group === group) || warn(`home.build.cards needs a "${group}" card.`) && {};
+  const web = card('websites');
+  const tool = card('tools');
+  const bar = (address) => `<p class="mk-bar"><span class="dots"><i></i><i></i><i></i></span><span class="mk-url mk-p">${svg.icon('lock')}<span>${esc(address || '')}</span></span></p>`;
+  const site = `<div class="mock mock-site" aria-hidden="true">${bar(web.address)}<div class="mk-page">
+<p class="mk-nav mk-p"><span class="mk-logo">${svg.icon(P.icon || 'globe')}</span><b>${ph(P.siteName)}</b><i class="mk-burger"></i></p>
+<div class="mk-hero mk-p">${svg.icon(P.icon || 'globe')}<span>${ph(P.siteTagline)}</span></div>
+<p class="mk-h mk-p">${ph(P.pricesHeading)}</p>
+<ul class="mk-prices">${P.prices.map(([a, b]) => `<li class="mk-p"><span>${ph(a)}</span><b>${ph(b)}</b></li>`).join('')}</ul>
+<p class="mk-gallery"><i class="mk-p"></i><i class="mk-p"></i><i class="mk-p"></i></p>
+<p class="mk-btn mk-p">${ph(P.button)}</p>
+<span class="mk-wa mk-p">${svg.whatsapp()}</span>
+</div></div>`;
+  let total = 0;
+  const lines = (Q.lines || []).map(([label, amount]) => {
+    total += Number(amount) || 0;
+    return `<li class="mk-p"><span>${ph(label)}</span><b>${rand(Number(amount) || 0)}</b></li>`;
+  }).join('');
+  const app = `<div class="mock mock-tool" aria-hidden="true">${bar(tool.address)}<div class="mk-app">
+<div class="mk-side mk-p"><span class="mk-logo">${svg.icon('form')}</span><i></i><i></i><i></i></div>
+<div class="mk-main">
+<p class="mk-title mk-p"><b>${ph(Q.title)}</b><span>${ph(Q.number)}</span></p>
+<ul class="mk-lines">${lines}</ul>
+<p class="mk-total mk-p"><span>${ph(Q.totalLabel)}</span><b data-total="${total}">${rand(total)}</b></p>
+<p class="mk-send mk-p">${svg.whatsapp()}<span>${ph(Q.button)}</span></p>
+</div>
+<p class="mk-sent mk-p">${svg.icon('check')}<span>${ph(Q.sent)}</span></p>
+</div></div>`;
+  const caption = (c) => {
     const from = c.group === 'tools' ? toolsFrom : websitesFrom;
-    return `<article class="niche-card service-card tilt">
-<div class="browser-bar" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url">${esc(c.address)}</span></div>
-<div class="niche-card-body">
-<span class="niche-icon">${svg.icon(c.icon)}</span>
-<h3><a class="stretched" href="${groups[c.group].page}">${t(c.title)}</a></h3>
+    return `<div class="build-caption">
+<h3><span class="build-icon">${svg.icon(c.icon)}</span>${t(c.title)}</h3>
 <p>${t(c.text)}</p>
 <p class="niche-price">From <strong>${rand(from)}</strong>${isSet(c.priceNote) ? ` <span class="niche-price-note">${t(c.priceNote)}</span>` : ''}</p>
-<span class="niche-more" aria-hidden="true">${t(c.more)} ${svg.icon('arrow')}</span>
+<p class="more-link"><a href="${groups[c.group].page}">${t(c.more)} ${svg.icon('arrow')}</a></p>
+</div>`;
+  };
+  const stage = `<div class="wrap build-grid">
+<div class="chapter-head">${kicker(ch.n, ch.kicker)}${sectionHead('get', B.heading, B.lead)}</div>
+<div class="build-items">
+<article class="build-item build-site">${site}${caption(web)}</article>
+<article class="build-item build-tool">${app}${caption(tool)}</article>
 </div>
-</article>`;
-  }).join('');
-  const anyBody = `<ul class="can-build">${B.items.map((i) => `<li><span class="inc-icon">${svg.icon(i.icon)}</span><span class="cb-text">${t(i.text)}</span>${kindTag(i.kind)}</li>`).join('')}</ul>${canEnquire ? `<p class="chooser-other">${svg.icon('chat')}<span><strong>${t(I.other.title)}?</strong> ${t(I.other.text)} <a href="#enquiry">${t(I.other.more)}</a></span></p>` : ''}`;
-  const panels = [{ id: 'any', label: I.anyLabel, icon: svg.icon('grid'), heading: B.heading, lead: B.lead, body: anyBody }]
-    .concat(niches.map((x) => ({
-      id: x.id,
-      label: x.navLabel,
-      icon: nicheIcon(x),
-      heading: `Ideas for ${nicheLower(x)}`,
-      lead: x.card.text,
-      body: `${ideasList(x, 'h5')}<p class="more-link"><a href="/${x.id}">More for ${esc(nicheLower(x))} ${svg.icon('arrow')}</a></p>`
-    })));
-  const tabs = panels.map((p) => `<button type="button" class="tab" data-tab="${p.id}">${p.icon}<span>${t(p.label)}</span></button>`).join('');
-  const bodies = panels.map((p) => `<div class="tab-panel" id="panel-${p.id}" data-panel="${p.id}"><h4 class="panel-h">${t(p.heading)}</h4>${p.lead ? `<p class="panel-lead">${t(p.lead)}</p>` : ''}${p.body}</div>`).join('');
-  return `<section class="section section-sand chapter" id="build" aria-labelledby="build-h"><div class="wrap">
-<div class="chapter-head">${kicker(n, S.kicker)}${sectionHead('build', S.heading, S.lead)}</div>
-<div class="niche-cards service-cards">${serviceCards}</div>
-<div class="chooser" data-tabs>
-<h3 class="chooser-h" id="chooser-h">${t(I.heading)}</h3><p class="section-lead">${t(I.lead)}</p>
-<div class="tabs" data-tablist aria-labelledby="chooser-h" hidden>${tabs}</div>
-${bodies}
-</div>
+</div>`;
+  return scene('build', 'chapter', `id="${ch.id}" aria-labelledby="get-h"`, stage);
+}
+
+// 2. What you get, between the two scenes: demos you can try (a row you swipe on phones) and
+// the ideas for each kind of business.
+function demosSection() {
+  const I = C.home.industries;
+  const shownEx = examples.slice(0, 3);
+  const demos = shownEx.length
+    ? `${sectionHead('ex', C.home.examplesHeading)}<div class="examples examples-n${shownEx.length} examples-swipe">${shownEx.map(exampleCard).join('')}</div><p class="more-link"><a href="/examples">See all examples ${svg.icon('arrow')}</a></p>`
+    : '';
+  const chips = niches.map((n) => `<li><a href="/${n.id}">${nicheIcon(n)}<span>${esc(n.name)}</span>${svg.icon('arrow')}</a></li>`).join('');
+  const other = canEnquire ? `<p class="chooser-other">${svg.icon('chat')}<span><strong>${t(I.other.title)}?</strong> ${t(I.other.text)} <a href="#enquiry">${t(I.other.more)}</a></span></p>` : '';
+  return `<section class="section demos" aria-labelledby="${demos ? 'ex-h' : 'ideas-h'}"><div class="wrap">
+${demos}
+<div class="ideas-strip"><${demos ? 'h3' : 'h2'} id="ideas-h">${t(I.heading)}</${demos ? 'h3' : 'h2'}><p>${t(I.lead)}</p><ul class="idea-chips">${chips}</ul>${other}</div>
 </div></section>`;
 }
 
-// 4. What it could earn: two sliders, the sums and a 12-month chart. site.js redraws the
-// chart with the same geometry (read from the data- attributes).
+// 2. What you get, part 2: what a website does for you, over one day. As you scroll, the clock
+// runs from morning to night, the sky darkens and the shop closes, but the website keeps
+// working (site.js). Without that, the moments show as a list.
+function allDaySection() {
+  const A = C.home.allDay;
+  const mins = (s) => {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || '').trim());
+    return m && Number(m[1]) < 24 && Number(m[2]) < 60 ? Number(m[1]) * 60 + Number(m[2]) : null;
+  };
+  const items = (A.items || []).filter((i) => {
+    if (mins(i.time) !== null) return true;
+    warn(`home.allDay: "${i.time}" isn't a time like 07:30, so "${i.title}" is left out.`);
+    return false;
+  });
+  if (!items.length) return '';
+  const closes = mins(A.closes);
+  const moments = items.map((i) => `<li class="moment"><p class="moment-time"><span class="moment-icon">${svg.icon(i.icon)}</span><time>${esc(i.time)}</time></p><h3>${t(i.title)}</h3><p>${t(i.text)}</p></li>`).join('');
+  const toasts = items.map((i) => `<li class="toast"><span class="toast-icon">${svg.icon(i.icon)}</span><span>${t(i.event)}</span></li>`).join('');
+  const stage = `<div class="sky" aria-hidden="true"><i class="sky-dusk"></i><i class="sky-night"></i><i class="sky-stars"></i></div>
+<div class="wrap allday-grid">
+<div class="allday-head">${sectionHead('allday', A.heading, A.lead)}</div>
+<div class="clock-card" aria-hidden="true">
+<div class="clock"><div class="sky-wheel"><i class="sun"></i><i class="moon"></i></div>${svg.clockFace()}</div>
+<p class="clock-time" data-day-clock>${esc(items[items.length - 1].time)}</p>
+<p class="clock-signs"><span class="sign sign-shop"><span>${t(A.shop)}</span><b class="sign-open">${t(A.open)}</b><b class="sign-closed">${t(A.closed)}</b></span><span class="sign sign-web"><span>${t(A.website)}</span><b class="sign-open">${t(A.open)}</b></span></p>
+<ul class="toasts">${toasts}</ul>
+</div>
+<ol class="moments">${moments}</ol>
+</div>`;
+  return scene('allday', '', `aria-labelledby="allday-h" data-times="${items.map((i) => mins(i.time)).join(' ')}"${closes === null ? '' : ` data-closes="${closes}"`}`, stage);
+}
+
+// 3. What it could earn: two sliders, the sums and a 12-month chart. site.js redraws the
+// chart with the same geometry (read from the data- attributes), and grows it as you scroll in.
 function earnChart(r, build) {
   const n = 12, w = 360, top = 34, bottom = 150, gap = 6;
   const bw = (w - gap * (n + 1)) / n;
@@ -1023,7 +1100,7 @@ function earnChart(r, build) {
 </svg>`;
 }
 
-function earnSection(n) {
+function earnSection(ch) {
   const E = C.home.earn;
   const d = E.defaults || {};
   const o = optionById[E.build] || onceOff;
@@ -1043,8 +1120,8 @@ function earnSection(n) {
 <li>${svg.icon('check')}<span>A ${what} (${rand(o.build)}) pays for itself after <strong data-out="payback">${plural(r.payback, 'customer', 'customers')}</strong>, in about <strong data-out="months">${plural(r.months, 'month', 'months')}</strong>.</span></li>
 <li>${svg.icon('check')}<span>On ${careName}, <strong data-out="care">${plural(r.care, 'customer', 'customers')}</strong> a month <span data-out="careVerb">${r.care === 1 ? 'covers' : 'cover'}</span> the ${month(care.monthly)} fee.</span></li>
 </ul>`;
-  return `<section class="section section-navy chapter earn-section" id="earn" aria-labelledby="earn-h"><div class="wrap earn-grid">
-<div class="chapter-head">${kicker(n, E.kicker)}${sectionHead('earn', E.heading, E.lead)}</div>
+  const stage = `<div class="wrap earn-grid">
+<div class="chapter-head">${kicker(ch.n, ch.kicker)}${sectionHead('earn', E.heading, E.lead)}</div>
 <div class="earn" data-earn data-build="${o.build}" data-care="${care.monthly}">
 <div class="earn-inputs">
 <div class="field"><p class="label-row"><label for="earn-spend">${t(E.spendLabel)}</label> <output for="earn-spend" data-out="spend">${rand(spend)}</output></p><input class="range" id="earn-spend" name="spend" type="range" min="0" max="100" step="1" value="${pos}" data-min="${min}" data-max="${max}" aria-valuetext="${esc(rand(spend))}"><div class="range-ends" aria-hidden="true"><span>${rand(min)}</span><span>${rand(max)}</span></div></div>
@@ -1054,11 +1131,13 @@ function earnSection(n) {
 <figure class="earn-figure"><p class="earn-legend" aria-hidden="true"><span><i class="lg-line"></i>Your website (${rand(o.build)})</span><span><i class="lg-bar"></i>Takings so far</span><span><i class="lg-paid"></i>Paid for itself</span></p>${earnChart(r, o.build)}<figcaption>Your takings over 12 months, against the cost of the website.</figcaption></figure>
 <p class="calc-small">${t(E.note)} Uses the ${esc(o.name.toLowerCase())} price of ${rand(o.build)} and the ${careName} fee of ${month(care.monthly)}, so your own quote may differ.</p>
 </div>
-</div></section>`;
+</div>`;
+  return scene('earnings', 'section-navy earn-section chapter', `id="${ch.id}" aria-labelledby="earn-h"`, stage);
 }
 
-// 5. What it costs: the three ways to buy a website (compact cards), a "which suits me?"
-// question (site.js; hidden without JavaScript), then bigger jobs and tools.
+// 4. What it costs: the three ways to buy a website, and "which suits me?" (site.js; hidden
+// without JavaScript). On phones the cards come in one at a time as you scroll; on wide screens
+// they're dealt out side by side. Then bigger jobs, the founding offer and a link to all prices.
 function miniOption(o) {
   const featured = o.featured === true;
   const rows = (WEB.rows || []).filter((r) => ['hosting', 'changes', 'term'].includes(r.key) && isSet(o[r.key]))
@@ -1078,75 +1157,77 @@ ${monthly}${founding}
 </article>`;
 }
 
-function costSection(page, n) {
+function costSection(page, ch) {
   const K = C.home.costs;
-  const ch = K.chooser;
-  const answers = ch && ch.answers ? ch.answers.filter((a) => optionById[a.option] || warn(`home.costs.chooser: no website option "${a.option}"`)) : [];
+  const q = K.chooser;
+  const answers = q && q.answers ? q.answers.filter((a) => optionById[a.option] || warn(`home.costs.chooser: no website option "${a.option}"`) && false) : [];
   const fit = answers.length ? `<div class="fit" data-fit hidden>
-<p class="fit-q" id="fit-q">${t(ch.question)}</p>
+<p class="fit-q" id="fit-q">${t(q.question)}</p>
 <div class="fit-answers" role="group" aria-labelledby="fit-q">${answers.map((a) => `<button type="button" class="fit-btn" aria-pressed="false" data-option="${esc(a.option)}" data-text="${esc(typo(fill(a.text)))}">${t(a.label)}</button>`).join('')}</div>
 <p class="fit-result" aria-live="polite" data-fit-result></p>
 </div>` : '';
-  const bandRows = bands.map((b) => `<li><span>${esc(b.name)}</span><span>${hasPrice(b) ? `from <strong>${rand(b.from)}</strong>` : 'Quoted'}</span></li>`).join('');
-  return `<section class="section chapter" id="cost" aria-labelledby="cost-h"><div class="wrap">
-<div class="chapter-head">${kicker(n, K.kicker)}${sectionHead('cost', K.heading, K.lead)}</div>
-${fit}
+  const bandList = bands.map((b) => `<li><span>${esc(b.name)}</span> <span>${hasPrice(b) ? `from <strong>${rand(b.from)}</strong>` : 'Quoted'}</span></li>`).join('');
+  const stage = `<div class="wrap cost-grid">
+<div class="scene-head cost-head"><div class="chapter-head">${kicker(ch.n, ch.kicker)}${sectionHead('cost', K.heading, K.lead)}</div>${fit}</div>
 <div class="minis" data-minis>${options.map(miniOption).join('')}</div>
+<p class="deck-dots" aria-hidden="true">${options.map(() => '<i></i>').join('')}</p>
+</div>`;
+  const after = `<div class="wrap scene-after cost-after">
 <p class="fine">${t(K.note)}</p>
-<div class="cost-more">
-<div class="pt-col"><h3><a class="tap-area" href="/pricing#tools-prices">${t(BG.heading)}</a></h3><ul>${bandRows}</ul><p class="pt-note">${t(BG.intro)} ${t(BG.lead)}</p></div>
+<div class="bigger-line"><h3><a class="tap-area" href="/pricing#tools-prices">${t(BG.heading)}</a></h3><ul class="band-pills">${bandList}</ul><p class="pt-note">${t(BG.intro)} ${t(BG.lead)}</p></div>
 ${foundingBanner(page)}
-</div>
 <p class="more-link"><a href="/pricing">${t(K.more)} ${svg.icon('arrow')}</a></p>
-</div></section>`;
+</div>`;
+  return scene('cost', 'chapter', `id="${ch.id}" aria-labelledby="cost-h"`, stage, after);
 }
 
-// 7. Why it's worth it: without and with a website. site.js turns the two columns into
-// cards that flip over with a switch; without JavaScript they sit side by side.
-function compareSection(page, n) {
-  const K = C.home.compare;
-  const rows = K.rows.map((r) => `<li class="flip-row"><span class="flip-a">${svg.icon('x')}<span><span class="visually-hidden">${t(K.without)}: </span>${t(r.without)}</span></span><span class="flip-b">${svg.icon('check')}<span><span class="visually-hidden">${t(K.with)}: </span>${t(r.with)}</span></span></li>`).join('');
-  const door = '<span class="mini-door" aria-hidden="true"><span class="md-hole"><span class="door-inside"></span><span class="md-hinge"><span class="md-leaf"><i class="door-handle"></i></span></span></span></span>';
-  const wa = contact.wa ? [{ href: esc(waGeneral()), label: `${svg.whatsapp()}WhatsApp us`, cls: 'btn-navy' }] : [];
-  return `<section class="section chapter" id="start" aria-labelledby="start-h"><div class="wrap narrow">
-<div class="chapter-head center">${kicker(n, K.kicker)}${sectionHead('start', K.heading, K.lead)}</div>
-<div class="flip" data-flip>
-<div class="flip-top" data-flip-switch hidden>
-<p class="flip-hint">${t(K.hint)}</p>
-<div class="flip-switch" role="group" aria-label="${esc(typo(K.heading))}"><button type="button" aria-pressed="true" data-side="a">${t(K.without)}</button><button type="button" aria-pressed="false" data-side="b">${t(K.with)}</button></div>
-</div>
+// 5. How it works. As you scroll, a big front door opens a little more with each step, with
+// the step's number on it, then light pours out onto the enquiry form below (site.js).
+// Without that, the four steps show side by side with their small doors.
+function howSection(ch) {
+  const S = C.home.steps;
+  const lead = `${S.lead}${tokens.quoteTime && S.quoteTimeText ? ` ${S.quoteTimeText}` : ''}`;
+  const plate = S.items.map((_, i) => `<b>${i + 1}</b>`).join('');
+  const door = `<div class="bigdoor" aria-hidden="true">
+<div class="bd-frame"><div class="bd-fan"></div><div class="bd-hole"><div class="bd-inside"><p class="bd-open">${t(S.open)}</p></div><div class="bd-hinge"><div class="bd-leaf"><i class="dp dp-1"></i><i class="dp dp-2"></i><i class="dp dp-3"></i><i class="dp dp-4"></i><span class="bd-plate">${plate}</span><i class="door-handle"></i></div></div></div></div>
+<div class="bd-step"></div><div class="bd-spill"></div>
+</div>`;
+  const stage = `<div class="wrap how-grid">
+<div class="chapter-head">${kicker(ch.n, ch.kicker)}${sectionHead('how', S.heading, lead)}</div>
 ${door}
-<p class="flip-heads" aria-hidden="true"><span class="flip-a">${t(K.without)}</span><span class="flip-b">${t(K.with)}</span></p>
-<ul class="flip-rows">${rows}</ul>
+<ol class="steps steps-${S.items.length} how-steps">${stepItems(S.items)}</ol>
+<p class="how-rail" aria-hidden="true">${S.items.map(() => '<i></i>').join('')}</p>
 </div>
-<div class="center">${ctaRow(page, wa)}</div>
-</div></section>`;
+<div class="how-flood" aria-hidden="true"></div>`;
+  return scene('how', 'section-sand chapter', `id="${ch.id}" aria-labelledby="how-h"`, stage);
 }
 
 function homePage() {
   const H = C.home;
   const page = { url: '/', out: 'index.html', hasForm: true, jsonLd: true, title: H.seo.title, description: H.seo.description, bodyClass: 'page-home' };
-  const chapters = [['why', H.why], ['helps', H.helps], ['build', H.services], ['earn', H.earn], ['cost', H.costs], ['how', H.steps], ['start', H.compare]]
-    .map(([id, c]) => ({ id, kicker: c.kicker, short: c.short }));
-  const num = (id) => chapters.findIndex((c) => c.id === id) + 1;
+  const chapters = ['why', 'get', 'earn', 'cost', 'how'].map((id, i) => {
+    const c = (H.chapters || {})[id] || {};
+    if (!isSet(c.kicker)) warn(`home.chapters.${id} needs a kicker (the chapter's name in the tour).`);
+    return { id, n: i + 1, kicker: c.kicker || id, short: c.short };
+  });
+  const ch = Object.fromEntries(chapters.map((c) => [c.id, c]));
   const about = H.about
     ? `<section class="section about" aria-labelledby="about-h"><div class="wrap narrow about-inner">${svg.logo('logo about-logo')}<div>${sectionHead('about', H.about.heading)}<p>${t(H.about.text)}${contact.area ? ` ${t(H.about.areaText)}` : ''}</p></div></div></section>`
     : '';
-  const st = H.steps;
   page.body = `${storyBar(chapters)}
 ${doorHero(page)}
 ${tourSection(chapters)}
-${whySection(num('why'))}
-${helpsSection(num('helps'))}
-${buildSection(page, num('build'))}
-${examplesBlock(examples, H.examplesHeading)}
-${earnSection(num('earn'))}
-${costSection(page, num('cost'))}
-${stepsSection('how', st.heading, `${st.lead}${tokens.quoteTime && st.quoteTimeText ? ` ${st.quoteTimeText}` : ''}`, st.items, true, { chapter: { id: 'how', n: num('how'), label: st.kicker } })}
-${compareSection(page, num('start'))}
+${whySection(ch.why)}
+${lightsSection(page)}
+${buildSection(ch.get)}
+${demosSection()}
+${allDaySection()}
+${earnSection(ch.earn)}
+${costSection(page, ch.cost)}
+${howSection(ch.how)}
+${enquirySection(page, { heading: H.cta.heading, lead: H.cta.lead })}
 ${about}
-<section class="section section-sand" aria-labelledby="faqt-h"><div class="wrap narrow">${sectionHead('faqt', H.faqTeaser.heading)}${faqList(generalFaq(H.faqTeaser.ids))}<p class="more-link"><a href="/faq">All questions and answers ${svg.icon('arrow')}</a></p></div></section>
-${enquirySection(page, { heading: H.cta.heading, lead: H.cta.lead })}`;
+<section class="section section-sand" aria-labelledby="faqt-h"><div class="wrap narrow">${sectionHead('faqt', H.faqTeaser.heading)}${faqList(generalFaq(H.faqTeaser.ids))}<p class="more-link"><a href="/faq">All questions and answers ${svg.icon('arrow')}</a></p></div></section>`;
   return page;
 }
 
