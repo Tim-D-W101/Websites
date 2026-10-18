@@ -16,7 +16,7 @@ content/pages/          ← privacy.html and terms.html (drafts: review before l
 content/guides/         ← guide articles (none yet)
 src/styles.css          ← all styles
 src/site.js             ← menu, calculators, enquiry form, open/closed sign, the Examples page,
-                          the home page's front door and tour, things rising into view
+                          the home page's front door, tour and scenes, things rising into view
 src/calc.js             ← calculator maths (shared by the build and the browser)
 src/svg.js              ← logo, the front door, illustrations and icons
 src/fonts/              ← Fraunces + Figtree, self-hosted (SIL Open Font Licence)
@@ -141,25 +141,25 @@ While every `payfast` link in `website.options` is blank, the monthly plan fees 
 
 The home page tells the story as you scroll. Everything it says is in `home` in `content.json`.
 
-1. **The front door** (`home.hero`). When the page opens, the heading rises in, the door creaks open a little and a speech bubble types out `bubble`. As you scroll, the door moves to the middle, swings open, the things in `inside` (up to 6, each an `icon` and a `label`) come out of it, and you go through the doorway into the light. Put `*stars*` around words in `h1` to highlight them. `address`, `mat`, `openSign` and `bookButton` are the words drawn on the door picture.
+1. **The front door** (`home.hero`). When the page opens, the heading rises in, the door creaks open a little and a speech bubble types out `bubble`. As you scroll, the door moves to the middle, swings open, the things in `inside` (up to 6, each an `icon` and a `label`) come out of it, and you go through the doorway into the light, where the tour comes up to meet you. Put `*stars*` around words in `h1` to highlight them. `address`, `mat`, `openSign` and `bookButton` are the words drawn on the door picture.
 2. **The tour** (`home.tour`): "Come in", with a link to each chapter. Once you're through the door, a bar at the top shows which chapter you're in and how far through you are.
-3. **The chapters.** Each has a `kicker` (its name in the tour) and a `short` name (in the bar at the top):
+3. **The five chapters.** Their names are in `home.chapters`: `kicker` is a chapter's name in the tour and above its heading, `short` its name in the bar at the top. Most of the chapters are *scenes*: the picture stays on the screen while you scroll, and plays as you go.
 
 | Chapter | In `content.json` | What it shows |
 |---|---|---|
-| 1. Why you need a website | `home.why` | A customer's search, step by step (`steps`), on a phone that changes as you read. The phone's made-up example (a salon) is in `phone` |
-| 2. How it helps you | `home.helps` | Six cards (`items`, each with an `icon`) |
-| 3. What I can build | `home.services`, `home.canBuild`, `home.industries` | Websites and business tools, then tabs of ideas for each kind of business. The industry tabs use each industry page's `ideas` |
-| 4. What it could earn you | `home.earn` | Two sliders, the sums and a 12-month chart. `build` is the website option whose price it uses, `carePlan` the plan whose fee it uses, and `defaults` the starting figures |
-| 5. What it costs | `home.costs` | The three ways to pay, and the question in `chooser`: each answer points to a website option and explains why it suits |
-| 6. How it works | `home.steps` | The four steps; each lights up as you reach it |
-| 7. Why it's worth it | `home.compare` | Cards that flip from "without a website" to "with a website" (`rows`) |
+| 1. Why you need a website | `home.why`, then `home.lights` | A customer's search, step by step (`steps`), on a phone that changes as you read. The phone's made-up example (a salon) is in `phone`. Then a dark, closed shop lights up: each of the `rows` turns from "without a website" to "with a website" and switches on part of the shop, and at the end its door opens. `sign` is the name on the shop |
+| 2. What you get | `home.build`, `home.industries`, `home.allDay` | A website builds itself on screen (the salon from `why.phone`), then a business tool beside it (the made-up quote in `tool`, whose total adds itself up), each with what it costs (`cards`). Then the first three demos, links to the ideas for each kind of business, and one day from morning to night: the clock runs through the moments in `items`, the sky darkens, the shop closes at `closes`, and the website keeps working |
+| 3. What it could earn you | `home.earn` | Two sliders, the sums and a 12-month chart that grows month by month as you scroll to it. `build` is the website option whose price it uses, `carePlan` the plan whose fee it uses, and `defaults` the starting figures |
+| 4. What it costs | `home.costs` | The three ways to pay, and the question in `chooser`: each answer points to a website option and explains why it suits. On phones the three come in one at a time; on wider screens they're dealt out side by side. Then bigger jobs, the founding-client offer and a link to all the prices |
+| 5. How it works | `home.steps` | A big front door opens a little more with each of the four steps, with the step's number on it, until it's wide open with "Open" (`open`) in the doorway |
 
-After the chapters come the founding-client offer, "About Front Door Sites", common questions and the enquiry form.
+After the chapters come the enquiry form, "About Front Door Sites" and common questions.
+
+Each moment in `home.allDay.items` has a `time` (24-hour, like `07:30`, in order through the day), an `icon`, the `event` that pops up as a note, and the `title` and `text` that explain it. A moment whose time the build can't read is left out, with a warning.
 
 The icons you can use are listed in `ICONS` in `src/svg.js` (for example `globe`, `calendar`, `form`, `cart`, `clipboard`, `chart`, `clock`, `pin`, `eye`, `chat`, `phone`, `key`).
 
-Everything still works without movement: if someone has asked their phone or computer for reduced motion, the door stays ajar with its labels around it and nothing slides or flips. Without JavaScript, every chapter shows in full: the ideas for each industry one after another, and "without" and "with" side by side.
+Everything still works without movement. A scene only plays when everything in it fits on the screen; on a screen too small for it, and for anyone who has asked their phone or computer for reduced motion, it shows its finished state instead: the shop lit, with "without" and "with" side by side, both windows built, the day's moments as a list, the price cards together and the steps one after another. With reduced motion the door stays ajar with its labels around it, and nothing slides or flips. Without JavaScript, every chapter shows in full in the same way.
 
 ## Edit the industry pages
 

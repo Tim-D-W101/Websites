@@ -220,9 +220,16 @@
       "heading": "Here's the quick tour",
       "lead": "Keep scrolling and we'll walk you through it, one step at a time. Or jump straight to the part you want."
     },
+    "chapters": {
+      "_note": "The tour's five chapters, in order. kicker is a chapter's name in the tour and above its heading, short its name in the bar at the top.",
+      "why": { "kicker": "Why you need a website", "short": "Why" },
+      "get": { "kicker": "What you get", "short": "What you get" },
+      "earn": { "kicker": "What it could earn you", "short": "What you earn" },
+      "cost": { "kicker": "What it costs", "short": "What it costs" },
+      "how": { "kicker": "How it works", "short": "How it works" }
+    },
     "why": {
-      "kicker": "Why you need a website",
-      "short": "Why",
+      "_note": "Chapter 1, part 1: a customer's search, step by step, on a phone that changes as you read.",
       "heading": "Your next customer is already looking for you",
       "lead": "Before people buy, book or visit, they often look you up on their phone first. Here's what happens next.",
       "steps": [
@@ -245,7 +252,7 @@
       ],
       "punch": "Without a website, that search often ends with someone else.",
       "phone": {
-        "_note": "The made-up example on the phone: a salon here, but it could be any kind of business.",
+        "_note": "The made-up example on the phone: a salon here, but it could be any kind of business. Chapter 2 builds the same website.",
         "query": "hair salon near me",
         "icon": "scissors",
         "results": [
@@ -270,47 +277,41 @@
         "notice": "Booked: Saturday, 9:30"
       }
     },
-    "helps": {
-      "kicker": "How it helps you",
-      "short": "How it helps",
-      "heading": "What your website does for you",
-      "lead": "Think of it as a shopfront that never closes. And it's yours.",
-      "items": [
+    "lights": {
+      "_note": "Chapter 1, part 2: a dark, closed shop lights up as you scroll, and each row turns from without to with a website. sign is the name on the shop.",
+      "heading": "Still wondering if you need one?",
+      "lead": "Here's the difference a website makes.",
+      "hint": "Keep scrolling to switch the lights on.",
+      "without": "Without a website",
+      "with": "With a website",
+      "sign": "Your Business",
+      "closed": "Closed",
+      "open": "Open",
+      "rows": [
         {
-          "icon": "clock",
-          "title": "Works while you sleep",
-          "text": "It answers questions and takes enquiries at 10 pm, on Sundays and while you're busy with a customer."
+          "without": "People can't easily find your prices or your work",
+          "with": "People see your prices and your best work, any time"
         },
         {
-          "icon": "pin",
-          "title": "Helps people find you",
-          "text": "Set up so Google can find and understand it, with your Google Business Profile set up for Maps."
+          "without": "Questions after hours wait until morning",
+          "with": "Enquiries and bookings can come in day and night"
         },
         {
-          "icon": "eye",
-          "title": "Shows you at your best",
-          "text": "Your services, prices, photos and real reviews in one place, so people choose you with confidence."
+          "without": "You're one more name in a list",
+          "with": "You stand out with a site of your own"
         },
         {
-          "icon": "chat",
-          "title": "Saves you time",
-          "text": "Fewer “how much?” and “are you open?” messages, because the answers are already on your site."
+          "without": "Your best posts get buried in a busy feed",
+          "with": "Everything's in one place, easy to find"
         },
         {
-          "icon": "phone",
-          "title": "One tap to reach you",
-          "text": "A WhatsApp button, tap-to-call and directions, so the next step is always easy."
-        },
-        {
-          "icon": "key",
-          "title": "It's yours",
-          "text": "Your own .co.za address, registered in your name. Not a page on someone else's platform."
+          "without": "You're on someone else's platform",
+          "with": "Your own .co.za address, in your name"
         }
       ]
     },
-    "services": {
-      "kicker": "What we can build",
-      "short": "What we build",
+    "build": {
+      "_note": "Chapter 2, part 1: a website builds itself on screen (the salon from why.phone), then a business tool beside it. tool is the made-up quote drawn in the tool; its total is added up for you.",
       "heading": "Two things we build",
       "lead": "Start with one, and add the other later if you need it.",
       "cards": [
@@ -332,73 +333,78 @@
           "priceNote": "once-off",
           "more": "See business tools"
         }
-      ]
-    },
-    "canBuild": {
-      "heading": "Ideas for any business",
-      "lead": "A few ideas. If something is slowing your business down, ask.",
-      "items": [
-        {
-          "kind": "website",
-          "icon": "globe",
-          "text": "A website that turns Google searches into enquiries"
-        },
-        {
-          "kind": "website",
-          "icon": "calendar",
-          "text": "Online bookings for appointments, rooms or tables"
-        },
-        {
-          "kind": "tool",
-          "icon": "form",
-          "text": "A quote and invoice builder you can use on your phone"
-        },
-        {
-          "kind": "tool",
-          "icon": "cart",
-          "text": "Online ordering for collection or delivery"
-        },
-        {
-          "kind": "tool",
-          "icon": "clipboard",
-          "text": "Job cards that follow every job from booking to paid"
-        },
-        {
-          "kind": "tool",
-          "icon": "users",
-          "text": "A client or member portal with its own logins"
-        },
-        {
-          "kind": "tool",
-          "icon": "clock",
-          "text": "Staff rosters and timesheets without the paper"
-        },
-        {
-          "kind": "tool",
-          "icon": "box",
-          "text": "A stock and order tracker that shows what's running low"
-        },
-        {
-          "kind": "tool",
-          "icon": "chart",
-          "text": "A dashboard that turns your numbers into a clear picture"
-        }
-      ]
+      ],
+      "tool": {
+        "title": "New quote",
+        "number": "Quote 0142",
+        "lines": [
+          ["Paint 3 rooms", 6300],
+          ["Ceilings, 2 coats", 1800],
+          ["Paint and materials", 1450]
+        ],
+        "totalLabel": "Total",
+        "button": "Send on WhatsApp",
+        "sent": "Quote sent"
+      }
     },
     "industries": {
       "heading": "Ideas for your kind of business",
-      "lead": "Any South African business can use a website or a tool: trades, shops, farms, transport companies, professional services and more. Pick yours.",
-      "anyLabel": "Any business",
+      "lead": "Any South African business can use a website or a tool. See ideas and prices for yours:",
       "other": {
         "title": "Any other business",
         "text": "Tell us how your business works and what you'd like to fix. We'll suggest what would help most.",
         "more": "Tell us what you need"
       }
     },
+    "allDay": {
+      "_note": "Chapter 2, part 2: as you scroll, the day turns to night and the website keeps working. Each item is one moment of that day: time is what the clock shows (24-hour), event the note that pops up. The shop's sign turns to closed at closes.",
+      "heading": "What your website does for you",
+      "lead": "Think of it as a shopfront that never closes. And it's yours.",
+      "shop": "Your shop",
+      "website": "Your website",
+      "open": "Open",
+      "closed": "Closed",
+      "closes": "18:00",
+      "items": [
+        {
+          "time": "07:30",
+          "icon": "pin",
+          "event": "Found you on Google Maps",
+          "title": "Helps people find you",
+          "text": "Set up so Google can find and understand it, with your Google Business Profile set up for Maps."
+        },
+        {
+          "time": "10:15",
+          "icon": "eye",
+          "event": "Looking at your prices and photos",
+          "title": "Shows you at your best",
+          "text": "Your services, prices, photos and real reviews in one place, so people choose you with confidence."
+        },
+        {
+          "time": "13:00",
+          "icon": "chat",
+          "event": "“How much?” It's on your site",
+          "title": "Saves you time",
+          "text": "Fewer “how much?” and “are you open?” messages, because the answers are already on your site."
+        },
+        {
+          "time": "16:45",
+          "icon": "phone",
+          "event": "New WhatsApp message",
+          "title": "One tap to reach you",
+          "text": "A WhatsApp button, tap-to-call and directions, so the next step is always easy."
+        },
+        {
+          "time": "22:14",
+          "icon": "calendar",
+          "event": "New booking: Saturday, 9:30",
+          "title": "Works while you sleep",
+          "text": "It answers questions and takes enquiries at 10 pm, on Sundays and while you're busy with a customer."
+        }
+      ]
+    },
     "earn": {
-      "_note": "The calculator on the home page. build is the website option whose build price it uses, carePlan the plan whose monthly fee it uses.",
-      "kicker": "What it could earn you",
-      "short": "What you earn",
+      "_note": "Chapter 3, the calculator. build is the website option whose build price it uses, carePlan the plan whose monthly fee it uses.",
       "heading": "What could a website earn you?",
       "lead": "Slide in your own numbers. It's an example, not a promise.",
       "spendLabel": "What one customer usually spends with you",
@@ -415,8 +421,7 @@
       "note": "Based on takings, not profit."
     },
     "costs": {
-      "kicker": "What it costs",
-      "short": "What it costs",
+      "_note": "Chapter 4: the three ways to pay, and the question in chooser. Each answer points to a website option.",
       "heading": "One website, three ways to pay",
       "lead": "Pay more upfront and nothing monthly, or less upfront with a monthly plan. Every job gets a fixed quote.",
       "note": "Care and Care Plus have a {minMonths}-month minimum. Once-off includes the first year of hosting, then {renewalFee} a year.",
@@ -444,8 +449,7 @@
       "more": "See full pricing and what's included"
     },
     "steps": {
-      "kicker": "How it works",
-      "short": "How it works",
+      "_note": "Chapter 5: the four steps. As you scroll, a big door opens a little more with each one, until it's wide open with open in the doorway, just before the enquiry form.",
       "heading": "From first message to go-live",
       "lead": "Four steps, and you know the price before any work starts.",
       "items": [
@@ -466,38 +470,8 @@
           "text": "Pay the balance and it goes live, with hosting included. It's yours once it's paid in full."
         }
       ],
-      "quoteTimeText": "Mock-ups and plans usually reach you within {quoteTime}."
-    },
-    "compare": {
-      "kicker": "Why it's worth it",
-      "short": "Get started",
-      "heading": "Still wondering if you need one?",
-      "lead": "Here's the difference a website makes.",
-      "hint": "Flip the switch and see the difference.",
-      "without": "Without a website",
-      "with": "With a website",
-      "rows": [
-        {
-          "without": "People can't easily find your prices or your work",
-          "with": "People see your prices and your best work, any time"
-        },
-        {
-          "without": "Questions after hours wait until morning",
-          "with": "Enquiries and bookings can come in day and night"
-        },
-        {
-          "without": "You're one more name in a list",
-          "with": "You stand out with a site of your own"
-        },
-        {
-          "without": "Your best posts get buried in a busy feed",
-          "with": "Everything's in one place, easy to find"
-        },
-        {
-          "without": "You're on someone else's platform",
-          "with": "Your own .co.za address, in your name"
-        }
-      ]
+      "quoteTimeText": "Mock-ups and plans usually reach you within {quoteTime}.",
+      "open": "Open"
     },
     "about": {
       "heading": "About {siteName}",

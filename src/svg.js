@@ -131,6 +131,77 @@ function stepDoor(n) {
   return `<svg class="step-door" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><defs><linearGradient id="${l}" x1="0" y1="0" x2="0" y2="1">${n === 1 ? '<stop offset="0" stop-color="#0D436F"/><stop offset="1" stop-color="#0D436F"/>' : lightStops}</linearGradient></defs>${frame}${door}${floor}</svg>`;
 }
 
+// "Lights on" (home page): a shopfront at night. The lit parts are separate layers that
+// site.js and the styles switch on one at a time: the window (shop-l1), the open sign and lamp
+// (shop-l2), the name board (shop-l3), the awning (shop-l4), the web address (shop-l5), then
+// the door opens (shop-l6). Without that, everything shows lit.
+function shop(o) {
+  const glass = id('sg'), lamp = id('sl'), spill = id('ss'), room = id('sr');
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const name = String(o.sign || '');
+  const nameSize = Math.min(26, Math.floor(390 / Math.max(1, name.length)));
+  // Twelve stripes, wider at the top, each with a rounded flap below.
+  const awning = (a, b) => Array.from({ length: 12 }, (_, i) => {
+    const tl = 44 + i * 32.667, bl = 58 + i * 30.333, w = 30.333, c = i % 2 ? b : a;
+    return `<path d="M${tl.toFixed(1)} 154H${(tl + 32.667).toFixed(1)}L${(bl + w).toFixed(1)} 186H${bl.toFixed(1)}z" fill="${c}"/><path d="M${bl.toFixed(1)} 185.5h${w.toFixed(1)}v5a${(w / 2).toFixed(2)} ${(w / 2).toFixed(2)} 0 0 1-${w.toFixed(1)} 0z" fill="${c}"/>`;
+  }).join('');
+  const frames = [72, 140, 208];
+  return `<svg class="shop-art" viewBox="0 0 480 380" aria-hidden="true" focusable="false">
+<defs>
+<linearGradient id="${glass}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6D6"/><stop offset=".55" stop-color="#FFE58E"/><stop offset="1" stop-color="#FEC458"/></linearGradient>
+<radialGradient id="${lamp}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE58E" stop-opacity=".95"/><stop offset="1" stop-color="#FFE58E" stop-opacity="0"/></radialGradient>
+<linearGradient id="${spill}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE58E" stop-opacity=".85"/><stop offset="1" stop-color="#FEC458" stop-opacity="0"/></linearGradient>
+<radialGradient id="${room}" cx=".5" cy=".9" r=".9"><stop offset="0" stop-color="#FFFDF4"/><stop offset=".45" stop-color="#FFE58E"/><stop offset="1" stop-color="#FEC458"/></radialGradient>
+</defs>
+<circle cx="440" cy="26" r="13" fill="#F6E7B8"/><circle cx="447" cy="21" r="11" fill="#0A2A44"/>
+<g fill="#F6E7B8"><circle cx="36" cy="22" r="1.6"/><circle cx="92" cy="30" r="1.2"/><circle cx="352" cy="14" r="1.4"/><circle cx="470" cy="70" r="1.2"/><circle cx="14" cy="88" r="1.1"/><circle cx="214" cy="18" r="1"/></g>
+<rect x="40" y="52" width="400" height="290" rx="6" fill="#163650"/>
+<rect x="28" y="42" width="424" height="18" rx="5" fill="#0F2B44"/>
+<rect x="120" y="70" width="240" height="50" rx="12" fill="#1D3E5B"/>
+<text class="shop-name shop-name-off" x="240" y="104" font-size="${nameSize}" text-anchor="middle">${esc(name)}</text>
+<g class="shop-l3"><rect x="120" y="70" width="240" height="50" rx="12" fill="#124B78" stroke="#FEC458" stroke-width="3"/><text class="shop-name" x="240" y="104" font-size="${nameSize}" text-anchor="middle">${esc(name)}</text></g>
+<g class="shop-l5"><rect x="160" y="127" width="160" height="21" rx="10.5" fill="#FFF3D6"/><text class="shop-url" x="240" y="141.5" text-anchor="middle">${esc(o.address)}</text></g>
+<g class="shop-awning-off">${awning('#22435F', '#1A3851')}</g>
+<g class="shop-l4">${awning('#FFF3D6', '#FEC458')}</g>
+<rect x="60" y="222" width="212" height="108" rx="6" fill="#0D263C"/>
+<path d="M76 232h34l-50 70z" fill="#1B4565" opacity=".55"/>
+<g class="shop-l1">
+<rect x="60" y="222" width="212" height="108" rx="6" fill="url(#${glass})"/>
+<g fill="#FFFBF3" stroke="#124B78" stroke-width="3">${frames.map((x) => `<rect x="${x}" y="236" width="52" height="40" rx="4"/>`).join('')}</g>
+<g fill="#F0D1A2"><path d="M78 270l12-14 9 9 7-6 12 11z"/><circle cx="166" cy="252" r="7"/><path d="M146 270l20-12 20 12z"/><path d="M214 270l10-16 8 8 6-4 16 12z"/></g>
+<g fill="#124B78">${frames.map((x) => `<rect x="${x + 4}" y="288" width="44" height="15" rx="7.5"/>`).join('')}</g>
+<g class="shop-tag" fill="#FFE58E" text-anchor="middle">${['R350', 'R650', 'R280'].map((s, i) => `<text x="${frames[i] + 26}" y="299.5">${s}</text>`).join('')}</g>
+</g>
+<rect x="60" y="222" width="212" height="108" rx="6" fill="none" stroke="#0F2B44" stroke-width="6"/>
+<path d="M292 212h-6v8" fill="none" stroke="#0F2B44" stroke-width="4" stroke-linecap="round"/>
+<g class="shop-l2"><circle cx="286" cy="234" r="40" fill="url(#${lamp})"/></g>
+<path d="M279 222h14l-3 24h-8z" fill="#2C4762" stroke="#0F2B44" stroke-width="3" stroke-linejoin="round"/>
+<path class="shop-l2" d="M282 226h8l-2 16h-4z" fill="#FFE58E"/>
+<rect x="312" y="214" width="100" height="128" fill="#0B2034"/>
+<rect class="shop-l6" x="312" y="214" width="100" height="128" fill="url(#${room})"/>
+<g class="shop-door"><rect x="314" y="216" width="96" height="126" fill="#0D436F"/><rect x="326" y="230" width="72" height="44" rx="3" fill="#0B2A44"/><rect class="shop-l2" x="326" y="230" width="72" height="44" rx="3" fill="#FFE58E" opacity=".45"/><rect x="326" y="286" width="72" height="42" rx="3" fill="none" stroke="#124B78" stroke-width="3"/><circle cx="400" cy="282" r="4.5" fill="#FEC458"/>
+<g class="shop-sign"><path d="M350 238l12-10 12 10" fill="none" stroke="#E2C998" stroke-width="2"/><rect x="334" y="238" width="56" height="22" rx="5" fill="#2C4762"/><text class="shop-sign-text" x="362" y="253.5" text-anchor="middle" fill="#9FB2C2">${esc(o.closed)}</text><g class="shop-l2"><rect x="334" y="238" width="56" height="22" rx="5" fill="#1E6B3A"/><text class="shop-sign-text" x="362" y="253.5" text-anchor="middle" fill="#FFFFFF">${esc(o.open)}</text></g></g></g>
+<path d="M308 342V210h108v132" fill="none" stroke="#0F2B44" stroke-width="8" stroke-linejoin="round"/>
+<rect x="0" y="342" width="480" height="38" fill="#0D2235"/>
+<path d="M0 342h480" stroke="#1B4060" stroke-width="3"/>
+<path class="shop-l1" d="M60 342h212l40 38H20z" fill="url(#${spill})" opacity=".55"/>
+<path class="shop-l6" d="M312 342h100l52 38H262z" fill="url(#${spill})"/>
+<g transform="translate(397.5 61.8) scale(.62)"><path d="M58 402l-8-62 14 40 2-58 12 58 12-46-4 64" fill="#3F6F48"/><path d="M66 402l-22-40 30 28M78 402l26-46-18 48" fill="none" stroke="#335E3B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 400h68l-7 52H43z" fill="#8E4A28"/><path d="M33 396h74v10H33z" fill="#77401F"/></g>
+</svg>`;
+}
+
+// "Open all night" (home page): a clock face. The hands are separate, so the styles can turn them.
+function clockFace() {
+  const ticks = Array.from({ length: 12 }, (_, i) => `<path d="M100 ${i % 3 ? 16 : 13}v${i % 3 ? 9 : 15}" transform="rotate(${i * 30} 100 100)"/>`).join('');
+  return `<svg class="clock-art" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+<circle cx="100" cy="100" r="94" fill="#FFFBF3" stroke="#124B78" stroke-width="8"/>
+<g stroke="#124B78" stroke-width="4" stroke-linecap="round">${ticks}</g>
+<g class="clock-hand clock-hour"><path d="M100 104V58" stroke="#0A2A44" stroke-width="9" stroke-linecap="round"/></g>
+<g class="clock-hand clock-min"><path d="M100 108V30" stroke="#124B78" stroke-width="6" stroke-linecap="round"/></g>
+<circle cx="100" cy="100" r="9" fill="#FEC458" stroke="#0A2A44" stroke-width="3"/>
+</svg>`;
+}
+
 // Line icons (24x24, stroke). Feather-style shapes.
 const ICONS = {
   bed: '<path d="M3 19V6M3 11h18v8M3 15h18M21 19v-2"/><rect x="5.5" y="8" width="6" height="3" rx="1"/>',
@@ -246,4 +317,4 @@ ${rows}
 </svg>`;
 }
 
-module.exports = { logo, hero, doorBack, doorFront, stepDoor, icon, whatsapp, phone, app };
+module.exports = { logo, hero, doorBack, doorFront, stepDoor, shop, clockFace, icon, whatsapp, phone, app };

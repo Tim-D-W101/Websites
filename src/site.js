@@ -1,6 +1,6 @@
 /* Front Door Sites: menu, calculators, enquiry form, the open/closed demo, the Examples page
-   (live previews, its in-page nav, buttons that fill in the form), and the home page's front door
-   and tour. Also: things rising into view, cards that tilt.
+   (live previews, its in-page nav, buttons that fill in the form), and the home page's front door,
+   tour and scenes (chapters that play as you scroll). Also: things rising into view, cards that tilt.
    Plain JavaScript, no libraries. FDSCalc comes from calc.js (bundled in front of this file). */
 (function () {
   'use strict';
@@ -450,6 +450,8 @@
   function initDoor(hero) {
     var stage = hero.querySelector('.door-stage');
     var zoom = hero.querySelector('.door-zoom');
+    // The tour comes up out of the light as it fills the doorway.
+    var tour = hero.nextElementSibling && hero.nextElementSibling.classList.contains('tour') ? hero.nextElementSibling : null;
     var live = false;
     var rect = null;
     var stageH = 0;
@@ -477,7 +479,10 @@
         live = want;
         last = '';
         hero.classList.toggle('is-live', live);
-        if (!live) ['--text', '--center', '--knob', '--door', '--zoom', '--flood'].forEach(function (k) { hero.style.removeProperty(k); });
+        if (!live) {
+          ['--text', '--center', '--knob', '--door', '--zoom', '--flood'].forEach(function (k) { hero.style.removeProperty(k); });
+          if (tour) tour.style.removeProperty('--come');
+        }
       }
       if (!live) return;
       // How far the doorway moves to reach the middle of the screen, and how much bigger the
@@ -512,7 +517,9 @@
         set('--knob', clamp((p - 0.06) / 0.06, 0, 1).toFixed(3));
         set('--door', easeInOut(clamp((p - 0.1) / 0.48, 0, 1)).toFixed(3));
         set('--zoom', (through * through).toFixed(4));
-        set('--flood', clamp((through - 0.35) / 0.55, 0, 1).toFixed(3));
+        var flood = clamp((through - 0.35) / 0.55, 0, 1).toFixed(3);
+        set('--flood', flood);
+        if (tour) tour.style.setProperty('--come', flood);
       }
     });
     resize();
@@ -677,51 +684,6 @@
     show(0);
   }
 
-  /* ---------- tabs (ideas for each kind of business) ---------- */
-  var tabBoxes = document.querySelectorAll('[data-tabs]');
-  for (var tb = 0; tb < tabBoxes.length; tb++) initTabs(tabBoxes[tb]);
-
-  // Without JavaScript every panel shows, one under the other; this turns them into tabs.
-  function initTabs(box) {
-    var list = box.querySelector('[data-tablist]');
-    var tabs = list.querySelectorAll('[data-tab]');
-    var panels = box.querySelectorAll('[data-panel]');
-    list.hidden = false;
-    list.setAttribute('role', 'tablist');
-    box.classList.add('is-live');
-    for (var i = 0; i < tabs.length; i++) {
-      var key = tabs[i].getAttribute('data-tab');
-      tabs[i].setAttribute('role', 'tab');
-      tabs[i].id = 'tab-' + key;
-      tabs[i].setAttribute('aria-controls', 'panel-' + key);
-      panels[i].setAttribute('role', 'tabpanel');
-      panels[i].setAttribute('aria-labelledby', 'tab-' + key);
-      panels[i].setAttribute('tabindex', '0');
-    }
-    function select(n, byUser, focus) {
-      for (var j = 0; j < tabs.length; j++) {
-        var on = j === n;
-        tabs[j].setAttribute('aria-selected', String(on));
-        tabs[j].tabIndex = on ? 0 : -1;
-        panels[j].hidden = !on;
-        panels[j].classList.toggle('is-shown', on && byUser);
-      }
-      if (focus) tabs[n].focus();
-    }
-    list.addEventListener('click', function (e) {
-      var b = e.target.closest('[data-tab]');
-      if (b) select(Array.prototype.indexOf.call(tabs, b), true, false);
-    });
-    list.addEventListener('keydown', function (e) {
-      var n = Array.prototype.indexOf.call(tabs, document.activeElement);
-      var next = { ArrowRight: n + 1, ArrowLeft: n - 1, Home: 0, End: tabs.length - 1 }[e.key];
-      if (n < 0 || next === undefined) return;
-      e.preventDefault();
-      select((next + tabs.length) % tabs.length, true, true);
-    });
-    select(0, false, false);
-  }
-
   /* ---------- what a website could earn: sliders, sums and the 12-month chart ---------- */
   var earn = document.querySelector('[data-earn]');
   if (earn) initEarn(earn);
@@ -822,6 +784,7 @@
       var spend = Calc.spendAt(Number(spendIn.value), min, max);
       var customers = Number(custIn.value);
       var r = Calc.earnings({ spend: spend, customers: customers, build: build, care: care });
+      box.fdsResult = r; // for the chart growing as you scroll in (earnScene)
       fill(spendIn);
       fill(custIn);
       text('spend', Calc.rand(spend));
@@ -891,34 +854,333 @@
     });
   }
 
-  /* ---------- without and with a website: the cards flip over ---------- */
-  var flip = document.querySelector('[data-flip]');
-  if (flip) initFlip(flip);
-
-  function initFlip(box) {
-    var top = box.querySelector('[data-flip-switch]');
-    var buttons = top.querySelectorAll('[data-side]');
-    top.hidden = false;
-    box.classList.add('is-live');
-    function set(withSite) {
-      box.classList.toggle('is-b', withSite);
-      for (var i = 0; i < buttons.length; i++) buttons[i].setAttribute('aria-pressed', String((buttons[i].getAttribute('data-side') === 'b') === withSite));
+  /* ---------- scenes: parts of the home page that play as you scroll ---------- */
+  // Each [data-scene] has a track and a stage (build.js). When everything under the scene's
+  // heading fits on the screen, the scene goes live (.is-live): the styles make the track tall
+  // and stick the stage to the screen, and --p on the scene goes from 0 to 1 as you scroll
+  // through it. A stage taller than the screen sticks by its bottom edge (--stick), so its
+  // heading scrolls away first. A scene that can't go live keeps its finished, static layout,
+  // unless it asks to "flow": then it still plays as one part of it comes up the screen.
+  var SCENES = { lights: lightsScene, build: buildScene, allday: allDayScene, earnings: earnScene, cost: costScene, how: howScene };
+  var sceneEls = motion ? document.querySelectorAll('[data-scene]') : [];
+  var svhProbe = null;
+  var remeasure = [];
+  if (sceneEls.length) {
+    // The small viewport height: steady while a phone's own toolbars come and go.
+    svhProbe = document.createElement('div');
+    svhProbe.className = 'svh-probe';
+    svhProbe.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(svhProbe);
+    for (var se = 0; se < sceneEls.length; se++) {
+      var kind = SCENES[sceneEls[se].getAttribute('data-scene')];
+      if (kind) initScene(sceneEls[se], kind(sceneEls[se]));
     }
-    top.addEventListener('click', function (e) {
-      var b = e.target.closest('[data-side]');
-      if (b) set(b.getAttribute('data-side') === 'b');
+    // Text in the real fonts can be a different height.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        for (var r = 0; r < remeasure.length; r++) remeasure[r]();
+        queue();
+      });
+    }
+  }
+
+  function initScene(el, s) {
+    var track = el.querySelector('[data-track]');
+    var stage = el.querySelector('[data-stage]');
+    var head = stage.querySelector('.scene-head, .chapter-head, .lights-head, .allday-head');
+    var flowEl = s.flowEl || stage;
+    var mode = '';
+    var size = '';
+    var stageH = 0;
+    var stick = 0;
+    var rect = null;
+    var last = '';
+
+    function measure(force) {
+      var svh = svhProbe.offsetHeight;
+      var key = window.innerWidth + 'x' + svh;
+      if (key === size && force !== true) return;
+      size = key;
+      el.classList.add('is-live');
+      el.style.removeProperty('--stick');
+      stageH = stage.offsetHeight;
+      // Everything but the heading has to fit on the screen, below the tour bar: a stage that's
+      // taller than the screen may only lose (part of) its heading off the top.
+      var bar = (storybar ? storybar.offsetHeight : 0) + 8;
+      var from = stage.getBoundingClientRect().top;
+      var rest = stageH;
+      var parts = stage.querySelectorAll('[data-stage] > .wrap > *');
+      for (var i = 0; i < parts.length; i++) {
+        if (parts[i] !== head && parts[i].getClientRects().length) rest = Math.min(rest, parts[i].getBoundingClientRect().top - from);
+      }
+      var fits = window.innerWidth >= 320 && (stageH <= svh + 1 || stageH - svh <= rest - bar);
+      if (fits) {
+        mode = 'live';
+        stick = 0;
+        if (stageH > svh + 1) {
+          // Stick by the bottom edge, but cut the heading between two of its lines, never
+          // through one: whatever would show only partly under the tour bar goes too.
+          var cut = bar + stageH - svh;
+          var lines = head ? head.querySelectorAll('h2, p, .fit') : [];
+          for (var k = 0; k < lines.length; k++) {
+            var r = lines[k].getBoundingClientRect();
+            if (r.top - from < cut && r.bottom - from > cut) cut = Math.min(rest, r.bottom - from + 4);
+          }
+          stick = Math.round(bar - cut);
+          el.style.setProperty('--stick', stick + 'px');
+        }
+      } else {
+        el.classList.remove('is-live');
+        mode = s.flow ? 'flow' : '';
+        stick = 0;
+      }
+      el.classList.toggle('is-flow', mode === 'flow');
+      last = '';
+      if (s.mode) s.mode(mode);
+    }
+    remeasure.push(function () { measure(true); });
+
+    loops.push({
+      resize: measure,
+      read: function () { rect = mode ? (mode === 'live' ? track : flowEl).getBoundingClientRect() : null; },
+      write: function (vh) {
+        if (!rect || rect.bottom < -vh || rect.top > vh * 2) return;
+        var p = mode === 'live'
+          ? clamp((stick - rect.top) / Math.max(1, rect.height - stageH), 0, 1)
+          : clamp((vh * 0.95 - rect.top) / (vh * 0.5), 0, 1);
+        var key = p.toFixed(4);
+        if (key === last) return;
+        last = key;
+        el.style.setProperty('--p', key);
+        if (s.draw) s.draw(p);
+      }
     });
-    // Tapping a card flips them all, too.
-    box.querySelector('.flip-rows').addEventListener('click', function () { set(!box.classList.contains('is-b')); });
+    measure(true);
+  }
+
+  // Lights on: a row comes up every so often and turns over to "with a website" a moment
+  // later, switching on part of the shop (lit-1 to lit-5). After the last one the shop's door
+  // opens (is-open). On phones only the newest row shows (is-current).
+  function lightsScene(el) {
+    var rows = el.querySelectorAll('.flip-row');
+    var n = rows.length;
+    var step = 0.68 / Math.max(1, n);
+    var state = '';
+    return {
+      draw: function (p) {
+        var q = (p - 0.06) / step;
+        var shown = clamp(Math.floor(q) + 1, 1, n);
+        var on = clamp(Math.floor(q - 0.35) + 1, 0, n);
+        var open = p >= 0.78;
+        var key = shown + ' ' + on + ' ' + open;
+        if (key === state) return;
+        state = key;
+        for (var i = 0; i < n; i++) {
+          rows[i].classList.toggle('is-current', i === shown - 1);
+          rows[i].classList.toggle('is-on', i < on);
+        }
+        for (var k = 1; k <= 5; k++) el.classList.toggle('lit-' + k, open || k <= on);
+        el.classList.toggle('is-open', open);
+      }
+    };
+  }
+
+  // A website builds itself, then a business tool: every piece (.mk-p) flies in at its own
+  // moment (--s), the website's over the first half and the tool's over the second. The tool's
+  // total adds itself up as its lines arrive. On phones the tool takes the website's place
+  // halfway through (is-second).
+  function buildScene(el) {
+    var items = el.querySelectorAll('.build-item');
+    var starts = [0.03, 0.54];
+    for (var i = 0; i < items.length; i++) {
+      var pieces = items[i].querySelectorAll('.mk-p');
+      for (var j = 0; j < pieces.length; j++) {
+        pieces[j].style.setProperty('--s', (starts[i % 2] + 0.27 * j / Math.max(1, pieces.length - 1)).toFixed(3));
+      }
+    }
+    var total = el.querySelector('[data-total]');
+    var amount = total ? Number(total.getAttribute('data-total')) : 0;
+    var lines = el.querySelectorAll('.mk-lines .mk-p');
+    var from = lines.length ? Number(lines[0].style.getPropertyValue('--s')) : 0.6;
+    var to = total ? Number(total.parentNode.style.getPropertyValue('--s')) + 0.07 : 0.8;
+    var shown = '';
+    var second = null;
+    return {
+      draw: function (p) {
+        var two = p >= 0.49;
+        if (two !== second) { second = two; el.classList.toggle('is-second', two); }
+        if (!total) return;
+        var text = Calc.rand(Math.round(amount * clamp((p - from) / Math.max(0.01, to - from), 0, 1) / 10) * 10);
+        if (text !== shown) { shown = text; total.textContent = text; }
+      },
+      mode: function (m) {
+        if (!m && total) { total.textContent = Calc.rand(amount); shown = ''; }
+      }
+    };
+  }
+
+  // One day: the clock runs through the moments (data-times, in minutes after midnight). It
+  // stops at each for a while, then runs on to the next, and the moment's words and note come
+  // up when it gets there. The sky follows the time of day (--dusk, --night, and --sky turns
+  // the sun and moon round the clock). The shop closes at data-closes; the website doesn't.
+  function allDayScene(el) {
+    var times = el.getAttribute('data-times').split(' ').map(Number);
+    var closes = el.hasAttribute('data-closes') ? Number(el.getAttribute('data-closes')) : Infinity;
+    var moments = el.querySelectorAll('.moment');
+    var toasts = el.querySelectorAll('.toast');
+    var clock = el.querySelector('[data-day-clock]');
+    var n = times.length;
+    var now = -1;
+    var minute = -1;
+    var closed = null;
+    var dark = null;
+    function pad(x) { return (x < 10 ? '0' : '') + x; }
+    function set(k, v) { el.style.setProperty(k, v); }
+    function show(m) {
+      now = m;
+      for (var i = 0; i < n; i++) {
+        moments[i].classList.toggle('is-on', i === m);
+        toasts[i].style.setProperty('--d', i > m ? 9 : m - i);
+        toasts[i].classList.toggle('is-new', i === m);
+      }
+    }
+    return {
+      draw: function (p) {
+        var f = clamp(p / 0.9, 0, 1) * (n - 1);
+        var i = Math.min(Math.floor(f), Math.max(0, n - 2));
+        var run = n > 1 ? easeInOut(clamp((f - i - 0.4) / 0.6, 0, 1)) : 0;
+        var t = n > 1 ? times[i] + (times[i + 1] - times[i]) * run : times[0];
+        var m = run >= 1 ? i + 1 : i;
+        if (m !== now) show(m);
+        var whole = Math.round(t) % 1440;
+        if (whole !== minute) {
+          minute = whole;
+          clock.textContent = pad(Math.floor(whole / 60)) + ':' + pad(whole % 60);
+        }
+        set('--hh', (t / 60 % 12 * 30).toFixed(2));
+        set('--mm', (t % 60 * 6).toFixed(2));
+        set('--sky', ((t - 720) / 4).toFixed(2));
+        // a warm glow around sunrise and sunset; dark from about eight
+        var night = clamp((t - 1110) / 100, 0, 1);
+        set('--dusk', Math.max(0, 1 - Math.abs(t - 1110) / 140, 1 - Math.abs(t - 400) / 80).toFixed(3));
+        set('--night', night.toFixed(3));
+        if ((night > 0.55) !== dark) { dark = night > 0.55; el.classList.toggle('is-dark', dark); }
+        if ((t >= closes) !== closed) { closed = t >= closes; el.classList.toggle('is-closed', closed); }
+      }
+    };
+  }
+
+  // What it could earn: the months grow one after another as the chart comes up the screen
+  // (--grow), and the sums count up with them, until you move a slider.
+  function earnScene(el) {
+    var box = el.querySelector('[data-earn]');
+    var bars = el.querySelectorAll('.earn-chart .bar');
+    for (var i = 0; i < bars.length; i++) bars[i].style.setProperty('--bi', i);
+    var outs = [box.querySelector('[data-out="monthly"]'), box.querySelector('[data-out="yearly"]')];
+    var touched = false;
+    function done() {
+      el.style.removeProperty('--grow');
+      var r = box.fdsResult;
+      if (r) { outs[0].textContent = Calc.rand(r.monthly); outs[1].textContent = Calc.rand(r.yearly); }
+    }
+    box.addEventListener('input', function () { touched = true; el.style.removeProperty('--grow'); });
+    return {
+      flow: true,
+      flowEl: el.querySelector('.earn-figure'),
+      draw: function (p) {
+        var r = box.fdsResult;
+        if (touched || !r) return;
+        var g = clamp((p - 0.02) / 0.6, 0, 1);
+        el.style.setProperty('--grow', g.toFixed(3));
+        var e = 1 - Math.pow(1 - g, 3);
+        outs[0].textContent = Calc.rand(Math.round(r.monthly * e / 10) * 10);
+        outs[1].textContent = Calc.rand(Math.round(r.yearly * e / 10) * 10);
+      },
+      mode: function (m) { if (!m) done(); }
+    };
+  }
+
+  // What it costs: on phones the three cards come in one at a time from the right (--deck goes
+  // from 0 to 2); on wide screens they're dealt out (the styles use --p). Answering "which
+  // suits me?", or tabbing to a card's link, scrolls that card into the middle.
+  function costScene(el) {
+    var track = el.querySelector('[data-track]');
+    var stage = el.querySelector('[data-stage]');
+    var cards = el.querySelectorAll('.mini');
+    var dots = el.querySelectorAll('.deck-dots i');
+    var fitBox = el.querySelector('[data-fit]');
+    var narrow = window.matchMedia('(max-width: 899px)');
+    var n = cards.length;
+    var on = -1;
+    var live = false;
+    for (var i = 0; i < n; i++) cards[i].style.setProperty('--i', i);
+    function bringIn(k) {
+      var r = track.getBoundingClientRect();
+      var stick = parseFloat(el.style.getPropertyValue('--stick')) || 0;
+      var p = 0.08 + 0.78 * k / Math.max(1, n - 1);
+      window.scrollTo({ top: window.pageYOffset + r.top - stick + p * (r.height - stage.offsetHeight), behavior: 'smooth' });
+    }
+    if (fitBox) {
+      fitBox.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-option]');
+        if (!b || !live || !narrow.matches || b.getAttribute('aria-pressed') !== 'true') return;
+        for (var k = 0; k < n; k++) if (cards[k].getAttribute('data-mini') === b.getAttribute('data-option')) bringIn(k);
+      });
+    }
+    el.addEventListener('focusin', function (e) {
+      if (!live || !narrow.matches) return;
+      for (var k = 0; k < n; k++) if (k !== on && cards[k].contains(e.target)) bringIn(k);
+    });
+    return {
+      draw: function (p) {
+        var d = clamp((p - 0.08) / 0.78, 0, 1) * (n - 1);
+        el.style.setProperty('--deck', d.toFixed(3));
+        var k = Math.round(d);
+        if (k === on) return;
+        on = k;
+        for (var j = 0; j < dots.length; j++) dots[j].classList.toggle('is-on', j === k);
+      },
+      mode: function (m) { live = m === 'live'; }
+    };
+  }
+
+  // How it works: the steps take turns and the big door opens a little more with each one
+  // (--door), its number plate showing the step. It stays at each step for a while, then
+  // swings on to the next; at the last it's wide open, with the "Open" sign showing.
+  function howScene(el) {
+    var steps = el.querySelectorAll('.how-steps .step');
+    var bars = el.querySelectorAll('.how-rail i');
+    var plates = el.querySelectorAll('.bd-plate b');
+    var n = steps.length;
+    var now = -1;
+    function openAt(i) { return n > 1 ? Math.pow(i / (n - 1), 1.6) : 1; }
+    return {
+      draw: function (p) {
+        var f = clamp((p - 0.03) / 0.75, 0, 1) * (n - 1);
+        var i = Math.min(Math.floor(f), Math.max(0, n - 2));
+        var u = n > 1 ? f - i : 0;
+        var run = easeInOut(clamp((u - 0.35) / 0.65, 0, 1));
+        el.style.setProperty('--door', (openAt(i) + (openAt(i + 1) - openAt(i)) * run).toFixed(3));
+        var m = u >= 0.7 ? i + 1 : i;
+        if (m === now) return;
+        now = m;
+        for (var k = 0; k < n; k++) {
+          steps[k].classList.toggle('is-on', k === m);
+          if (bars[k]) bars[k].classList.toggle('is-on', k <= m);
+          if (plates[k]) plates[k].classList.toggle('is-on', k === m);
+        }
+      }
+    };
   }
 
   /* ---------- things below the fold rise into view as you scroll ---------- */
   if (motion && 'IntersectionObserver' in window) initReveal();
 
   function initReveal() {
-    var selector = '.chapter-head, .tour-list > li, .help, .niche-card, .can-build > li, .idea, .mini, .flip, .fit, ' +
+    var selector = '.chapter-head, .lights-head, .allday-head, .tour-list > li, .idea, .mini, .fit, ' +
       '.includes > li, .point-cards > li, .plan, .example, .pt-col, .about-inner, .faq-list, .big-callout, .punch, ' +
       '.earn, .calc, .open-demo, .points-card, .start-step, .founding, .price-group-head, .times-table, ' +
+      '.shop, .flip-row, .build-item, .moment, .ideas-strip, .bigger-line, ' +
       '.ex-website-text, .ex-shot, .ex-tool-device, .ex-tool-text, .ex-flow-step, .ex-flow-line';
     var els = document.querySelectorAll(selector);
     var vh = window.innerHeight;
@@ -939,7 +1201,7 @@
     var k = 0;
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (el.closest('[data-door], [data-journey], [hidden]')) continue;
+      if (el.closest('[data-door], [data-journey], .scene.is-live, [hidden]')) continue;
       if (el.getBoundingClientRect().top < vh) continue;
       k = el.parentNode === parent ? k + 1 : 0;
       parent = el.parentNode;
