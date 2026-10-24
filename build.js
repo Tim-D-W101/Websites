@@ -160,7 +160,8 @@ const yearly = (monthlyFee) => monthlyFee * yearlyMonths;
 const yearlyFree = `${12 - yearlyMonths} month${12 - yearlyMonths === 1 ? '' : 's'}`;
 effective['terms.yearlyPaysMonths'] = yearlyOn ? 'on' : '';
 
-// Founding clients get their first month of a plan free.
+// Founding clients get their first month of a plan free. spotsLeft only switches the offer
+// off at 0: it's never shown, so there's no countdown on the site.
 const F = C.founding || {};
 const foundingOn = F.enabled === true && Number(F.spotsLeft) > 0;
 
@@ -219,8 +220,6 @@ const tokens = {
   suspendAfterDays: T.suspendAfterDays,
   yearlyPaysMonths: yearlyOn ? yearlyMonths : '',
   yearlyFree: yearlyOn ? yearlyFree : '',
-  spotsTotal: F.spotsTotal,
-  spotsLeft: F.spotsLeft,
   siteName: site.name,
   domain: site.domain,
   email: contact.email,
@@ -265,13 +264,17 @@ function typo(s) {
 
 const t = (s) => esc(typo(fill(s)));
 // Like t(), with every rand amount in bold: "from R3 999" -> "from <strong>R3 999</strong>".
-const tMoney = (s) => t(s).replace(/R\d{1,3}(?: \d{3})*/g, '<strong>$&</strong>');
+// A build and its monthly fee are one amount: <strong>R4 999 + R399/month</strong>.
+const tMoney = (s) => t(s).replace(/R\d{1,3}(?: \d{3})*(?: \+ R\d{1,3}(?: \d{3})*\/month)?/g, '<strong>$&</strong>');
 
-// Per option, e.g. {onceOffBuild}, {careMonthly}, {carePlusChanges}, {careYearly}.
-// Filled after the other words, because an option's text can use them ({changeFee} per change).
+// Per option, e.g. {onceOffBuild}, {careMonthly}, {carePrice}, {carePlusChanges}, {careYearly}.
+// {carePrice} is the build and the monthly fee together ("R4 999 + R399/month"), so a plan's
+// price is never shown without its monthly fee. Filled after the other words, because an
+// option's text can use them ({changeFee} per change).
 for (const o of options) {
   const k = camel(o.id);
   tokens[`${k}Build`] = rand(o.build);
+  tokens[`${k}Price`] = o.monthly ? `${rand(o.build)} +\u00a0${month(o.monthly)}` : rand(o.build);
   tokens[`${k}Changes`] = isSet(o.changes) ? fill(o.changes) : '';
   if (o.monthly) {
     tokens[`${k}Monthly`] = month(o.monthly);
@@ -360,7 +363,7 @@ function foundingBanner(page, opts = {}) {
   const action = !opts.compact && canEnquire ? `<a class="btn btn-navy" href="${enquiryHref(page)}">Get a free quote</a>` : '';
   return `<aside class="founding${opts.compact ? ' founding-compact' : ''}" aria-labelledby="founding-h">
 <div class="founding-inner">
-<p class="founding-spots"><strong>${esc(F.spotsLeft)}</strong> of ${esc(F.spotsTotal)} spots left</p>
+${isSet(F.badge) ? `<p class="founding-badge">${t(F.badge).replace(/\*([^*]+)\*/g, '<strong>$1</strong>')}</p>` : ''}
 <div class="founding-text"><h2 id="founding-h">${t(F.title)}</h2><p>${t(F.text)}</p></div>
 ${action}
 </div></aside>`;
@@ -411,17 +414,24 @@ function optionValue(v) {
   return freePill(esc(typo(s)));
 }
 
+// An option's price: the build and, on a plan, the monthly fee right beside it in the same
+// type (under it on narrow cards), so the fee never looks optional. Then the minimum term (or "No monthly fee") and the founding note.
+// The home page's cards and the full cards on /websites and /pricing both use it.
+function optionPrice(o, yearlyLine = false) {
+  const amount = `<p class="plan-price"><span class="plan-amount">${rand(o.build)}</span>${o.monthly ? `<span class="plan-monthly">+&nbsp;${month(o.monthly)}</span>` : ''}</p>`;
+  const term = o.monthly ? (isSet(WEB.planTerm) ? `<p class="option-term">${t(WEB.planTerm)}</p>` : '') : `<p class="option-term">${t(WEB.noMonthly)}</p>`;
+  const year = yearlyLine && yearlyOn && o.monthly ? `<p class="plan-yearly">or pay <strong>${rand(yearly(o.monthly))}</strong> once a year <span class="plan-save">${yearlyFree} free</span></p>` : '';
+  const founding = foundingOn && o.monthly && isSet(F.cardNote) ? `<p class="option-note">${t(F.cardNote)}</p>` : '';
+  return `<p class="option-label">${t(WEB.priceLabel)}</p>${amount}${term}${year}${founding}`;
+}
+
 function optionCard(o, page) {
   const featured = o.featured === true;
-  const monthly = o.monthly
-    ? `<p class="option-monthly"><strong>+ ${rand(o.monthly)}</strong>/month</p>${yearlyOn ? `<p class="plan-yearly">or pay <strong>${rand(yearly(o.monthly))}</strong> once a year <span class="plan-save">${yearlyFree} free</span></p>` : ''}`
-    : `<p class="option-monthly">${t(WEB.noMonthly)}</p>`;
-  const founding = foundingOn && o.monthly && isSet(F.cardNote) ? `<p class="option-note">${t(F.cardNote)}</p>` : '';
   const rows = (WEB.rows || []).map((r) => `<div><dt>${t(r.label)}</dt><dd>${optionValue(o[r.key])}</dd></div>`).join('');
   return `<article class="plan option${featured ? ' plan-featured' : ''}" id="option-${esc(o.id)}">
 ${featured && isSet(WEB.badge) ? `<p class="option-badge">${t(WEB.badge)}</p>` : ''}
 <header class="option-head"><h3>${t(o.name)}</h3><p class="plan-summary">${t(o.summary)}</p></header>
-<div class="option-price"><p class="option-label">${t(WEB.priceLabel)}</p><p class="plan-price"><span class="plan-amount">${rand(o.build)}</span></p>${monthly}${founding}</div>
+<div class="option-price">${optionPrice(o, true)}</div>
 <dl class="option-rows">${rows}</dl>
 <div class="plan-actions">${quoteButton(page, featured ? 'btn btn-gold' : 'btn btn-ghost')}</div>
 </article>`;
@@ -439,9 +449,10 @@ function optionsCss() {
   return `@media (min-width:1000px){@supports (grid-template-rows:subgrid){.options>.option{display:grid;grid-template-rows:subgrid;grid-row:span ${n + 3}}.option-rows{display:grid;grid-template-rows:subgrid;grid-row:span ${n}}}}`;
 }
 
-// "Websites from R3 999 with Care Plus, or R7 500 once-off · Business tools from R5 000"
+// "Websites from R7 500 once-off · or pay less upfront: R4 999 + R399/month", one part per line,
+// with the amounts in bold.
 function priceAnchor(s, cls = '') {
-  return `<p class="price-anchor${cls}">${s.split(' · ').map((part) => `<span><span>${t(part)}</span></span>`).join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
+  return `<p class="price-anchor${cls}">${s.split(' · ').map((part) => `<span><span>${tMoney(part)}</span></span>`).join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
 }
 
 // The steps of a project, each with its little door: closed, ajar, open, then open and done.
@@ -922,7 +933,7 @@ function tourSection(chapters) {
   const items = chapters.map((c, i) => `<li><a href="#${c.id}"><span class="tour-num" aria-hidden="true">${i + 1}</span><span class="tour-label">${t(c.kicker)}</span>${svg.icon('arrow')}</a></li>`).join('');
   return `<section class="section tour" id="tour" aria-labelledby="tour-h"><div class="wrap">
 <div class="tour-head center"><p class="kicker kicker-plain">${t(T.kicker)}</p>${sectionHead('tour', T.heading, T.lead)}</div>
-<div class="tour-extra">${priceAnchor(D.priceAnchor)}<ul class="hero-points">${D.points.map((p) => `<li>${svg.icon('check')}<span>${t(p)}</span></li>`).join('')}</ul></div>
+<div class="tour-extra"><ul class="hero-points">${D.points.map((p) => `<li>${svg.icon('check')}<span>${t(p)}</span></li>`).join('')}</ul></div>
 <ol class="tour-list">${items}</ol>
 </div></section>`;
 }
@@ -1011,15 +1022,12 @@ function buildSection(ch) {
 </div>
 <p class="mk-sent mk-p">${svg.icon('check')}<span>${ph(Q.sent)}</span></p>
 </div></div>`;
-  const caption = (c) => {
-    const from = c.group === 'tools' ? toolsFrom : websitesFrom;
-    return `<div class="build-caption">
+  const caption = (c) => `<div class="build-caption">
 <h3><span class="build-icon">${svg.icon(c.icon)}</span>${t(c.title)}</h3>
 <p>${t(c.text)}</p>
-<p class="niche-price">From <strong>${rand(from)}</strong>${isSet(c.priceNote) ? ` <span class="niche-price-note">${t(c.priceNote)}</span>` : ''}</p>
+${isSet(c.price) ? `<p class="niche-price">${tMoney(c.price)}</p>` : ''}
 <p class="more-link"><a href="${groups[c.group].page}">${t(c.more)} ${svg.icon('arrow')}</a></p>
 </div>`;
-  };
   const stage = `<div class="wrap build-grid">
 <div class="chapter-head">${kicker(ch.n, ch.kicker)}${sectionHead('get', B.heading, B.lead)}</div>
 <div class="build-items">
@@ -1142,15 +1150,11 @@ function miniOption(o) {
   const featured = o.featured === true;
   const rows = (WEB.rows || []).filter((r) => ['hosting', 'changes', 'term'].includes(r.key) && isSet(o[r.key]))
     .map((r) => `<li><span>${t(r.label)}</span><b>${freePill(t(o[r.key]))}</b></li>`).join('');
-  const monthly = o.monthly ? `<p class="option-monthly"><strong>+ ${rand(o.monthly)}</strong>/month</p>` : `<p class="option-monthly">${t(WEB.noMonthly)}</p>`;
-  const founding = foundingOn && o.monthly && isSet(F.cardNote) ? `<p class="option-note">${t(F.cardNote)}</p>` : '';
   const ch = C.home.costs.chooser || {};
   return `<article class="mini${featured ? ' mini-featured' : ''}" data-mini="${esc(o.id)}">
 ${featured && isSet(WEB.badge) ? `<p class="option-badge">${t(WEB.badge)}</p>` : ''}${isSet(ch.badge) ? `<p class="mini-fit" aria-hidden="true">${svg.icon('check')}${t(ch.badge)}</p>` : ''}
 <h3>${t(o.name)}</h3>
-<p class="option-label">${t(WEB.priceLabel)}</p>
-<p class="plan-price"><span class="plan-amount">${rand(o.build)}</span></p>
-${monthly}${founding}
+${optionPrice(o)}
 <p class="plan-summary">${t(o.summary)}</p>
 <ul class="mini-rows">${rows}</ul>
 <a class="mini-link" href="/pricing#option-${esc(o.id)}">What’s included<span class="visually-hidden"> in ${t(o.name)}</span> ${svg.icon('arrow')}</a>
