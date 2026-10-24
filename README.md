@@ -67,12 +67,13 @@ If neither WhatsApp nor email is filled in, the enquiry form and every "Free quo
 You can use these in any text in `content.json`, and in the privacy, terms and guide pages:
 
 - **Prices:** `{onceOffBuild}` (R7 500) · `{careBuild}` (R4 999) · `{careMonthly}` (R399/month) · `{carePlusBuild}` (R3 999) · `{carePlusMonthly}` (R699/month) · `{websitesFrom}` (the lowest website build price, R3 999) · `{toolsFrom}` (R5 000) · `{careFrom}` (the cheapest monthly fee, R399/month)
+- **Build and monthly fee together:** `{carePrice}` (R4 999 + R399/month) · `{carePlusPrice}` (R3 999 + R699/month) · `{onceOffPrice}` (R7 500, no monthly fee). Use these when a text mentions a plan's price, so its monthly fee is never left out. In a line where amounts show in bold (like the hero's price line), the build and the monthly fee are bold together
 - **Terms:** `{renewalFee}` (R249) · `{changeFee}` (R199) · `{minMonths}` (6) · `{graceDays}` (30) · `{deposit}` (50%) · `{balance}` (50%) · `{quoteValidDays}` · `{noticeDays}` · `{editsDeadline}` · `{editsLive}` · `{suspendAfterDays}`
 - **Changes per option:** `{onceOffChanges}` (R199 per change) · `{careChanges}` (5 free changes a month) · `{carePlusChanges}` (10 free changes a month)
 - **Yearly payment** (only while it's switched on): `{yearlyPaysMonths}` · `{yearlyFree}` · `{careYearly}` · `{carePlusYearly}`
-- **Everything else:** `{quoteTime}` · `{paymentMethods}` · `{spotsTotal}` · `{spotsLeft}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
+- **Everything else:** `{quoteTime}` · `{paymentMethods}` · `{serviceArea}` · `{replyHours}` · `{email}` · `{whatsapp}` · `{domain}` · `{legalName}` · `{registrationNumber}` · `{noticeAddress}` · `{lastUpdated}`
 
-The option words come from each option's `id`: `once-off` gives `{onceOffBuild}`, `care-plus` gives `{carePlusBuild}`, and so on.
+The option words come from each option's `id`: `once-off` gives `{onceOffBuild}`, `care-plus` gives `{carePlusBuild}` and `{carePlusPrice}`, and so on.
 
 A FAQ item, or one part of an answer, that needs a blank detail can be hidden until it's filled in: add `"requires": ["process.quoteTime"]`. In the HTML pages, wrap the text in `{{#if contact.email}} … {{/if}}`.
 
@@ -89,8 +90,9 @@ A business website can be bought three ways. They live in `website.options`, and
   "payLabel": "Start Care", "payfast": "" }
 ```
 
-- **Option prices:** change `build` (the "from" price for the build) and `monthly` (the monthly fee; `null` for once-off). Run `node build.js` and everything updates: the option cards, the price line in the hero ("Websites from R3 999 with Care Plus, or R7 500 once-off"), the home page's "What it costs" and "What it could earn you" chapters, the industry ideas, the calculators, the Start page, the FAQ, the Terms, page descriptions and the search-engine data.
+- **Option prices:** change `build` (the "from" price for the build) and `monthly` (the monthly fee; `null` for once-off). Run `node build.js` and everything updates: the option cards, the price line in the hero ("Websites from R7 500 once-off · or pay less upfront: R4 999 + R399/month"), the home page's "What it costs" and "What it could earn you" chapters, the industry ideas, the calculators, the Start page, the FAQ, the Terms, page descriptions and the search-engine data.
 - **The card rows** (Minimum term, Hosting & domain, Changes, Replies, Monthly report, Backups & security) are listed in `website.rows`. Each row shows the option's field with the same `key`. Leave a field blank to show a dash, or write `Yes` to show a tick. The word "free" in a row ("5 free changes a month") gets a green highlight, on the cards and in the "Changes on each option" list.
+- **The price on each card** shows the build and, for Care and Care Plus, the monthly fee together ("R4 999 + R399/month"), so the monthly fee never looks optional. The home page's cards and the full cards on `/websites` and `/pricing` share the same price block. Under it: `website.planTerm` on the plans ("6-month minimum") and `website.noMonthly` on once-off. `website.priceLabel` is the small label above the price ("From").
 - `"featured": true` gives an option the darker border and the "Most popular" badge (`website.badge`).
 - `website.buildTime` is the typical build time for the business website.
 
@@ -133,22 +135,22 @@ While every `payfast` link in `website.options` is blank, the monthly plan fees 
 "founding": { "enabled": true, "spotsTotal": 3, "spotsLeft": 3, ... }
 ```
 
-- The offer: the first month of Care or Care Plus free. The wording is in `founding.title`, `founding.text`, `founding.cardNote` (the note on the Care and Care Plus cards) and `founding.startNote`.
-- Each time someone signs up as a founding client, lower `spotsLeft` and rebuild.
+- The offer: the first month of Care or Care Plus free. The wording is in `founding.badge` (the gold "**1st** month free" badge on the banner; put `*stars*` around the big part), `founding.title`, `founding.text`, `founding.cardNote` (the note on the Care and Care Plus cards) and `founding.startNote`.
+- `spotsTotal` and `spotsLeft` are for you only. The site never shows how many places are left, so there's no countdown. Each time someone signs up as a founding client, lower `spotsLeft` and rebuild.
 - When `spotsLeft` reaches `0`, or `enabled` is `false`, the banner and the notes on the option cards disappear everywhere.
 
 ## The home page: the front door and the tour
 
 The home page tells the story as you scroll. Everything it says is in `home` in `content.json`.
 
-1. **The front door** (`home.hero`). When the page opens, the heading rises in, the door creaks open a little and a speech bubble types out `bubble`. As you scroll, the door moves to the middle, swings open, the things in `inside` (up to 6, each an `icon` and a `label`) come out of it, and you go through the doorway into the light, where the tour comes up to meet you. Put `*stars*` around words in `h1` to highlight them. `address`, `mat`, `openSign` and `bookButton` are the words drawn on the door picture.
+1. **The front door** (`home.hero`). When the page opens, the heading rises in, the door creaks open a little and a speech bubble types out `bubble`. As you scroll, the door moves to the middle, swings open, the things in `inside` (up to 6, each an `icon` and a `label`) come out of it, and you go through the doorway into the light, where the tour comes up to meet you. Put `*stars*` around words in `h1` to highlight them. `priceAnchor` is the price line under the lead (each part between ` · ` on its own line, amounts in bold). On phones the heading, the price line and both buttons stay in view above the door while it plays, and the ticks in `points` show in the tour instead. `address`, `mat`, `openSign` and `bookButton` are the words drawn on the door picture.
 2. **The tour** (`home.tour`): "Come in", with a link to each chapter. Once you're through the door, a bar at the top shows which chapter you're in and how far through you are.
 3. **The five chapters.** Their names are in `home.chapters`: `kicker` is a chapter's name in the tour and above its heading, `short` its name in the bar at the top. Most of the chapters are *scenes*: the picture stays on the screen while you scroll, and plays as you go.
 
 | Chapter | In `content.json` | What it shows |
 |---|---|---|
 | 1. Why you need a website | `home.why`, then `home.lights` | A customer's search, step by step (`steps`), on a phone that changes as you read. The phone's made-up example (a salon) is in `phone`. Then a dark, closed shop lights up: each of the `rows` turns from "without a website" to "with a website" and switches on part of the shop, and at the end its door opens. `sign` is the name on the shop |
-| 2. What you get | `home.build`, `home.industries`, `home.allDay` | A website builds itself on screen (the salon from `why.phone`), then a business tool beside it (the made-up quote in `tool`, whose total adds itself up), each with what it costs (`cards`). Then the first three demos, links to the ideas for each kind of business, and one day from morning to night: the clock runs through the moments in `items`, the sky darkens, the shop closes at `closes`, and the website keeps working |
+| 2. What you get | `home.build`, `home.industries`, `home.allDay` | A website builds itself on screen (the salon from `why.phone`), then a business tool beside it (the made-up quote in `tool`, whose total adds itself up), each with what it costs (`price` in `cards`, where amounts show in bold). Then the first three demos, links to the ideas for each kind of business, and one day from morning to night: the clock runs through the moments in `items`, the sky darkens, the shop closes at `closes`, and the website keeps working |
 | 3. What it could earn you | `home.earn` | Two sliders, the sums and a 12-month chart that grows month by month as you scroll to it. `build` is the website option whose price it uses, `carePlan` the plan whose fee it uses, and `defaults` the starting figures |
 | 4. What it costs | `home.costs` | The three ways to pay, and the question in `chooser`: each answer points to a website option and explains why it suits. On phones the three come in one at a time; on wider screens they're dealt out side by side. Then bigger jobs, the founding-client offer and a link to all the prices |
 | 5. How it works | `home.steps` | A big front door opens a little more with each of the four steps, with the step's number on it, until it's wide open with "Open" (`open`) in the doorway |

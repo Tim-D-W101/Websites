@@ -5,7 +5,7 @@
     "Anything that is empty or starts with TODO counts as blank, and the matching button or section is hidden on the site.",
     "Prices are plain numbers in rand: 7500 shows as R7 500. A band with \"from\": null shows as \"Quoted\".",
     "The three ways to buy a website (Once-off, Build + Care, Build + Care Plus) are in website.options. The renewal fee, change fee and minimum term are in terms.",
-    "Words in {curly brackets} are filled in for you, e.g. {onceOffBuild} becomes R7 500. The full list is in README.md."
+    "Words in {curly brackets} are filled in for you, e.g. {onceOffBuild} becomes R7 500 and {carePrice} becomes R4 999 + R399/month. The full list is in README.md."
   ],
   "site": {
     "name": "Front Door Sites",
@@ -47,12 +47,14 @@
     "lastUpdated": "2026-10-17"
   },
   "founding": {
+    "_note": "spotsTotal and spotsLeft are for you only and never show on the site. When spotsLeft reaches 0, the offer switches off everywhere. Put *stars* around the big part of badge.",
     "enabled": true,
     "spotsTotal": 3,
     "spotsLeft": 3,
-    "title": "Founding-client offer: first month of Care or Care Plus free",
-    "text": "Our first {spotsTotal} clients get their first month of any care plan free. If you're happy, we'd love an honest Google review.",
-    "cardNote": "First month free for founding clients",
+    "badge": "*1st* month free",
+    "title": "Founding-client offer on Care and Care Plus",
+    "text": "We're new, so our first clients get their first month of Care or Care Plus free. If you're happy with your site, we'd love an honest Google review.",
+    "cardNote": "1st month free for founding clients",
     "startNote": "Founding client? Your first month of Care or Care Plus is free. Your quote shows it."
   },
   "groups": {
@@ -72,8 +74,9 @@
     "heading": "One website, three ways to pay",
     "lead": "Pay more upfront and nothing monthly, or pay less upfront with a monthly plan. It's the same website either way.",
     "badge": "Most popular",
-    "priceLabel": "Build from",
+    "priceLabel": "From",
     "noMonthly": "No monthly fee",
+    "planTerm": "{minMonths}-month minimum",
     "rows": [
       { "key": "term", "label": "Minimum term" },
       { "key": "hosting", "label": "Hosting & domain" },
@@ -191,13 +194,13 @@
     "hero": {
       "_note": "The front door at the top of the home page. Scrolling opens the door, and the things in inside (up to 6) come out of it. Put *stars* around words in h1 to highlight them.",
       "eyebrow": "Websites and business tools for South African businesses",
-      "h1": "Open the door to *more customers*",
-      "lead": "We build websites and business tools for South African businesses. You get a free mock-up or plan and a fixed price before any work starts, and we look after it afterwards.",
-      "priceAnchor": "Websites from {carePlusBuild} with Care Plus, or {onceOffBuild} once-off · Business tools from {toolsFrom}",
+      "h1": "No website? Customers find *someone else*.",
+      "lead": "We build you a website with your prices, your best work and a one-tap WhatsApp button, set up so Google can find you.",
+      "priceAnchor": "Websites from {onceOffBuild} once-off · or pay less upfront: {carePrice}",
       "points": [
-        "Fixed quote before we start",
-        "You own it once it's paid for",
-        "No calls, voice notes welcome"
+        "Free mock-up before you pay",
+        "No commission on your sales",
+        "Yours once it's paid for"
       ],
       "tourButton": "Show me around",
       "bubble": "Scroll down, and we'll open the door and show you around.",
@@ -321,7 +324,7 @@
           "icon": "globe",
           "address": "yourbusiness.co.za",
           "text": "From a simple three-page site to online bookings and payments, built to bring in customers.",
-          "priceNote": "with Care Plus, or {onceOffBuild} once-off",
+          "price": "From {onceOffBuild} once-off, or {carePrice}",
           "more": "See website options"
         },
         {
@@ -330,7 +333,7 @@
           "icon": "grid",
           "address": "app.yourbusiness.co.za",
           "text": "Quote builders, booking systems, trackers and portals, built around the way you already work.",
-          "priceNote": "once-off",
+          "price": "From {toolsFrom} once-off",
           "more": "See business tools"
         }
       ],
@@ -503,7 +506,7 @@
       "eyebrow": "Websites",
       "h1": "A website that brings in customers",
       "lead": "Your services, your prices, your reviews and a way to reach you in one tap. We build a free mock-up first, so you see your site before you pay anything.",
-      "from": "Websites from {carePlusBuild} with Care Plus, or {onceOffBuild} once-off. Free mock-up first."
+      "from": "Websites from {onceOffBuild} once-off, or pay less upfront: {carePrice}. Free mock-up first."
     },
     "includesHeading": "Every website includes",
     "mockupCard": {
@@ -1093,7 +1096,7 @@
     {
       "id": "cost",
       "q": "How much will it cost?",
-      "a": "A business website is {onceOffBuild} once-off, or from {carePlusBuild} with a monthly plan. Business tools start from {toolsFrom}. Tell us what you need and we'll send a fixed quote. The price only changes if you ask for something new, and we quote that first."
+      "a": "A business website is {onceOffBuild} once-off. Or pay less upfront with a monthly plan: {carePrice} with Care, or {carePlusPrice} with Care Plus. Business tools start from {toolsFrom}. Tell us what you need and we'll send a fixed quote. The price only changes if you ask for something new, and we quote that first."
     },
     {
       "id": "need-plan",
