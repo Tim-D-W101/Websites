@@ -11,164 +11,206 @@
 <!-- demo:head -->
 <style>
 /* Bright Cuts: a made-up barber and salon's own booking tool (demo).
-   Black, warm white and one blush accent; Syne and Manrope. */
+   Calm and Swiss: a black frame, warm paper, and one blush action.
+   Colour  black  #141210  frame (panel, header, booking bar, ticket) and anything selected
+           ink    #26221F  text;  muted #5E5751 secondary text (6.4:1 on paper)
+           paper  #F7F2EC  page;  card #FFFDFB and soft #EFE7DF are its tints
+           line   #E3D8CD  hairlines; line-2 #D3C7BB chip edges; edge #8E857E input edges (3.3:1)
+           blush  #F2C4BE  the one action only (Continue, Confirm booking, Add to calendar), always on black (11.9:1)
+   Type    Syne 700 headings: panel 2.25-3rem, step 1.5-1.875rem. Manrope body 500 1rem/1.6, strong 700, small .8125-.875rem
+   Space   8px grid: .5 / 1 / 1.5 / 2 / 3 / 4rem
+   Radius  8px small controls (days, times), 12px containers (lists, inputs), 16px black surfaces, pill buttons
+   Motion  a step change and the bar's arrival fade in with an 8px rise, 400ms ease-out, once. Reduced motion: none. */
 @font-face { font-family: "Syne"; src: url("/fonts/syne-var.woff2") format("woff2"); font-weight: 400 800; font-display: swap; }
 @font-face { font-family: "Manrope"; src: url("/fonts/manrope-var.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
 :root {
-  --black: #141210; --ink: #26221F; --muted: #5E5751; --white: #F7F2EC; --card: #FFFDFB; --line: #E5DBD1; --soft: #EFE7DF;
-  --blush: #F2C4BE; --blush-l: #FBE7E3; --blush-d: #9E4F47;
+  --black: #141210; --ink: #26221F; --muted: #5E5751;
+  --paper: #F7F2EC; --card: #FFFDFB; --soft: #EFE7DF;
+  --line: #E3D8CD; --line-2: #D3C7BB; --edge: #8E857E;
+  --blush: #F2C4BE; --focus: #9E4F47;
+  --on-black: #F7F2EC; --on-black-2: #CFC4BA; --rule-dark: #38322E;
   --display: "Syne", "Arial Black", system-ui, sans-serif;
   --body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --r-s: 8px; --r-m: 12px; --r-l: 16px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
 }
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-body { margin: 0; font: 500 1rem/1.5 var(--body); color: var(--ink); background: var(--white); }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-bottom: 7rem; }
+body { margin: 0; font: 500 1rem/1.6 var(--body); color: var(--ink); background: var(--paper); }
 button, input, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
-:focus-visible { outline: 3px solid var(--blush-d); outline-offset: 2px; border-radius: 8px; }
-h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 700; line-height: 1.1; color: var(--black); letter-spacing: -.01em; }
-p { margin: 0; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 700; line-height: 1.15; letter-spacing: -.015em; color: var(--black); text-wrap: balance; }
+p { margin: 0; text-wrap: pretty; }
+.nw { white-space: nowrap; }
 .sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.i { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; }
+.i { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; }
 
+/* the black frame: phone header, desktop panel */
 .shell { min-height: 100vh; }
-.brand { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .85rem 1rem; background: var(--black); color: var(--white); }
-.logo { display: flex; align-items: center; gap: .6rem; }
-.logo-mark { display: grid; place-items: center; width: 2.3rem; height: 2.3rem; border-radius: 50%; background: var(--blush); color: var(--black); }
-.logo-mark .i { width: 1.3rem; height: 1.3rem; }
-.logo b { display: block; font: 800 1.12rem/1 var(--display); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
-.logo small { display: block; margin-top: .15rem; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: #CFC4BA; }
-.hours { font-size: .78rem; color: #E6DDD4; text-align: right; line-height: 1.35; white-space: nowrap; }
+.brand { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; background: var(--black); color: var(--on-black); }
+.logo { display: flex; align-items: center; gap: .75rem; }
+.logo-mark { display: grid; place-items: center; flex: none; width: 2.25rem; height: 2.25rem; border: 1.5px solid #5A524C; border-radius: 50%; }
+.logo-mark .i { width: 1.1rem; height: 1.1rem; }
+.logo b { display: block; font: 700 1.0625rem/1.1 var(--display); letter-spacing: -.01em; white-space: nowrap; }
+.logo small { display: block; margin-top: .125rem; font-size: .8125rem; line-height: 1.3; color: var(--on-black-2); }
+.hours { font-size: .8125rem; line-height: 1.4; color: var(--on-black-2); text-align: right; white-space: nowrap; }
 .panel { display: none; }
-@media (max-width: 379px) { .hours { display: none; } }
+@media (max-width: 359px) { .hours { display: none; } }
 
-.card { max-width: 36rem; margin: 0 auto; padding: 1.1rem 1rem 1.5rem; }
-.progress { margin-bottom: 1.1rem; }
-.progress-top { display: flex; justify-content: space-between; align-items: center; gap: .5rem; margin-bottom: .45rem; font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.track { height: 6px; border-radius: 99px; background: var(--soft); overflow: hidden; }
-.fill { height: 100%; border-radius: 99px; background: var(--black); transform-origin: left; transform: scaleX(.25); transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
-.back { display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; margin: -.35rem 0 .2rem -.35rem; padding: .3rem .4rem; border: 0; border-radius: 10px; background: none; font-weight: 700; color: var(--ink); }
-.back:hover { background: var(--soft); }
-.step h1 { font-size: 1.65rem; }
-.step-lead { margin: .35rem 0 1rem; color: var(--muted); }
-@keyframes in { from { opacity: 0; transform: translateX(18px); } }
-@media (prefers-reduced-motion: no-preference) { .step.enter { animation: in .35s cubic-bezier(.2, .8, .2, 1); } }
+/* the booking column */
+.card { max-width: 36rem; margin: 0 auto; padding: 1.5rem 1rem 2rem; }
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; margin: 0 0 2rem; padding: 0; list-style: none; font-size: .8125rem; line-height: 1.3; color: var(--muted); }
+.steps li::before { content: ""; display: block; height: 3px; margin-bottom: .5rem; border-radius: 2px; background: var(--line); transition: background-color .25s; }
+.steps li.done::before, .steps li[aria-current="step"]::before { background: var(--black); }
+.steps li[aria-current="step"] { font-weight: 700; color: var(--black); }
+.back { display: inline-flex; align-items: center; gap: .375rem; min-height: 44px; margin: -.75rem 0 .25rem -.5rem; padding: .5rem; border: 0; border-radius: var(--r-s); background: none; font-size: .9375rem; font-weight: 600; color: var(--muted); transition: color .2s; }
+.back:hover { color: var(--black); }
+.step h1 { font-size: 1.5rem; }
+.lead { max-width: 60ch; margin: .5rem 0 1.5rem; color: var(--muted); }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: no-preference) {
+  .step.enter, .bar.enter, .owner.enter { animation: rise .4s var(--ease) both; }
+}
 
-/* step 1: services */
-.choices { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; }
-.choice { display: flex; align-items: center; gap: .85rem; width: 100%; min-height: 64px; padding: .75rem .9rem; border: 1.5px solid var(--black); border-radius: 16px; background: var(--card); text-align: left; transition: background-color .15s, transform .15s; }
-.choice:hover { background: var(--blush-l); }
-.choice:active { transform: scale(.99); }
-.choice[aria-pressed="true"] { background: var(--black); color: var(--white); }
-.choice[aria-pressed="true"] .meta { color: #D8CEC5; }
-.choice[aria-pressed="true"] .price { color: var(--blush); }
-.choice .name { display: block; font-weight: 800; font-size: 1.02rem; }
-.choice .meta { display: block; margin-top: .1rem; color: var(--muted); font-size: .88rem; }
+/* service and people lists: one quiet group, a radio mark shows the choice */
+.choices { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: var(--r-m); background: var(--card); overflow: hidden; }
+.choices li + li { border-top: 1px solid var(--line); }
+.choice { display: flex; align-items: center; gap: 1rem; width: 100%; min-height: 4rem; padding: .875rem 1rem; border: 0; border-radius: 0; background: transparent; text-align: left; transition: background-color .2s; }
+.choice:hover { background: #FBF7F2; }
+.choice:focus-visible { outline-offset: -3px; border-radius: 10px; }
+.choice[aria-pressed="true"] { background: var(--soft); }
 .choice .grow { flex: 1; min-width: 0; }
-.price { font: 800 1.02rem/1 var(--body); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.go { color: var(--muted); }
+.choice .name { display: block; font-weight: 700; color: var(--black); }
+.choice .meta { display: block; font-size: .875rem; color: var(--muted); }
+.price { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--black); }
+.radio { flex: none; width: 1.25rem; height: 1.25rem; border: 1.5px solid var(--edge); border-radius: 50%; background: var(--card); transition: border-color .2s, background-color .2s, box-shadow .2s; }
+.choice[aria-pressed="true"] .radio { border-color: var(--black); background: var(--black); box-shadow: inset 0 0 0 3.5px var(--card); }
+.av { display: grid; place-items: center; flex: none; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--soft); color: var(--black); font: 700 1rem/1 var(--display); }
+.av .i { width: 1.2rem; height: 1.2rem; }
+.choice[aria-pressed="true"] .av { background: var(--card); }
 
-/* step 2: who */
-.av { display: grid; place-items: center; flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: var(--blush); color: var(--black); font: 800 1.1rem/1 var(--display); }
-.av-any { background: var(--soft); }
-.av-any .i { width: 1.3rem; height: 1.3rem; }
-.choice[aria-pressed="true"] .av { box-shadow: 0 0 0 2px var(--white); }
+/* when: days, then times */
+.month { margin: 0 0 .75rem; font-weight: 700; color: var(--black); }
+.dates { display: flex; gap: .5rem; overflow-x: auto; margin: 0 -1rem 1.5rem; padding: 0 1rem .5rem; scroll-snap-type: x proximity; scroll-padding-inline: 1rem; scrollbar-width: thin; }
+.date { flex: none; display: grid; justify-items: center; align-content: center; gap: .125rem; width: 4.25rem; min-height: 4.5rem; padding: .5rem .25rem; border: 1px solid var(--line-2); border-radius: var(--r-s); background: var(--card); line-height: 1.2; scroll-snap-align: start; transition: background-color .2s, border-color .2s; }
+.date small { font-size: .8125rem; font-weight: 600; color: var(--muted); }
+.date b { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--black); }
+.date .tiny { min-height: 1.2em; font-size: .75rem; font-weight: 600; color: var(--muted); }
+.date:hover { border-color: var(--black); }
+.date[aria-pressed="true"] { border-color: var(--black); background: var(--black); }
+.date[aria-pressed="true"] b { color: var(--on-black); }
+.date[aria-pressed="true"] small, .date[aria-pressed="true"] .tiny { color: var(--on-black-2); }
+.date:disabled { border-style: dashed; border-color: var(--line-2); background: transparent; cursor: not-allowed; }
+.date:disabled b, .date:disabled small, .date:disabled .tiny { color: #857C75; }
+.slots-h { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; margin: 0 0 .75rem; }
+.slots-h b { font-weight: 700; color: var(--black); }
+.slots-h span { font-size: .875rem; color: var(--muted); }
+.slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.slot { width: 100%; min-height: 2.75rem; padding: .5rem; border: 1px solid var(--line-2); border-radius: var(--r-s); background: var(--card); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--black); transition: background-color .2s, border-color .2s; }
+.slot:hover { border-color: var(--black); }
+.slot[aria-pressed="true"] { border-color: var(--black); background: var(--black); color: var(--on-black); }
+.slot:disabled { border-style: dashed; background: transparent; color: #857C75; font-weight: 500; text-decoration: line-through; cursor: not-allowed; }
+.empty { grid-column: 1 / -1; padding: 1rem; border-radius: var(--r-m); background: var(--soft); color: var(--muted); text-align: center; }
+.legend { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin-top: 1rem; font-size: .8125rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: .5rem; }
+.legend i { display: inline-block; width: 1.5rem; height: .875rem; border: 1px solid var(--edge); border-radius: 4px; background: var(--card); }
+.legend .x { border-style: dashed; background: transparent; }
 
-/* step 3: when */
-.month { margin: 0 0 .5rem; font-weight: 800; }
-.dates { display: flex; gap: .45rem; overflow-x: auto; margin: 0 -1rem; padding: .2rem 1rem .8rem; scroll-snap-type: x proximity; scrollbar-width: thin; }
-.date { flex: none; display: grid; justify-items: center; gap: .1rem; width: 3.9rem; min-height: 72px; padding: .45rem .2rem; border: 1.5px solid var(--black); border-radius: 14px; background: var(--card); scroll-snap-align: start; }
-.date small { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.date b { font: 800 1.3rem/1.1 var(--body); font-variant-numeric: tabular-nums; }
-.date .tiny { font-size: .66rem; font-weight: 700; color: var(--muted); }
-.date:hover { background: var(--blush-l); }
-.date[aria-pressed="true"] { background: var(--black); color: var(--white); }
-.date[aria-pressed="true"] small, .date[aria-pressed="true"] .tiny { color: #D8CEC5; }
-.date:disabled { border-color: var(--line); background: var(--soft); color: #9A918A; cursor: not-allowed; }
-.date:disabled small, .date:disabled .tiny { color: #8B827B; }
-.slots-h { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; margin: .4rem 0 .6rem; font-weight: 800; }
-.slots-h span { font-weight: 600; font-size: .85rem; color: var(--muted); }
-.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: .45rem; margin: 0; padding: 0; list-style: none; }
-.slot { width: 100%; min-height: 46px; padding: .4rem; border: 1.5px solid var(--black); border-radius: 12px; background: var(--card); font-weight: 800; font-variant-numeric: tabular-nums; }
-.slot:hover { background: var(--blush); }
-.slot[aria-pressed="true"] { background: var(--black); color: var(--white); }
-.slot:disabled { border: 1.5px dashed #C9BDB1; background: transparent; color: #8E857E; text-decoration: line-through; cursor: not-allowed; font-weight: 600; }
-.empty { padding: 1rem; border-radius: 14px; background: var(--soft); color: var(--muted); text-align: center; }
-.legend { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-top: .75rem; color: var(--muted); font-size: .82rem; }
-.legend span { display: inline-flex; align-items: center; gap: .35rem; }
-.legend i { display: inline-block; width: .9rem; height: .9rem; border-radius: 4px; border: 1.5px solid var(--black); }
-.legend .x { border-style: dashed; border-color: #C9BDB1; }
-
-/* step 4: details */
-.summary { display: grid; gap: .1rem; padding: .85rem .95rem; border-radius: 16px; background: var(--black); color: var(--white); }
-.summary b { font: 800 1.08rem/1.25 var(--body); }
-.summary span { color: #D8CEC5; font-size: .92rem; }
-.summary .price { color: var(--blush); }
-.sum-top { display: flex; justify-content: space-between; gap: .75rem; align-items: baseline; }
-.nothing { display: flex; gap: .45rem; align-items: flex-start; margin: 1rem 0 0; padding: .6rem .8rem; border-radius: 12px; background: var(--blush-l); color: #5B2A24; font-size: .88rem; font-weight: 700; }
-.nothing .i { margin-top: .1rem; }
-.field { margin-top: 1rem; }
-label { display: block; margin-bottom: .35rem; font-weight: 800; color: var(--black); }
+/* details */
+.review { display: grid; grid-template-columns: auto 1fr; gap: 0; margin: 0; padding: .25rem 1rem; border: 1px solid var(--line); border-radius: var(--r-m); background: var(--card); }
+.review dt, .review dd { padding: .625rem 0; border-top: 1px solid var(--line); }
+.review dt:first-of-type, .review dt:first-of-type + dd { border-top: 0; }
+.review dt { padding-right: 1rem; font-size: .9375rem; color: var(--muted); }
+.review dd { margin: 0; font-weight: 600; text-align: right; color: var(--black); }
+.nothing { display: flex; gap: .5rem; align-items: flex-start; margin: 1.5rem 0 0; font-size: .875rem; color: var(--muted); }
+.nothing .i { margin-top: .2rem; }
+.field { margin-top: 1.25rem; }
+label { display: block; margin-bottom: .375rem; font-weight: 700; color: var(--black); }
 .opt { font-weight: 500; color: var(--muted); }
-input, textarea { width: 100%; min-height: 50px; padding: .65rem .85rem; border: 1.5px solid var(--black); border-radius: 14px; background: var(--card); }
-textarea { min-height: 4.5rem; resize: vertical; }
-input:focus-visible, textarea:focus-visible { outline: 3px solid var(--blush-d); outline-offset: 1px; }
-[aria-invalid="true"] { border-color: #A3271B; border-width: 2px; }
-.err { margin-top: .35rem; color: #A3271B; font-weight: 700; font-size: .9rem; }
-.hint { margin-top: .3rem; color: var(--muted); font-size: .85rem; }
-.btn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; min-height: 54px; margin-top: 1.25rem; padding: .7rem 1rem; border: 1.5px solid var(--black); border-radius: 999px; background: var(--black); color: var(--white); font-weight: 800; font-size: 1.02rem; text-decoration: none; }
-.btn:hover { background: #2E2925; }
-.btn-blush { background: var(--blush); color: var(--black); }
-.btn-blush:hover { background: #F5D2CD; }
-.btn-line { background: transparent; color: var(--black); }
-.btn-line:hover { background: var(--soft); }
-.btn + .btn { margin-top: .6rem; }
+input, textarea { display: block; width: 100%; min-height: 3rem; padding: .625rem .875rem; border: 1px solid var(--edge); border-radius: var(--r-m); background: var(--card); transition: border-color .2s; }
+input:hover, textarea:hover { border-color: var(--ink); }
+input:focus-visible, textarea:focus-visible { border-color: var(--black); outline-offset: 1px; }
+input::placeholder, textarea::placeholder { color: #7A716A; }
+textarea { min-height: 5rem; resize: vertical; }
+[aria-invalid="true"], [aria-invalid="true"]:hover { border-color: #A3271B; box-shadow: inset 0 0 0 1px #A3271B; }
+.err { margin-top: .375rem; font-size: .875rem; font-weight: 700; color: #A3271B; }
+.hint { margin-top: .375rem; font-size: .875rem; color: var(--muted); }
 
-/* done */
-.booked { padding: 1.25rem 1rem; border-radius: 22px; background: var(--black); color: var(--white); text-align: center; }
-.booked h1 { color: var(--white); font-size: 1.9rem; outline: none; }
-.booked .tick { display: grid; place-items: center; width: 3.4rem; height: 3.4rem; margin: 0 auto .75rem; border-radius: 50%; background: var(--blush); color: var(--black); }
-.booked .tick .i { width: 1.9rem; height: 1.9rem; stroke-width: 2.6; }
-.ref { display: inline-block; margin-top: .55rem; padding: .25rem .8rem; border: 1.5px dashed var(--blush); border-radius: 999px; font-weight: 800; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
-.booked dl { display: grid; grid-template-columns: auto 1fr; gap: .45rem 1rem; margin: 1.1rem 0 0; padding-top: 1rem; border-top: 1px solid #3B3531; text-align: left; }
-.booked dt { color: #CFC4BA; font-size: .9rem; }
-.booked dd { margin: 0; font-weight: 700; text-align: right; }
-.owner-btn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; min-height: 52px; margin-top: 1rem; padding: .6rem 1rem; border: 1.5px dashed #3F6E58; border-radius: 16px; background: #EAF3EC; color: #1F4B36; font-weight: 800; }
-.owner-btn[aria-expanded="true"] { border-style: solid; }
+/* buttons: blush is the one action; everything else is an outline or a text link */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 3rem; padding: .75rem 1.5rem; border: 1px solid transparent; border-radius: 999px; font-weight: 700; font-size: 1rem; line-height: 1.2; white-space: nowrap; text-decoration: none; transition: background-color .2s, border-color .2s; }
+.btn-go { border-color: var(--blush); background: var(--blush); color: var(--black); }
+.btn-go:hover { border-color: #F7D6D1; background: #F7D6D1; }
+.btn-go[aria-disabled="true"], .btn-go[aria-disabled="true"]:hover { border-color: #5A524C; background: transparent; color: #A0968E; cursor: default; }
+.btn-line { width: 100%; border-color: var(--line-2); background: transparent; color: var(--black); }
+.btn-line:hover { border-color: var(--black); }
+.link { min-height: 44px; padding: .5rem .25rem; border: 0; background: none; font-weight: 700; color: var(--black); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .25em; }
+.link:hover { text-decoration-thickness: 2px; }
+
+/* the booking bar: the running summary and the step's action. Fixed on phones, docked under the step on desktop */
+.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; gap: 1rem; padding: .75rem max(1rem, calc(50% - 17rem)) calc(.75rem + env(safe-area-inset-bottom)); background: var(--black); color: var(--on-black); }
+.bar-sum { flex: 1; min-width: 0; line-height: 1.35; }
+.bar-1 { display: flex; align-items: baseline; gap: .5rem; font-weight: 700; }
+.bar-1 b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-1 span { flex: none; font-variant-numeric: tabular-nums; }
+.bar-2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .8125rem; color: var(--on-black-2); }
+.bar :focus-visible, .ticket :focus-visible { outline-color: var(--on-black); }
+@media (max-width: 899px) {
+  body.has-bar { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+  .has-bar .toasts { bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+}
+
+/* booked: a black ticket that holds the next step */
+.ticket { padding: 2rem 1.5rem 1.5rem; border-radius: var(--r-l); background: var(--black); color: var(--on-black); text-align: center; }
+.ticket h1 { font-size: 1.75rem; color: var(--on-black); outline: none; }
+.tick { display: grid; place-items: center; width: 3rem; height: 3rem; margin: 0 auto 1rem; border: 1.5px solid #5A524C; border-radius: 50%; }
+.tick .i { width: 1.5rem; height: 1.5rem; stroke-width: 2.2; }
+.ticket p { margin-top: .5rem; color: var(--on-black-2); }
+.ref { display: inline-block; margin-top: .75rem; padding: .25rem .875rem; border: 1px solid #5A524C; border-radius: 999px; font-weight: 700; letter-spacing: .02em; font-variant-numeric: tabular-nums; color: var(--on-black); }
+.ticket dl { display: grid; grid-template-columns: auto 1fr; gap: 0; margin: 1.5rem 0; text-align: left; }
+.ticket dt, .ticket dd { padding: .625rem 0; border-top: 1px solid var(--rule-dark); }
+.ticket dt { padding-right: 1rem; font-size: .9375rem; color: var(--on-black-2); }
+.ticket dd { margin: 0; font-weight: 600; text-align: right; }
+.ticket .btn-go { width: 100%; }
+.owner-btn { margin-top: 1rem; }
 .chev { transition: transform .2s; }
 .owner-btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
-.owner { margin-top: .75rem; }
-.chat { border-radius: 18px; overflow: hidden; background: #ECE5DA; }
-.chat-top { display: flex; align-items: center; gap: .6rem; padding: .65rem .85rem; background: #1F4F46; color: #fff; font-weight: 700; line-height: 1.25; }
-.chat-top small { display: block; font-weight: 500; opacity: .82; font-size: .78rem; }
-.chat-av { display: grid; place-items: center; flex: none; width: 2.1rem; height: 2.1rem; border-radius: 50%; background: #8FB7A9; color: #173832; font-weight: 800; }
-.chat-body { padding: .8rem; }
-.bubble { position: relative; max-width: 94%; padding: .6rem .75rem 1.35rem; border-radius: 14px 14px 14px 4px; background: #fff; box-shadow: 0 1px 1px rgba(0, 0, 0, .12); white-space: pre-wrap; overflow-wrap: anywhere; font-size: .92rem; line-height: 1.45; color: #1F1C1A; }
-.bubble time { position: absolute; right: .6rem; bottom: .3rem; font-size: .7rem; color: #6F6A64; }
-.owner-note { display: flex; gap: .45rem; align-items: flex-start; margin-top: .6rem; color: #1F4B36; font-size: .92rem; font-weight: 700; }
-.owner-note .i { margin-top: .1rem; }
+.owner { margin-top: 1rem; }
+.chat { border-radius: var(--r-m); overflow: hidden; background: #ECE5DA; }
+.chat-top { display: flex; align-items: center; gap: .75rem; padding: .625rem 1rem; background: #1F4F46; color: #fff; font-weight: 700; line-height: 1.25; }
+.chat-top small { display: block; font-size: .8125rem; font-weight: 500; color: #D5E3DE; }
+.chat-av { display: grid; place-items: center; flex: none; width: 2.125rem; height: 2.125rem; border-radius: 50%; background: #8FB7A9; color: #173832; font-weight: 700; }
+.chat-body { padding: 1rem .75rem; }
+.bubble { position: relative; max-width: 94%; padding: .625rem .75rem 1.375rem; border-radius: 12px 12px 12px 4px; background: #fff; box-shadow: 0 1px 1px rgba(0, 0, 0, .1); white-space: pre-wrap; overflow-wrap: anywhere; font-size: .9375rem; line-height: 1.5; color: #1F1C1A; }
+.bubble time { position: absolute; right: .625rem; bottom: .3rem; font-size: .75rem; color: #6F6A64; }
+.owner-note { display: flex; gap: .5rem; align-items: flex-start; margin-top: .75rem; font-size: .9375rem; color: var(--muted); }
+.owner-note .i { margin-top: .2rem; }
+.again { display: block; margin: 1rem auto 0; }
 
-.foot { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .25rem 1rem; padding: 1rem 1rem 1.5rem; color: var(--muted); font-size: .85rem; }
-.link { min-height: 44px; padding: .5rem .2rem; border: 0; background: none; font-weight: 800; text-decoration: underline; text-underline-offset: .2em; color: var(--black); }
+.foot { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .25rem 1.5rem; padding: 1rem 1rem 2rem; font-size: .875rem; color: var(--muted); }
 .toasts { position: fixed; left: 0; right: 0; bottom: calc(1rem + env(safe-area-inset-bottom)); z-index: 60; display: flex; justify-content: center; padding: 0 1rem; pointer-events: none; }
-.toast { max-width: 26rem; padding: .65rem 1rem; border-radius: 14px; background: var(--black); color: var(--white); font-size: .92rem; box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .5); }
+.toast { max-width: 26rem; padding: .625rem 1rem; border: 1px solid #3B3531; border-radius: var(--r-m); background: var(--black); color: var(--on-black); font-size: .9375rem; }
 noscript p { padding: 1rem; }
 
 @media (min-width: 900px) {
-  .shell { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); min-height: calc(100vh - 2rem); }
+  .shell { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); min-height: calc(100vh - 2rem); }
   .brand { display: none; }
-  .panel { position: sticky; top: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 2rem; height: 100vh; padding: 2.5rem 3rem; background: var(--black); color: var(--white); }
-  .panel .logo b { font-size: 1.6rem; }
-  .panel h2 { margin-top: 3rem; color: var(--white); font: 800 clamp(2.6rem, 4vw, 3.6rem)/1 var(--display); letter-spacing: -.02em; }
-  .panel h2 em { font-style: normal; color: var(--blush); }
-  .panel p { max-width: 24rem; margin-top: 1rem; color: #D8CEC5; font-size: 1.05rem; }
-  .panel ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .35rem; font-size: .92rem; color: #D8CEC5; }
-  .panel li { display: flex; justify-content: space-between; max-width: 18rem; border-bottom: 1px solid #3B3531; padding-bottom: .35rem; }
-  .card { width: 100%; max-width: 34rem; padding: 2.5rem 2rem; }
-  .step h1 { font-size: 2rem; }
-  .slots { grid-template-columns: repeat(4, 1fr); }
-  .dates { margin: 0; padding-inline: 0; }
+  .panel { position: sticky; top: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 3rem; height: 100vh; padding: 3rem clamp(2.5rem, 4vw, 4rem) 3.5rem; background: var(--black); color: var(--on-black); }
+  .panel .logo b { font-size: 1.25rem; }
+  .pitch h2 { max-width: 11ch; font-size: clamp(2.25rem, 3.2vw, 3rem); line-height: 1.05; letter-spacing: -.02em; color: var(--on-black); }
+  .pitch p { max-width: 32ch; margin-top: 1.5rem; font-size: 1.0625rem; color: var(--on-black-2); }
+  .panel ul { max-width: 20rem; margin: 0; padding: 0; list-style: none; font-size: .9375rem; color: var(--on-black-2); }
+  .panel li { display: flex; justify-content: space-between; gap: 1rem; padding: .625rem 0; border-top: 1px solid var(--rule-dark); }
+  .card { padding: 4rem 2rem 1.5rem; }
+  .steps { margin-bottom: 2.5rem; }
+  .step h1 { font-size: 1.875rem; }
+  .dates { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); overflow: visible; margin-inline: 0; padding: 0; }
+  .date { width: auto; padding-inline: 0; }
+  .slots { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .bar { position: sticky; bottom: 1.5rem; margin-top: 2rem; padding: .75rem .75rem .75rem 1.25rem; border-radius: var(--r-l); }
+  .bar::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 1.5rem; background: var(--paper); }
+  .toasts { left: 40%; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -177,10 +219,10 @@ noscript p { padding: 1rem; }
 <!-- demo:ribbon -->
 <div class="shell">
 <aside class="panel" aria-label="About Bright Cuts">
-<div>
 <p class="logo"><span class="logo-mark" data-icon="scissors"></span><span><b>Bright Cuts</b><small>Barber &amp; salon</small></span></p>
-<h2>Book in, <em>skip the wait.</em></h2>
-<p>Pick your service, your barber and a time that’s really free. No calls, no back-and-forth.</p>
+<div class="pitch">
+<h2>Book in, skip the wait.</h2>
+<p>Pick your service, your barber and a time that’s really free. No calls, no <span class="nw">back-and-forth</span>.</p>
 </div>
 <ul><li><span>Tuesday to Saturday</span><span>09:00–17:30</span></li><li><span>Sunday and Monday</span><span>Closed</span></li></ul>
 </aside>
@@ -191,28 +233,27 @@ noscript p { padding: 1rem; }
 </header>
 <main class="card" id="main">
 <noscript><p>This demo needs JavaScript to run.</p></noscript>
-<div class="progress" id="progress">
-<p class="progress-top"><span id="step-label">Step 1 of 4 · Service</span></p>
-<div class="track" role="progressbar" aria-labelledby="step-label" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="track"><div class="fill" id="fill"></div></div>
-</div>
+<ol class="steps" id="progress" aria-label="Booking steps">
+<li aria-current="step">Service</li><li>Who</li><li>When</li><li>Details</li>
+</ol>
 
 <section class="step" id="s1" aria-labelledby="s1-h">
 <h1 id="s1-h" tabindex="-1">What are we doing today?</h1>
-<p class="step-lead">Choose a service. Prices include everything.</p>
+<p class="lead">Choose a service. Prices include everything.</p>
 <ul class="choices" id="services"></ul>
 </section>
 
 <section class="step" id="s2" aria-labelledby="s2-h" hidden>
 <button class="back" type="button" data-back="1"><span data-icon="left"></span>Back</button>
 <h1 id="s2-h" tabindex="-1">Who would you like?</h1>
-<p class="step-lead" id="s2-lead"></p>
+<p class="lead" id="s2-lead"></p>
 <ul class="choices" id="staff"></ul>
 </section>
 
 <section class="step" id="s3" aria-labelledby="s3-h" hidden>
 <button class="back" type="button" data-back="2"><span data-icon="left"></span>Back</button>
 <h1 id="s3-h" tabindex="-1">When suits you?</h1>
-<p class="step-lead" id="s3-lead"></p>
+<p class="lead" id="s3-lead"></p>
 <p class="month" id="month"></p>
 <div class="dates" id="dates" role="group" aria-label="Choose a day"></div>
 <p class="slots-h"><span class="sr">Times on </span><b id="slots-day"></b><span id="slots-count"></span></p>
@@ -223,35 +264,39 @@ noscript p { padding: 1rem; }
 <section class="step" id="s4" aria-labelledby="s4-h" hidden>
 <button class="back" type="button" data-back="3"><span data-icon="left"></span>Back</button>
 <h1 id="s4-h" tabindex="-1">Your details</h1>
-<p class="step-lead">So we know who’s coming, and can let you know if anything changes.</p>
-<div class="summary" id="summary"></div>
+<p class="lead">So we know who’s coming, and can let you know if anything changes.</p>
+<dl class="review" id="summary"></dl>
 <form id="details" novalidate>
 <p class="nothing"><span data-icon="lock"></span><span>Demo: nothing you type here is sent or stored.</span></p>
 <div class="field"><label for="d-name">First name</label><input id="d-name" name="name" type="text" autocomplete="given-name" maxlength="40" required></div>
 <div class="field"><label for="d-mobile">Mobile number</label><input id="d-mobile" name="mobile" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="e.g. 082 123 4567" required><p class="hint" id="d-mobile-hint">We’ll send a reminder the day before.</p></div>
 <div class="field"><label for="d-note">Anything we should know? <span class="opt">(optional)</span></label><textarea id="d-note" name="note" rows="2" maxlength="160" placeholder="e.g. Keep it long on top"></textarea></div>
-<button class="btn" type="submit">Confirm booking</button>
 </form>
 </section>
 
 <section class="step" id="s5" aria-labelledby="s5-h" hidden>
-<div class="booked">
+<div class="ticket">
 <span class="tick" data-icon="check"></span>
 <h1 id="s5-h" tabindex="-1">You’re booked</h1>
 <p>See you soon. Your reference is</p>
 <p class="ref" id="ref">BC-4821</p>
 <dl id="booked-list"></dl>
+<button class="btn btn-go" type="button" id="ics"><span data-icon="calendar"></span>Add to calendar</button>
 </div>
-<button class="btn btn-blush" type="button" id="ics"><span data-icon="calendar"></span>Add to calendar</button>
-<button class="owner-btn" id="owner-btn" type="button" aria-expanded="false" aria-controls="owner"><span data-icon="chat"></span>See what the owner receives<span class="chev" data-icon="chev"></span></button>
+<button class="btn btn-line owner-btn" id="owner-btn" type="button" aria-expanded="false" aria-controls="owner"><span data-icon="chat"></span>See what the owner receives<span class="chev" data-icon="chev"></span></button>
 <div class="owner" id="owner" hidden>
-<div class="chat"><p class="chat-top"><span class="chat-av" id="owner-av">S</span><span><span id="owner-from">Client</span><small>WhatsApp · new booking</small></span></p><div class="chat-body"><p class="bubble"><span id="owner-msg"></span><time id="owner-time">12:00</time></p></div></div>
+<div class="chat"><p class="chat-top"><span class="chat-av" id="owner-av">S</span><span><span id="owner-from">Client</span><small>WhatsApp, new booking</small></span></p><div class="chat-body"><p class="bubble"><span id="owner-msg"></span><time id="owner-time">12:00</time></p></div></div>
 <p class="owner-note"><span data-icon="phone"></span><span>On your system, every booking lands on your phone like this, and in your diary.</span></p>
 </div>
-<button class="btn btn-line" type="button" id="again">Make another booking</button>
+<button class="link again" type="button" id="again">Make another booking</button>
 </section>
+
+<div class="bar" id="bar" hidden>
+<div class="bar-sum" aria-live="polite"><p class="bar-1"><b id="bar-name"></b><span id="bar-price"></span></p><p class="bar-2" id="bar-2"></p></div>
+<button class="btn btn-go" type="button" id="next">Continue</button>
+</div>
 </main>
-<footer class="foot"><span>Bright Cuts · Tue–Sat 09:00–17:30</span><button class="link" id="reset" type="button">Reset demo</button></footer>
+<footer class="foot"><button class="link" id="reset" type="button">Reset demo</button></footer>
 </div>
 </div>
 <div class="toasts" role="status" aria-live="polite" id="toasts"></div>
@@ -289,7 +334,6 @@ noscript p { padding: 1rem; }
   var ICONS = {
     scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"/>',
     left: '<path d="M19.5 12h-15M10.5 6l-6 6 6 6"/>',
-    right: '<path d="m9 6 6 6-6 6"/>',
     users: '<path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.5"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.35M15 4.6a3.5 3.5 0 0 1 0 6.8"/>',
     check: '<path d="m5 12.5 4.3 4.3L19 7.2"/>',
     lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"/>',
@@ -306,13 +350,20 @@ noscript p { padding: 1rem; }
     for (var i = 0; i < els.length; i++) { els[i].innerHTML = icon(els[i].getAttribute('data-icon')); els[i].removeAttribute('data-icon'); }
   }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  function rand(n) { return n ? 'R' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : 'Free'; }
+  function rand(n) { return n ? 'R' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : 'Free'; }
   function mins(s) { var p = s.split(':'); return Number(p[0]) * 60 + Number(p[1]); }
   function hhmm(m) { return ('0' + Math.floor(m / 60)).slice(-2) + ':' + ('0' + (m % 60)).slice(-2); }
   function focus(el) { if (!el) return; try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); } }
   function longDate(d) { return DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()]; }
+  function shortDate(d) { return DAYS[d.getDay()].slice(0, 3) + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()].slice(0, 3); }
   function sameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+  // Mark one button in a list as chosen, without re-drawing the list (so keyboard focus stays put).
+  function press(list, attr, value) {
+    var btns = list.querySelectorAll('[' + attr + ']');
+    for (var i = 0; i < btns.length; i++) btns[i].setAttribute('aria-pressed', String(btns[i].getAttribute(attr) === String(value)));
+  }
   var motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function enter(el) { if (!motion) return; el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); }
 
   /* ---------- availability ---------- */
   // Free if the whole service fits before closing and doesn't overlap any of that person's bookings.
@@ -349,59 +400,105 @@ noscript p { padding: 1rem; }
   var nextRef = loadRefs();
   function saveRefs() { try { sessionStorage.setItem(STORE, String(nextRef)); } catch (e) { /* memory only */ } }
 
-  var LABELS = ['Service', 'Who', 'When', 'Details', 'Booked'];
+  var stepItems = $('progress').querySelectorAll('li');
+  var toastTimer = null;
   // quiet: on first load, don't move focus (in a frame on another page, that would pull focus away).
-  function show(n, back, quiet) {
+  function show(n, quiet) {
     step = n;
+    clearToast();
     for (var i = 1; i <= 5; i++) {
       var s = $('s' + i);
       s.hidden = i !== n;
       s.classList.remove('enter');
     }
-    var cur = $('s' + n);
-    if (motion && !back) { void cur.offsetWidth; cur.classList.add('enter'); }
+    if (!quiet) enter($('s' + n));
     $('progress').hidden = n === 5;
-    $('step-label').textContent = n < 5 ? 'Step ' + n + ' of 4 · ' + LABELS[n - 1] : 'Booked';
-    $('track').setAttribute('aria-valuenow', String(Math.min(n, 4)));
-    $('fill').style.transform = 'scaleX(' + (Math.min(n, 4) / 4) + ')';
+    for (var j = 0; j < stepItems.length; j++) {
+      stepItems[j].classList.toggle('done', j + 1 < n);
+      if (j + 1 === n) stepItems[j].setAttribute('aria-current', 'step'); else stepItems[j].removeAttribute('aria-current');
+    }
+    updateBar();
     if (quiet) return;
     window.scrollTo(0, 0);
     focus($('s' + n + '-h'));
   }
 
+  /* ---------- the booking bar: what you've chosen so far, and the step's one action ---------- */
+  var barOn = false;
+  function ready() {
+    if (step === 1) return !!pick.service;
+    if (step === 2) return !!pick.staff;
+    if (step === 3) return pick.time !== null;
+    return step === 4;
+  }
+  function updateBar() {
+    var bar = $('bar');
+    var s = pick.service;
+    var on = !!s && step < 5;
+    bar.hidden = !on;
+    document.body.classList.toggle('has-bar', on);
+    if (!on) { barOn = false; return; }
+    if (!barOn) enter(bar);
+    barOn = true;
+    $('bar-name').textContent = s.name;
+    $('bar-price').textContent = rand(s.price);
+    var line;
+    if (pick.time !== null && pick.who) line = shortDate(pick.date) + ', ' + hhmm(pick.time) + ' with ' + pick.who.name;
+    else line = s.mins + ' min' + (pick.staff ? ' with ' + (pick.staff === 'any' ? 'whoever’s free' : staffName(pick.staff)) : '');
+    $('bar-2').textContent = line;
+    var next = $('next');
+    next.textContent = step === 4 ? 'Confirm booking' : 'Continue';
+    if (ready()) next.removeAttribute('aria-disabled'); else next.setAttribute('aria-disabled', 'true');
+    // On the last step the bar's button submits the details form, so Enter in a field works too.
+    if (step === 4) { next.type = 'submit'; next.setAttribute('form', 'details'); } else { next.type = 'button'; next.removeAttribute('form'); }
+  }
+  var NUDGE = ['', 'Choose a service first.', 'Choose someone first, or Any available.', 'Choose a time first.'];
+  $('next').addEventListener('click', function (e) {
+    if (step === 4) return; // the form's submit handler takes it from here
+    e.preventDefault(); // this click must not submit the form once the step below turns the button into "Confirm booking"
+    if (!ready()) { toast(NUDGE[step]); return; }
+    if (step === 1) { renderStaff(); show(2); }
+    else if (step === 2) {
+      if (!pick.date || !isOpenDay(pick.date)) pick.date = firstDayWithTimes();
+      renderWhen();
+      show(3);
+    } else if (step === 3) { renderSummary(); show(4); }
+  });
+
   /* ---------- step 1: service ---------- */
   function renderServices() {
     $('services').innerHTML = SERVICES.map(function (s) {
-      return '<li><button class="choice" type="button" data-service="' + s.id + '" aria-pressed="' + !!(pick.service && pick.service.id === s.id) + '"><span class="grow"><span class="name">' + esc(s.name) + '</span><span class="meta">' + s.mins + ' min</span></span><span class="price">' + rand(s.price) + '</span><span class="go">' + icon('right') + '</span></button></li>';
+      return '<li><button class="choice" type="button" data-service="' + s.id + '" aria-pressed="' + !!(pick.service && pick.service.id === s.id) + '"><span class="grow"><span class="name">' + esc(s.name) + '</span><span class="meta">' + s.mins + ' min</span></span><span class="price">' + rand(s.price) + '</span><span class="radio" aria-hidden="true"></span></button></li>';
     }).join('');
   }
   $('services').addEventListener('click', function (e) {
     var b = e.target.closest('[data-service]');
     if (!b) return;
-    pick.service = SERVICES.filter(function (s) { return s.id === b.getAttribute('data-service'); })[0];
-    pick.time = null;
-    renderServices();
-    renderStaff();
-    show(2);
+    var id = b.getAttribute('data-service');
+    if (!pick.service || pick.service.id !== id) {
+      pick.service = SERVICES.filter(function (s) { return s.id === id; })[0];
+      pick.time = null;
+      pick.who = null;
+    }
+    press($('services'), 'data-service', id);
+    updateBar();
   });
 
   /* ---------- step 2: who ---------- */
   function renderStaff() {
     $('s2-lead').textContent = pick.service.name + ', ' + pick.service.mins + ' minutes.';
-    var any = '<li><button class="choice" type="button" data-staff="any" aria-pressed="' + (pick.staff === 'any') + '"><span class="av av-any">' + icon('users') + '</span><span class="grow"><span class="name">Any available</span><span class="meta">The most free times</span></span><span class="go">' + icon('right') + '</span></button></li>';
+    var any = '<li><button class="choice" type="button" data-staff="any" aria-pressed="' + (pick.staff === 'any') + '"><span class="av" aria-hidden="true">' + icon('users') + '</span><span class="grow"><span class="name">Any available</span><span class="meta">The most free times</span></span><span class="radio" aria-hidden="true"></span></button></li>';
     $('staff').innerHTML = any + STAFF.map(function (p) {
-      return '<li><button class="choice" type="button" data-staff="' + p.id + '" aria-pressed="' + (pick.staff === p.id) + '"><span class="av" aria-hidden="true">' + p.name.charAt(0) + '</span><span class="grow"><span class="name">' + esc(p.name) + '</span><span class="meta">' + esc(p.role) + '</span></span><span class="go">' + icon('right') + '</span></button></li>';
+      return '<li><button class="choice" type="button" data-staff="' + p.id + '" aria-pressed="' + (pick.staff === p.id) + '"><span class="av" aria-hidden="true">' + p.name.charAt(0) + '</span><span class="grow"><span class="name">' + esc(p.name) + '</span><span class="meta">' + esc(p.role) + '</span></span><span class="radio" aria-hidden="true"></span></button></li>';
     }).join('');
   }
   $('staff').addEventListener('click', function (e) {
     var b = e.target.closest('[data-staff]');
     if (!b) return;
-    pick.staff = b.getAttribute('data-staff');
-    pick.time = null;
-    renderStaff();
-    if (!pick.date || !isOpenDay(pick.date)) pick.date = firstDayWithTimes();
-    renderWhen();
-    show(3);
+    var id = b.getAttribute('data-staff');
+    if (pick.staff !== id) { pick.staff = id; pick.time = null; pick.who = null; }
+    press($('staff'), 'data-staff', id);
+    updateBar();
   });
   function staffName(id) { return id === 'any' ? 'Any available' : STAFF.filter(function (s) { return s.id === id; })[0].name; }
 
@@ -417,16 +514,21 @@ noscript p { padding: 1rem; }
     for (var i = 0; i < list.length; i++) if (daySlots(list[i]).some(function (s) { return s.who; })) return list[i];
     return list[0];
   }
+  // The months the two weeks cover, e.g. "October–November 2026".
+  function monthSpan() {
+    var list = days14(), a = list[0], b = list[list.length - 1];
+    if (a.getMonth() === b.getMonth()) return MONTHS[a.getMonth()] + ' ' + a.getFullYear();
+    return MONTHS[a.getMonth()] + (a.getFullYear() === b.getFullYear() ? '' : ' ' + a.getFullYear()) + '–' + MONTHS[b.getMonth()] + ' ' + b.getFullYear();
+  }
   function renderWhen() {
     $('s3-lead').textContent = pick.service.name + ' (' + pick.service.mins + ' min) with ' + (pick.staff === 'any' ? 'whoever’s free' : staffName(pick.staff)) + '.';
-    var now = new Date();
     $('dates').innerHTML = days14().map(function (d, i) {
       var open = isOpenDay(d);
       var on = !!(pick.date && sameDay(d, pick.date));
       var tiny = !open ? 'Closed' : i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : '';
       return '<button class="date" type="button" data-day="' + i + '"' + (open ? '' : ' disabled') + ' aria-pressed="' + on + '" aria-label="' + longDate(d) + (open ? '' : ', closed') + '"><small>' + DAYS[d.getDay()].slice(0, 3) + '</small><b>' + d.getDate() + '</b><span class="tiny">' + tiny + '</span></button>';
     }).join('');
-    $('month').textContent = MONTHS[(pick.date || now).getMonth()] + ' ' + (pick.date || now).getFullYear();
+    $('month').textContent = monthSpan();
     renderSlots();
   }
   function renderSlots() {
@@ -449,24 +551,30 @@ noscript p { padding: 1rem; }
     if (!b || b.disabled) return;
     pick.date = days14()[Number(b.getAttribute('data-day'))];
     pick.time = null;
-    var btns = $('dates').querySelectorAll('[data-day]');
-    for (var i = 0; i < btns.length; i++) btns[i].setAttribute('aria-pressed', String(btns[i] === b));
-    $('month').textContent = MONTHS[pick.date.getMonth()] + ' ' + pick.date.getFullYear();
+    pick.who = null;
+    press($('dates'), 'data-day', b.getAttribute('data-day'));
     renderSlots();
+    updateBar();
   });
   $('slots').addEventListener('click', function (e) {
     var b = e.target.closest('[data-time]');
     if (!b || b.disabled) return;
     pick.time = Number(b.getAttribute('data-time'));
     pick.who = whoIsFree(pick.staff, pick.time, pick.service.mins);
-    renderSummary();
-    show(4);
+    press($('slots'), 'data-time', pick.time);
+    updateBar();
   });
 
   /* ---------- step 4: details ---------- */
   function renderSummary() {
     var s = pick.service;
-    $('summary').innerHTML = '<p class="sum-top"><b>' + esc(s.name) + '</b><span class="price">' + rand(s.price) + '</span></p><span>' + longDate(pick.date) + ', ' + hhmm(pick.time) + '–' + hhmm(pick.time + s.mins) + '</span><span>With ' + esc(pick.who.name) + (pick.staff === 'any' ? ' (first available)' : '') + '</span>';
+    var rows = [
+      ['Service', s.name + ', ' + s.mins + ' min'],
+      ['With', pick.who.name + (pick.staff === 'any' ? ' (first available)' : '')],
+      ['When', longDate(pick.date) + ', ' + hhmm(pick.time) + '–' + hhmm(pick.time + s.mins)],
+      ['Price', rand(s.price)]
+    ];
+    $('summary').innerHTML = rows.map(function (r) { return '<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('');
   }
   function mobileOk(v) { var d = v.replace(/[\s()-]/g, ''); return /^0[6-8]\d{8}$/.test(d) || /^\+?27[6-8]\d{8}$/.test(d); }
   function niceMobile(v) { var d = v.replace(/[\s()-]/g, '').replace(/^\+?27/, '0'); return d.length === 10 ? d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6) : v.trim(); }
@@ -498,7 +606,7 @@ noscript p { padding: 1rem; }
     e.preventDefault();
     var bad = null;
     [$('d-name'), $('d-mobile')].forEach(function (f) { if (!validate(f) && !bad) bad = f; });
-    if (bad) { focus(bad); return; }
+    if (bad) { bad.focus(); return; }
     // Someone else may have taken it while you typed; in the demo it's always still free.
     var booking = {
       ref: 'BC-' + nextRef,
@@ -549,6 +657,7 @@ noscript p { padding: 1rem; }
     var open = $('owner').hidden;
     $('owner').hidden = !open;
     this.setAttribute('aria-expanded', String(open));
+    if (open) enter($('owner'));
   });
 
   // A real calendar file (.ics), made here in the browser.
@@ -586,24 +695,22 @@ noscript p { padding: 1rem; }
     $('details').reset();
     ['d-name', 'd-mobile'].forEach(function (id) { setError($(id), ''); });
     renderServices();
-    show(1, true);
+    show(1);
   }
   $('again').addEventListener('click', startOver);
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-back]');
-    if (b) show(Number(b.getAttribute('data-back')), true);
+    if (b) show(Number(b.getAttribute('data-back')));
   });
 
-  var toastTimer = null;
+  function clearToast() { clearTimeout(toastTimer); $('toasts').innerHTML = ''; }
   function toast(text) {
-    var box = $('toasts');
-    clearTimeout(toastTimer);
-    box.innerHTML = '';
+    clearToast();
     var p = document.createElement('p');
     p.className = 'toast';
     p.textContent = text;
-    box.appendChild(p);
-    toastTimer = setTimeout(function () { box.innerHTML = ''; }, 3400);
+    $('toasts').appendChild(p);
+    toastTimer = setTimeout(clearToast, 3400);
   }
   $('reset').addEventListener('click', function () {
     try { sessionStorage.removeItem(STORE); } catch (e) { /* memory only */ }
@@ -614,7 +721,7 @@ noscript p { padding: 1rem; }
 
   paintIcons();
   renderServices();
-  show(1, true, true);
+  show(1, true);
 })();
 </script>
 </body>

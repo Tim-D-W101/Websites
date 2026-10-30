@@ -1,5 +1,5 @@
 /* Tin Kettle Kitchen (demo website): the live open/closed line, today's hours, menu tabs,
-   the table request and its WhatsApp preview, the rating tooltip and demo toasts.
+   the table request and its WhatsApp preview, demo toasts and the sections fading in.
    Plain JavaScript. Nothing is sent or stored: the table request only shows what would be sent. */
 (function () {
   'use strict';
@@ -84,20 +84,25 @@
     toast(b.getAttribute('data-tk-toast'));
   });
 
-  /* ---------- rating tooltip: hover, focus or tap ---------- */
-  var tips = document.querySelectorAll('.tk-tip');
-  for (var t = 0; t < tips.length; t++) {
-    (function (tip) {
-      var btn = tip.querySelector('button');
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var open = !tip.classList.contains('is-open');
-        tip.classList.toggle('is-open', open);
-        btn.setAttribute('aria-expanded', String(open));
+  /* ---------- sections fade in with a small rise, once ----------
+     Only sections still below the screen wait, so nothing on screen ever blinks out.
+     With reduced motion, or without IntersectionObserver, everything simply shows. */
+  var reveals = document.querySelectorAll('.tk-reveal');
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reveals.length && !calm && 'IntersectionObserver' in window) {
+    var seen = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.remove('is-waiting');
+        seen.unobserve(e.target);
       });
-      document.addEventListener('click', function () { tip.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); });
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { tip.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); } });
-    })(tips[t]);
+    }, { rootMargin: '0px 0px -10% 0px' });
+    for (var v = 0; v < reveals.length; v++) {
+      if (reveals[v].getBoundingClientRect().top > window.innerHeight) {
+        reveals[v].classList.add('is-waiting');
+        seen.observe(reveals[v]);
+      }
+    }
   }
 
   /* ---------- menu tabs: without JavaScript every category shows, one under the other ---------- */

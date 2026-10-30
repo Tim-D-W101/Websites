@@ -1598,7 +1598,6 @@ const TK_ICONS = {
   phone: '<path d="M8.6 3.5H6.2A2.2 2.2 0 0 0 4 5.8c.4 8 6.2 13.8 14.2 14.2a2.2 2.2 0 0 0 2.3-2.2v-2.4a1 1 0 0 0-.7-1l-3-1a1 1 0 0 0-1.1.3l-1.3 1.6a12 12 0 0 1-5.5-5.5l1.6-1.3a1 1 0 0 0 .3-1.1l-1-3a1 1 0 0 0-1-.7z"/>',
   chat: '<path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.4L3.5 20.5l1.6-4.4a8.4 8.4 0 1 1 15.4-4.5z"/><path d="M8.6 11.8h.01M12 11.8h.01M15.4 11.8h.01"/>',
   clock: '<circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 1.9"/>',
-  arrow: '<path d="M4.5 12h15M13.5 6l6 6-6 6"/>',
   menu: '<path d="M4 7h16M4 12h16M4 17h10"/>',
   bag: '<path d="M5.4 8.5h13.2l-1 11a1.6 1.6 0 0 1-1.6 1.5H8a1.6 1.6 0 0 1-1.6-1.5z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/>',
   calendar: '<rect x="3.8" y="5.2" width="16.4" height="15.3" rx="2.6"/><path d="M3.8 9.8h16.4M8.3 3.2v3.6M15.7 3.2v3.6"/>',
@@ -1607,7 +1606,7 @@ const TK_ICONS = {
   close: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
   lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"/>'
 };
-const tkIcon = (name, cls = 'tk-i') => `<svg class="${cls}${name === 'star' ? ' tk-i-fill' : ''}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${TK_ICONS[name] || TK_ICONS.kettle}</svg>`;
+const tkIcon = (name) => `<svg class="tk-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${TK_ICONS[name] || TK_ICONS.kettle}</svg>`;
 const tkT = (s) => esc(typo(s));
 const tkItems = Object.fromEntries(TK.menu.flatMap((c) => c.items.map((i) => [i.id, { ...i, cat: c }])));
 
@@ -1621,11 +1620,6 @@ function tkPhoto(slot, cls = '', tone = '') {
     warn(`Tin Kettle photo ${rel}: use a .webp file in src/${path.dirname(rel)}/. Showing the placeholder.`);
   }
   return `<div class="tk-photo tk-ph${tone ? ` tk-ph-${tone}` : ''} ${cls}" aria-hidden="true">${tkIcon(slot.icon || 'kettle')}<span class="tk-ph-cap">Your photo here</span></div>`;
-}
-
-function tkStars(n, label) {
-  const stars = Array.from({ length: 5 }, (_, i) => tkIcon('star', `tk-i${i < Math.round(n) ? '' : ' is-half'}`)).join('');
-  return `<span class="tk-stars" role="img" aria-label="${esc(label || `${n} out of 5 stars`)}">${stars}</span>`;
 }
 
 function tkHoursTable(caption) {
@@ -1670,13 +1664,21 @@ function tkLogo(cls = '') {
   return `<a class="tk-logo ${cls}" href="${TK_URL}"><span class="tk-logo-mark">${tkIcon('kettle')}</span><span class="tk-logo-name"><b>${esc(TK.short)}</b><small>Kitchen</small></span><span class="tk-sr"> home</span></a>`;
 }
 
+// The one action on every page is "Book a table": in the header (sticky on wide screens),
+// the hero, the close of the home page and the bar on phones.
+function tkBookButton(cls = '') {
+  return `<a class="tk-btn tk-btn-main ${cls}" href="${TK_URL}book">${tkIcon('calendar')}Book a table</a>`;
+}
+
 function tkHeader(p) {
   const items = (list) => list.map((n) => `<li><a href="${n.href}"${p.key === n.key ? ' aria-current="page"' : ''}>${esc(n.label)}</a></li>`).join('');
-  const order = `<a class="tk-btn tk-btn-main tk-btn-sm" href="${TK_ORDER}">${tkIcon('bag')}Order</a>`;
+  const pages = TK_NAV.filter((n) => n.key !== 'book');
+  const order = `<li><a href="${TK_ORDER}">Order online</a></li>`;
+  const book = p.key === 'book' ? '' : tkBookButton('tk-btn-sm');
   return `<header class="tk-header"><div class="tk-wrap tk-header-in">
 ${tkLogo()}
-<nav class="tk-nav" aria-label="Main"><ul>${items(TK_NAV.filter((n) => n.key !== 'home'))}</ul>${order}</nav>
-<details class="tk-menu"><summary>${tkIcon('menu')}<span>Menu</span></summary><nav class="tk-menu-panel" aria-label="Menu"><ul>${items(TK_NAV)}</ul>${order}</nav></details>
+<nav class="tk-nav" aria-label="Main"><ul>${items(pages.filter((n) => n.key !== 'home'))}${order}</ul>${book}</nav>
+<details class="tk-menu"><summary>${tkIcon('menu')}<span class="tk-sr">Site menu</span></summary><nav class="tk-menu-panel" aria-label="Site menu"><ul>${items(pages)}${order}</ul>${book}</nav></details>
 </div></header>`;
 }
 
@@ -1693,12 +1695,12 @@ function tkFooter() {
 </div></footer>`;
 }
 
+// Sticky on phones (wide screens have the sticky header instead). Not on the booking page,
+// where the form is the action.
 function tkBar() {
-  const F = TK.find;
   return `<nav class="tk-bar" aria-label="Quick actions">
-<button class="tk-btn tk-btn-line" type="button" data-tk-toast="${esc(typo(F.callToast))}">${tkIcon('phone')}Call</button>
-<button class="tk-btn tk-btn-olive" type="button" data-tk-toast="${esc(typo(F.whatsappToast))}">${tkIcon('chat')}WhatsApp</button>
-<a class="tk-btn tk-btn-main" href="${TK_ORDER}">${tkIcon('bag')}Order</a>
+<button class="tk-btn tk-btn-line" type="button" data-tk-toast="${esc(typo(TK.find.whatsappToast))}">${tkIcon('chat')}WhatsApp</button>
+${tkBookButton()}
 </nav>`;
 }
 
@@ -1713,13 +1715,15 @@ function tkLayout(p, assets) {
 <meta name="description" content="${esc(typo(p.description))}">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#C2603C">
+<link rel="preload" href="/fonts/work-sans-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/caprasimo-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${assets.css}">
 <script src="${assets.js}" defer></script>
 <link rel="icon" href="${TK_URL}favicon.svg" type="image/svg+xml">
 ${demoShareTags(typo(p.title), typo(p.description), p.url)}
 <script type="application/json" id="tk-data">${data}</script>
 </head>
-<body class="tk-has-bar">
+<body${p.key === 'book' ? '' : ' class="tk-has-bar"'}>
 <a class="tk-skip" href="#main">Skip to content</a>
 ${demoRibbon('website', TK.name)}
 ${tkHeader(p)}
@@ -1727,7 +1731,7 @@ ${tkHeader(p)}
 ${p.body}
 </main>
 ${tkFooter()}
-${tkBar()}
+${p.key === 'book' ? '' : tkBar()}
 <div class="tk-toasts" role="status" aria-live="polite" data-tk-toasts></div>
 </body>
 </html>
@@ -1743,50 +1747,51 @@ function tkHome() {
   const specials = S.items.map((s, i) => {
     const it = tkItems[s.item];
     if (!it) { warn(`Tin Kettle special: no menu item "${s.item}"`); return ''; }
-    return `<li class="tk-special">${tkPhoto(s, '', ['', 'sun', 'olive'][i % 3])}<div class="tk-special-body"><div class="tk-special-top"><h3>${tkT(it.name)}</h3><span class="tk-price">${rand(it.price)}</span></div><p>${tkT(s.note)}</p><a class="tk-btn tk-btn-line tk-btn-sm" href="${TK_ORDER}?add=${esc(it.id)}">Order this<span class="tk-sr">: ${tkT(it.name)}</span></a></div></li>`;
+    return `<li class="tk-special">${tkPhoto(s, '', ['', 'sun', 'olive'][i % 3])}<div class="tk-special-body"><div class="tk-special-top"><h3>${tkT(it.name)}</h3><span class="tk-price">${rand(it.price)}</span></div><p>${tkT(s.note)}</p><a class="tk-link" href="${TK_ORDER}?add=${esc(it.id)}">${tkIcon('bag')}Order this<span class="tk-sr">: ${tkT(it.name)}</span></a></div></li>`;
   }).join('');
-  const reviews = R.items.map((r) => `<li><figure class="tk-review">${tkStars(r.stars, `${r.stars} out of 5 stars`)}<blockquote><p>${tkT(r.text)}</p></blockquote><figcaption><span class="tk-avatar" aria-hidden="true">${esc(r.name[0])}</span>${esc(r.name)}<span class="tk-review-src">Demo review</span></figcaption></figure></li>`).join('');
-  const tip = `<span class="tk-tip"><button class="tk-tip-btn" type="button" aria-describedby="tk-rating-tip" aria-expanded="false">${tkIcon('info')}<span class="tk-sr">About these figures</span></button><span class="tk-tip-text" id="tk-rating-tip" role="tooltip">${tkT(TK.rating.tip)}</span></span>`;
+  // Where a client's real Google reviews go. The demo never shows made-up reviews or ratings.
+  const ghost = `<li class="tk-ghost"><span class="tk-ghost-stars">${tkIcon('star').repeat(5)}</span><span class="tk-ghost-line"></span><span class="tk-ghost-line"></span><span class="tk-ghost-line tk-ghost-short"></span><span class="tk-ph-cap">Your review here</span></li>`;
   return `<div class="tk-awning" aria-hidden="true"></div>
 <section class="tk-hero" aria-labelledby="tk-hero-h"><div class="tk-wrap tk-hero-grid">
 <div>
-<p class="tk-kind">${tkT(TK.kind)} · ${tkT(TK.town.split(',')[0])}</p>
-<hgroup>
+<p class="tk-kind">${tkT(TK.kind)} in ${tkT(TK.town.split(',')[0])}</p>
 <h1 id="tk-hero-h">${tkT(TK.name)}</h1>
 <p class="tk-status" data-tk-status><span class="tk-status-dot" aria-hidden="true"></span><span data-tk-status-text>Open every day. Our hours are below.</span></p>
-</hgroup>
 <p class="tk-promise">${tkT(TK.promise)}</p>
-<div class="tk-btns"><a class="tk-btn tk-btn-main" href="${TK_URL}menu">See the menu</a><a class="tk-btn tk-btn-line" href="${TK_ORDER}">${tkIcon('bag')}Order for collection</a></div>
-<p class="tk-rating">${tkStars(TK.rating.stars, TK.rating.text)}<span>${tkT(TK.rating.text)}</span>${tip}</p>
+<div class="tk-btns">${tkBookButton()}<a class="tk-btn tk-btn-line" href="${TK_URL}menu">See the menu</a></div>
 </div>
 ${tkPhoto(TK.hero, 'tk-hero-photo')}
 </div></section>
-<section class="tk-section tk-section-olive" aria-labelledby="tk-specials-h"><div class="tk-wrap">
-<p class="tk-eyebrow">Fresh today</p>
+<section class="tk-section tk-section-cream" aria-labelledby="tk-specials-h"><div class="tk-wrap tk-reveal">
 <h2 id="tk-specials-h">${tkT(S.heading)}</h2>
 <ul class="tk-specials">${specials}</ul>
-<p class="tk-more"><a href="${TK_URL}menu">See the full menu ${tkIcon('arrow')}</a></p>
+<p class="tk-more"><a href="${TK_URL}menu">See the full menu</a></p>
 </div></section>
-<section class="tk-section tk-section-paper" aria-labelledby="tk-why-h"><div class="tk-wrap">
+<section class="tk-section" aria-labelledby="tk-why-h"><div class="tk-wrap tk-reveal">
 <h2 id="tk-why-h">${tkT(Y.heading)}</h2>
 <ul class="tk-why">${Y.items.map((w) => `<li><span class="tk-why-icon">${tkIcon(w.icon)}</span><h3>${tkT(w.title)}</h3><p>${tkT(w.text)}</p></li>`).join('')}</ul>
 </div></section>
-<section class="tk-section" aria-labelledby="tk-about-h"><div class="tk-wrap tk-about">
+<section class="tk-section tk-section-cream" aria-labelledby="tk-about-h"><div class="tk-wrap tk-about tk-reveal">
 ${tkPhoto(A, '', 'olive')}
-<div><p class="tk-eyebrow">About us</p><h2 id="tk-about-h">${tkT(A.heading)}</h2>${A.text.map((x) => `<p>${tkT(x)}</p>`).join('')}<p class="tk-more"><a href="${TK_URL}book">Book a table ${tkIcon('arrow')}</a></p></div>
+<div><h2 id="tk-about-h">${tkT(A.heading)}</h2>${A.text.map((x) => `<p>${tkT(x)}</p>`).join('')}</div>
 </div></section>
-<section class="tk-section tk-section-sand" aria-labelledby="tk-reviews-h"><div class="tk-wrap">
+<section class="tk-section" aria-labelledby="tk-reviews-h"><div class="tk-wrap tk-reveal">
 <h2 id="tk-reviews-h">${tkT(R.heading)}</h2>
-<p class="tk-reviews-sum">${tkStars(TK.rating.stars, TK.rating.text)}<span>${tkT(TK.rating.text)}</span></p>
-<ul class="tk-reviews">${reviews}</ul>
+<p class="tk-demo-note">${tkIcon('info')}<span>${tkT(R.note)}</span></p>
+<ul class="tk-ghosts" aria-hidden="true">${ghost.repeat(3)}</ul>
 </div></section>
-<section class="tk-section tk-section-paper" aria-labelledby="tk-find-h"><div class="tk-wrap">
+<section class="tk-section tk-section-cream" aria-labelledby="tk-find-h"><div class="tk-wrap tk-reveal">
 <h2 id="tk-find-h">${tkT(F.heading)}</h2>
 <p class="tk-lead">${tkT(F.lead)}</p>
 <div class="tk-find">
 <div class="tk-card"><h3>${tkIcon('clock')}Opening hours</h3>${tkHoursTable(`${TK.name} opening hours`)}<p class="tk-hours-note">${tkT(TK.grill.note)}</p></div>
-<div class="tk-card">${tkMap()}<p class="tk-address">${tkIcon('pin')}<span>${tkT(TK.address)}, ${tkT(TK.town)}</span></p><p class="tk-parking">${tkIcon('parking')}<span>${tkT(F.parking)}</span></p><div class="tk-btns"><button class="tk-btn tk-btn-main" type="button" data-tk-toast="${esc(typo(F.directionsToast))}">${tkIcon('pin')}Get directions</button><a class="tk-btn tk-btn-line" href="${TK_URL}find-us">More about finding us</a></div></div>
+<div class="tk-card">${tkMap()}<p class="tk-address">${tkIcon('pin')}<span>${tkT(TK.address)}, ${tkT(TK.town)}</span></p><p class="tk-parking">${tkIcon('parking')}<span>${tkT(F.parking)}</span></p><div class="tk-btns"><button class="tk-btn tk-btn-line" type="button" data-tk-toast="${esc(typo(F.directionsToast))}">${tkIcon('pin')}Get directions</button><a class="tk-btn tk-btn-line" href="${TK_URL}find-us">More about finding us</a></div></div>
 </div>
+</div></section>
+<section class="tk-section tk-close" aria-labelledby="tk-close-h"><div class="tk-wrap tk-reveal">
+<h2 id="tk-close-h">${tkT(TK.book.closeHeading)}</h2>
+<p class="tk-lead">${tkT(TK.book.lead)}</p>
+${tkBookButton()}
 </div></section>`;
 }
 
@@ -1802,23 +1807,23 @@ ${c.grill ? `<p class="tk-cat-note">${tkIcon('flame')}<span>${tkT(TK.grill.note)
 <h3 class="tk-dish-name"><span>${tkT(it.name)}</span><span class="tk-leader" aria-hidden="true"></span></h3>
 <span class="tk-price">${rand(it.price)}</span>
 ${it.text ? `<p class="tk-dish-text">${tkT(it.text)}</p>` : ''}
-<div class="tk-dish-foot"><span class="tk-tags">${tags(it)}</span><a class="tk-btn tk-btn-line tk-btn-sm" href="${TK_ORDER}?add=${esc(it.id)}">Order this<span class="tk-sr">: ${tkT(it.name)}</span></a></div>
+<div class="tk-dish-foot"><span class="tk-tags">${tags(it)}</span><a class="tk-link" href="${TK_ORDER}?add=${esc(it.id)}">${tkIcon('bag')}Order this<span class="tk-sr">: ${tkT(it.name)}</span></a></div>
 </li>`).join('')}</ul>
 ${c.extras ? extras : ''}
 </section>`).join('');
-  return `<section class="tk-pagehead" aria-labelledby="tk-menu-h"><div class="tk-wrap"><p class="tk-eyebrow">Menu</p><h1 id="tk-menu-h">What we’re cooking</h1><p class="tk-lead">${tkT(TK.menuIntro)}</p></div></section>
+  return `<section class="tk-pagehead" aria-labelledby="tk-menu-h"><div class="tk-wrap"><h1 id="tk-menu-h">What we’re cooking</h1><p class="tk-lead">${tkT(TK.menuIntro)}</p></div></section>
 <section class="tk-section tk-section-tight"><div class="tk-wrap" data-tk-tabs>
 <div class="tk-tabs" role="tablist" aria-label="Menu sections" data-tk-tablist hidden>${tabs}</div>
 ${panels}
 <ul class="tk-legend">${Object.entries(TK.tags).map(([k, v]) => `<li><span class="tk-tag">${esc(k)}</span> ${esc(v)}</li>`).join('')}</ul>
-<div class="tk-menu-cta"><h2>Hungry now?</h2><p>Order for collection and skip the queue. Pay when you pick it up.</p><a class="tk-btn tk-btn-main" href="${TK_ORDER}">${tkIcon('bag')}Start an order</a></div>
+<div class="tk-menu-cta"><div><h2>Hungry now?</h2><p>Order for collection and skip the queue. Pay when you pick it up.</p></div><a class="tk-btn tk-btn-line" href="${TK_ORDER}">${tkIcon('bag')}Start an order</a></div>
 </div></section>`;
 }
 
 function tkBook() {
   const B = TK.book;
   const people = Array.from({ length: Number(B.maxPeople) || 12 }, (_, i) => `<option value="${i + 1}"${i === 1 ? ' selected' : ''}>${i + 1}</option>`).join('');
-  return `<section class="tk-pagehead" aria-labelledby="tk-book-h"><div class="tk-wrap"><p class="tk-eyebrow">Tables</p><h1 id="tk-book-h">${tkT(B.heading)}</h1><p class="tk-lead">${tkT(B.lead)}</p></div></section>
+  return `<section class="tk-pagehead" aria-labelledby="tk-book-h"><div class="tk-wrap"><h1 id="tk-book-h">${tkT(B.heading)}</h1><p class="tk-lead">${tkT(B.lead)}</p></div></section>
 <section class="tk-section tk-section-tight"><div class="tk-wrap tk-book">
 <form class="tk-form" data-tk-book novalidate>
 <p class="tk-nothing">${tkIcon('lock')}<span>Demo: nothing you type here is sent or stored.</span></p>
@@ -1852,17 +1857,17 @@ function tkBook() {
 
 function tkFind() {
   const F = TK.find;
-  return `<section class="tk-pagehead" aria-labelledby="tk-findus-h"><div class="tk-wrap"><p class="tk-eyebrow">Find us</p><h1 id="tk-findus-h">${tkT(TK.address)}</h1><p class="tk-lead">${tkT(F.lead)}</p></div></section>
+  return `<section class="tk-pagehead" aria-labelledby="tk-findus-h"><div class="tk-wrap"><h1 id="tk-findus-h">${tkT(TK.address)}</h1><p class="tk-lead">${tkT(F.lead)}</p></div></section>
 <section class="tk-section tk-section-tight"><div class="tk-wrap tk-find">
 <div class="tk-card">${tkMap()}<p class="tk-address">${tkIcon('pin')}<span>${tkT(TK.address)}, ${tkT(TK.town)}</span></p><p class="tk-parking">${tkIcon('parking')}<span>${tkT(F.parking)}</span></p>
-<div class="tk-btns"><button class="tk-btn tk-btn-main" type="button" data-tk-toast="${esc(typo(F.directionsToast))}">${tkIcon('pin')}Get directions</button><button class="tk-btn tk-btn-olive" type="button" data-tk-toast="${esc(typo(F.whatsappToast))}">${tkIcon('chat')}WhatsApp us</button><button class="tk-btn tk-btn-line" type="button" data-tk-toast="${esc(typo(F.callToast))}">${tkIcon('phone')}Call us</button></div></div>
+<div class="tk-btns"><button class="tk-btn tk-btn-line" type="button" data-tk-toast="${esc(typo(F.directionsToast))}">${tkIcon('pin')}Get directions</button><button class="tk-btn tk-btn-line" type="button" data-tk-toast="${esc(typo(F.whatsappToast))}">${tkIcon('chat')}WhatsApp us</button><button class="tk-btn tk-btn-line" type="button" data-tk-toast="${esc(typo(F.callToast))}">${tkIcon('phone')}Call us</button></div></div>
 <div class="tk-card"><h2>${tkIcon('clock')}Opening hours</h2>${tkHoursTable(`${TK.name} opening hours`)}<p class="tk-hours-note">${tkT(TK.grill.note)}</p><p class="tk-status" data-tk-status><span class="tk-status-dot" aria-hidden="true"></span><span data-tk-status-text>Open every day.</span></p></div>
 </div></section>`;
 }
 
 function tkNotFound() {
   const N = TK.notFound;
-  return `<section class="tk-404" aria-labelledby="tk-404-h"><div class="tk-wrap"><div class="tk-404-mark">${tkIcon('kettle')}</div><h1 id="tk-404-h">${tkT(N.heading)}</h1><p class="tk-lead">${tkT(N.lead)}</p><div class="tk-btns"><a class="tk-btn tk-btn-main" href="${TK_URL}">Home</a><a class="tk-btn tk-btn-line" href="${TK_URL}menu">Menu</a><a class="tk-btn tk-btn-line" href="${TK_URL}book">Book a table</a><a class="tk-btn tk-btn-line" href="${TK_URL}find-us">Find us</a></div></div></section>`;
+  return `<section class="tk-404" aria-labelledby="tk-404-h"><div class="tk-wrap"><div class="tk-404-mark">${tkIcon('kettle')}</div><h1 id="tk-404-h">${tkT(N.heading)}</h1><p class="tk-lead">${tkT(N.lead)}</p><div class="tk-btns">${TK_NAV.map((n) => `<a class="tk-btn tk-btn-line" href="${n.href}">${esc(n.label)}</a>`).join('')}</div></div></section>`;
 }
 
 function tinKettlePages() {
