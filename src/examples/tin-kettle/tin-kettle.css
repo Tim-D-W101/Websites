@@ -70,7 +70,6 @@ img, svg { max-width: 100%; }
 :focus-visible { outline: 3px solid var(--tk-terra-dark); outline-offset: 3px; border-radius: 6px; }
 ::selection { background: var(--tk-terra-light); }
 .tk-i { width: 1.25em; height: 1.25em; flex: none; vertical-align: -.22em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.tk-i-fill { fill: currentColor; stroke: none; }
 .tk-sr {
   position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
@@ -240,7 +239,7 @@ img, svg { max-width: 100%; }
 .tk-ghosts { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
 .tk-ghost { position: relative; display: grid; gap: .65rem; align-content: start; min-height: 11rem; padding: 1.25rem 1.25rem 3rem; border: 1.5px dashed var(--tk-line-strong); border-radius: var(--tk-radius); }
 .tk-ghost-stars { display: flex; gap: .15rem; margin-bottom: .25rem; color: var(--tk-line-strong); }
-.tk-ghost-stars .tk-i { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.tk-ghost-stars .tk-i { width: 1.1rem; height: 1.1rem; stroke-width: 1.6; }
 .tk-ghost-line { height: .6rem; border-radius: 999px; background: var(--tk-sand); }
 .tk-ghost-short { width: 60%; }
 .tk-ghost .tk-ph-cap { background: var(--tk-sand); color: var(--tk-muted); }
@@ -407,11 +406,11 @@ abbr.tk-tag { cursor: help; }
 .tk-footer .tk-address { color: #fff; font-weight: 500; }
 .tk-footer .tk-address .tk-i { color: #F2A27F; }
 .tk-footer h2 { margin-bottom: .75rem; font: 600 1rem var(--tk-body); color: #fff; }
-.tk-footer ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; }
+.tk-footer ul { margin: 0; padding: 0; list-style: none; display: grid; }
 .tk-footer ul a { display: inline-flex; align-items: center; min-height: 44px; }
 .tk-footer .tk-parking { color: #E8DFD4; }
 .tk-footer .tk-parking .tk-i { color: #C9CD9F; }
-.tk-footer-hours { gap: .35rem !important; }
+.tk-footer-hours { gap: .35rem; }
 .tk-footer-hours li { display: flex; justify-content: space-between; gap: 1rem; max-width: 15rem; font-variant-numeric: tabular-nums; }
 .tk-footer-base { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid rgba(255, 255, 255, .14); font-size: .92rem; color: #CFC4B7; }
 .tk-footer-base p { margin: 0; }

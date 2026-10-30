@@ -53,3 +53,43 @@ identity and load files from another company, which the privacy policy rules out
   never blink out, and reduced motion shows everything straight away.
 - **Fixes:** the footer address was charcoal on charcoal (invisible), and the "Tin Kettle" label on the drawn map
   was hidden by a CSS fill that overrode the SVG's own.
+
+## Bright Cuts (bookings)
+
+- **One action:** a black booking bar with a running summary ("Skin fade R210 · 45 min with Sipho", then the time)
+  and the only blush-pink button: Continue, then Confirm booking on the last step. It's fixed to the bottom on
+  phones and docked under the step on desktop, and hidden on the booked screen, where "Add to calendar" takes over.
+  Tapping a choice now selects it and Continue moves on (it used to jump straight to the next step).
+- **Calm:** the headline is one colour (the pink "skip the wait." accent is gone) and 3rem at most. "STEP 1 OF 4 ·
+  SERVICE" became a four-part track (Service, Who, When, Details). Services and people are one grouped list with
+  radio marks instead of heavy black-bordered cards, and the 14 days are a 2×7 grid on desktop.
+- **Tokens:** black #141210, ink #26221F, paper #F7F2EC, blush #F2C4BE (the action, only ever on black: 11.9:1).
+  Syne 700 for headings, Manrope for body.
+
+## Tin Kettle ordering
+
+- **One action:** terracotta-dark is only the next step (View order, Add to order, Place order). The 11 filled
+  "Add" pills are outline pills now. Each primary button shows its total on the right.
+- **Sticky:** on phones a "View order" bar appears once something is added. On desktop the phone-width card became
+  two columns: the menu, and a sticky "Your order" card that also repeats the open/collection time.
+- **Calm:** the café's refreshed tokens, hairlines instead of dashed lines, a quiet "Not available now" line on grill
+  dishes (the repeated "Fri–Sat evenings only" tag went), no inset shadows or press jumps.
+
+## Coastline Painting (quotes)
+
+- **One action:** yellow is only "Get a firm quote" (and "Request my firm quote" on the next screen). "Download
+  estimate" is an outline. On phones the sticky estimate bar ("Your estimate", the range, Get a firm quote) hides
+  once the estimate panel is on screen; on desktop the panel stays sticky beside the form.
+- **Calm:** sentence case throughout. Barlow Condensed is only the h1 and the estimate figure, the bold thing, white
+  on deep green. The hazard stripe, the yellow header rule, the "Free estimates" pill and the 2px green borders went.
+  Selected options get a green outline, a pale tint and a small tick instead of a dark fill.
+
+## Khumalo Plumbing (staff app)
+
+- **One action:** "Mark as …" (scheduled, on site, done) is the only blue button, pinned to the bottom of a job.
+  Blue is otherwise only the focus ring and the "On site" tint; navigation and filters use navy.
+- **Contact one tap away:** a job opens with the customer, a made-up street address in the made-up suburb, and Call,
+  WhatsApp and Directions buttons that show a "Demo:" note. No phone numbers are invented.
+- **Calm:** a centred sign-in card with one "Demo: use demo / demo" note, hairline cards, sentence-case labels,
+  softer status tints, each with its own symbol so colour isn't the only cue, and a connected status track. Empty
+  searches, notes and parts get proper empty states.

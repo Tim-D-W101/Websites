@@ -139,7 +139,7 @@ textarea { min-height: 5rem; resize: vertical; }
 .hint { margin-top: .375rem; font-size: .875rem; color: var(--muted); }
 
 /* buttons: blush is the one action; everything else is an outline or a text link */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 3rem; padding: .75rem 1.5rem; border: 1px solid transparent; border-radius: 999px; font-weight: 700; font-size: 1rem; line-height: 1.2; white-space: nowrap; text-decoration: none; transition: background-color .2s, border-color .2s, opacity .2s; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 3rem; padding: .75rem 1.5rem; border: 1px solid transparent; border-radius: 999px; font-weight: 700; font-size: 1rem; line-height: 1.2; white-space: nowrap; text-decoration: none; transition: background-color .2s, border-color .2s; }
 .btn-go { border-color: var(--blush); background: var(--blush); color: var(--black); }
 .btn-go:hover { border-color: #F7D6D1; background: #F7D6D1; }
 .btn-go[aria-disabled="true"], .btn-go[aria-disabled="true"]:hover { border-color: #5A524C; background: transparent; color: #A0968E; cursor: default; }
@@ -425,7 +425,12 @@ noscript p { padding: 1rem; }
 
   /* ---------- the booking bar: what you've chosen so far, and the step's one action ---------- */
   var barOn = false;
-  function ready() { return step === 1 ? !!pick.service : step === 2 ? !!pick.staff : step === 3 ? pick.time !== null : step === 4; }
+  function ready() {
+    if (step === 1) return !!pick.service;
+    if (step === 2) return !!pick.staff;
+    if (step === 3) return pick.time !== null;
+    return step === 4;
+  }
   function updateBar() {
     var bar = $('bar');
     var s = pick.service;
@@ -700,14 +705,12 @@ noscript p { padding: 1rem; }
 
   function clearToast() { clearTimeout(toastTimer); $('toasts').innerHTML = ''; }
   function toast(text) {
-    var box = $('toasts');
-    clearTimeout(toastTimer);
-    box.innerHTML = '';
+    clearToast();
     var p = document.createElement('p');
     p.className = 'toast';
     p.textContent = text;
-    box.appendChild(p);
-    toastTimer = setTimeout(function () { box.innerHTML = ''; }, 3400);
+    $('toasts').appendChild(p);
+    toastTimer = setTimeout(clearToast, 3400);
   }
   $('reset').addEventListener('click', function () {
     try { sessionStorage.removeItem(STORE); } catch (e) { /* memory only */ }

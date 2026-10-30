@@ -64,7 +64,7 @@ p { margin: 0; }
 label { display: block; margin-bottom: 8px; font-size: .9375rem; font-weight: 600; color: var(--ink); }
 input[type="text"], input[type="password"], input[type="search"], textarea { width: 100%; min-height: 48px; padding: 10px 14px; border: 1px solid var(--line-2); border-radius: var(--r-1); background: var(--surface); transition: border-color .2s; }
 input:hover, textarea:hover { border-color: #B7BEC9; }
-input:focus-visible, textarea:focus-visible { outline: 2px solid var(--blue); outline-offset: 0; border-color: var(--blue); }
+input:focus-visible, textarea:focus-visible { outline-offset: 0; border-color: var(--blue); }
 ::placeholder { color: #6B7381; opacity: 1; }
 textarea { min-height: 88px; resize: vertical; }
 
@@ -201,7 +201,7 @@ code { padding: 1px 6px; border: 1px solid var(--line); border-radius: 6px; back
 .bar-todo, .bar-done { width: 100%; transition: height .4s var(--ease); }
 .bar-todo { height: 0; background: #C6CDD8; border-radius: 4px 4px 0 0; }
 .bar-done { height: 0; background: var(--ink); }
-.bar-col .bar-done:first-child, .bar-todo[data-empty] + .bar-done { border-radius: 4px 4px 0 0; }
+.bar-todo[data-empty] + .bar-done { border-radius: 4px 4px 0 0; }
 .bars .is-today { color: var(--ink); font-weight: 600; }
 .bars .is-today > span:last-child { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 
@@ -757,10 +757,12 @@ noscript p { padding: 16px; }
     }
     var c = e.target.closest('[data-contact]');
     if (c) {
-      var k = c.getAttribute('data-contact');
-      toast(k === 'call' ? 'Demo: in your app, this phones ' + j.name + ' on the number from the booking.' :
-        k === 'wa' ? 'Demo: in your app, this opens a WhatsApp chat with ' + j.name + '.' :
-        'Demo: in your app, this opens directions to ' + place(j) + '.');
+      var say = {
+        call: 'Demo: in your app, this phones ' + j.name + ' on the number from the booking.',
+        wa: 'Demo: in your app, this opens a WhatsApp chat with ' + j.name + '.',
+        map: 'Demo: in your app, this opens directions to ' + place(j) + '.'
+      };
+      toast(say[c.getAttribute('data-contact')]);
       return;
     }
     if (e.target.closest('[data-photo]')) toast('Demo: in your app, this opens the camera and saves the photo to the job.');

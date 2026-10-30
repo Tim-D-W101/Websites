@@ -28,7 +28,7 @@
 @font-face { font-family: "Barlow"; src: url("/fonts/barlow-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
 @font-face { font-family: "Barlow"; src: url("/fonts/barlow-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
 :root {
-  --green: #123A2C; --green-2: #1C5240; --green-l: #EAF2EC;
+  --green: #123A2C; --green-l: #EAF2EC;
   --ink: #15241C; --muted: #4F6157; --line: #D8E2DA; --edge: #7A9184; --paper: #F5F7F4; --white: #FFFFFF;
   --yellow: #F7C948; --yellow-2: #FAD567;
   --on-green: #DCEBE2; --on-green-2: #B9D2C3;
@@ -147,7 +147,7 @@ input[type="text"], input[type="tel"], select { width: 100%; min-height: 52px; p
 input::placeholder { color: #5E7568; }
 select { -webkit-appearance: none; appearance: none; padding-right: 3rem; background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6' fill='none' stroke='%23123A2C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 1rem center / 1.25rem no-repeat; }
 input:hover, select:hover { border-color: var(--green); }
-input:focus-visible, select:focus-visible { border-color: var(--green); outline: 2px solid var(--green); outline-offset: 1px; }
+input:focus-visible, select:focus-visible { border-color: var(--green); outline-offset: 1px; }
 [aria-invalid="true"] { border-color: #A3271B !important; }
 .err { margin-top: .375rem; color: #A3271B; font-weight: 600; font-size: .9375rem; }
 .form-btn { margin-top: 1.5rem; }

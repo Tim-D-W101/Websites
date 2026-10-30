@@ -1579,7 +1579,6 @@ const TK_ICONS = {
   phone: '<path d="M8.6 3.5H6.2A2.2 2.2 0 0 0 4 5.8c.4 8 6.2 13.8 14.2 14.2a2.2 2.2 0 0 0 2.3-2.2v-2.4a1 1 0 0 0-.7-1l-3-1a1 1 0 0 0-1.1.3l-1.3 1.6a12 12 0 0 1-5.5-5.5l1.6-1.3a1 1 0 0 0 .3-1.1l-1-3a1 1 0 0 0-1-.7z"/>',
   chat: '<path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.4L3.5 20.5l1.6-4.4a8.4 8.4 0 1 1 15.4-4.5z"/><path d="M8.6 11.8h.01M12 11.8h.01M15.4 11.8h.01"/>',
   clock: '<circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 1.9"/>',
-  arrow: '<path d="M4.5 12h15M13.5 6l6 6-6 6"/>',
   menu: '<path d="M4 7h16M4 12h16M4 17h10"/>',
   bag: '<path d="M5.4 8.5h13.2l-1 11a1.6 1.6 0 0 1-1.6 1.5H8a1.6 1.6 0 0 1-1.6-1.5z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/>',
   calendar: '<rect x="3.8" y="5.2" width="16.4" height="15.3" rx="2.6"/><path d="M3.8 9.8h16.4M8.3 3.2v3.6M15.7 3.2v3.6"/>',
@@ -1588,7 +1587,7 @@ const TK_ICONS = {
   close: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
   lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"/>'
 };
-const tkIcon = (name, cls = 'tk-i') => `<svg class="${cls}${name === 'star' ? ' tk-i-fill' : ''}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${TK_ICONS[name] || TK_ICONS.kettle}</svg>`;
+const tkIcon = (name) => `<svg class="tk-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${TK_ICONS[name] || TK_ICONS.kettle}</svg>`;
 const tkT = (s) => esc(typo(s));
 const tkItems = Object.fromEntries(TK.menu.flatMap((c) => c.items.map((i) => [i.id, { ...i, cat: c }])));
 
@@ -1849,7 +1848,7 @@ function tkFind() {
 
 function tkNotFound() {
   const N = TK.notFound;
-  return `<section class="tk-404" aria-labelledby="tk-404-h"><div class="tk-wrap"><div class="tk-404-mark">${tkIcon('kettle')}</div><h1 id="tk-404-h">${tkT(N.heading)}</h1><p class="tk-lead">${tkT(N.lead)}</p><div class="tk-btns"><a class="tk-btn tk-btn-line" href="${TK_URL}">Home</a><a class="tk-btn tk-btn-line" href="${TK_URL}menu">Menu</a><a class="tk-btn tk-btn-line" href="${TK_URL}book">Book a table</a><a class="tk-btn tk-btn-line" href="${TK_URL}find-us">Find us</a></div></div></section>`;
+  return `<section class="tk-404" aria-labelledby="tk-404-h"><div class="tk-wrap"><div class="tk-404-mark">${tkIcon('kettle')}</div><h1 id="tk-404-h">${tkT(N.heading)}</h1><p class="tk-lead">${tkT(N.lead)}</p><div class="tk-btns">${TK_NAV.map((n) => `<a class="tk-btn tk-btn-line" href="${n.href}">${esc(n.label)}</a>`).join('')}</div></div></section>`;
 }
 
 function tinKettlePages() {
