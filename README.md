@@ -4,7 +4,7 @@ The marketing site for **frontdoorsites.co.za**: websites and business tools for
 
 It's a static site:
 
-- every word, price, website option, band, question and contact detail lives in **`content.json`**;
+- every word, price, website option, band, question and contact detail lives in **`content.json`**, except on the home page, which is one finished file, **`src/home/index.html`** (see [The home page](#the-home-page));
 - **`node build.js`** turns that into a finished website in **`dist/`**;
 - it's hosted on **Cloudflare**, which serves the files in `dist/` as they are (set up in `wrangler.toml`).
 
@@ -15,8 +15,9 @@ content.json            ← edit this: prices, website options, terms, FAQ, indu
 content/pages/          ← privacy.html and terms.html (drafts: review before launch)
 content/guides/         ← guide articles (none yet)
 src/styles.css          ← all styles
+src/home/index.html     ← the home page, used as it is (its own styles, fonts and script inside)
 src/site.js             ← menu, calculators, enquiry form, open/closed sign, the Examples page,
-                          the home page's front door, tour and scenes, things rising into view
+                          things rising into view
 src/calc.js             ← calculator maths (shared by the build and the browser)
 src/svg.js              ← logo, the front door, illustrations and icons
 src/fonts/              ← Fraunces + Figtree, self-hosted (SIL Open Font Licence)
@@ -90,9 +91,9 @@ A business website can be bought three ways. They live in `website.options`, and
   "payLabel": "Start Care", "payfast": "" }
 ```
 
-- **Option prices:** change `build` (the "from" price for the build) and `monthly` (the monthly fee; `null` for once-off). Run `node build.js` and everything updates: the option cards, the price line in the hero ("Websites from R7 500 once-off · or pay less upfront: R4 999 + R399/month"), the home page's "What it costs" and "What it could earn you" chapters, the industry ideas, the calculators, the Start page, the FAQ, the Terms, page descriptions and the search-engine data.
+- **Option prices:** change `build` (the "from" price for the build) and `monthly` (the monthly fee; `null` for once-off). Run `node build.js` and everything updates: the option cards, the industry ideas, the calculators, the Start page, the FAQ, the Terms, page descriptions and the search-engine data. The home page is the exception: its prices are written into `src/home/index.html`, so change them there too. The build warns if the home page doesn't show a build price or monthly fee from `content.json`.
 - **The card rows** (Minimum term, Hosting & domain, Changes, Replies, Monthly report, Backups & security) are listed in `website.rows`. Each row shows the option's field with the same `key`. Leave a field blank to show a dash, or write `Yes` to show a tick. The word "free" in a row ("5 free changes a month") gets a green highlight, on the cards and in the "Changes on each option" list.
-- **The price on each card** shows the build and, for Care and Care Plus, the monthly fee together ("R4 999 + R399/month"), so the monthly fee never looks optional. The home page's cards and the full cards on `/websites` and `/pricing` share the same price block. Under it: `website.planTerm` on the plans ("6-month minimum") and `website.noMonthly` on once-off. `website.priceLabel` is the small label above the price ("From").
+- **The price on each card** shows the build and, for Care and Care Plus, the monthly fee together ("R4 999 + R399/month"), so the monthly fee never looks optional. The full cards on `/websites` and `/pricing` share the same price block. Under it: `website.planTerm` on the plans ("6-month minimum") and `website.noMonthly` on once-off. `website.priceLabel` is the small label above the price ("From").
 - `"featured": true` gives an option the darker border and the "Most popular" badge (`website.badge`).
 - `website.buildTime` is the typical build time for the business website.
 
@@ -137,31 +138,23 @@ While every `payfast` link in `website.options` is blank, the monthly plan fees 
 
 - The offer: the first month of Care or Care Plus free. The wording is in `founding.badge` (the gold "**1st** month free" badge on the banner; put `*stars*` around the big part), `founding.title`, `founding.text`, `founding.cardNote` (the note on the Care and Care Plus cards) and `founding.startNote`.
 - `spotsTotal` and `spotsLeft` are for you only. The site never shows how many places are left, so there's no countdown. Each time someone signs up as a founding client, lower `spotsLeft` and rebuild.
-- When `spotsLeft` reaches `0`, or `enabled` is `false`, the banner and the notes on the option cards disappear everywhere.
+- When `spotsLeft` reaches `0`, or `enabled` is `false`, the banner and the notes on the option cards disappear everywhere except the home page. Take the banner out of `src/home/index.html` by hand (the build warns until you do).
 
-## The home page: the front door and the tour
+## The home page
 
-The home page tells the story as you scroll. Everything it says is in `home` in `content.json`.
+The home page is the approved design (v2), kept as one finished file: **`src/home/index.html`**. Its markup, styles and script are used exactly as they are, and its fonts (Fraunces and Figtree) are embedded in its styles, so it doesn't use `src/styles.css`, `src/site.js` or `src/fonts/`. `src/home/DESIGN-NOTES.md` explains what changed from the version before.
 
-1. **The front door** (`home.hero`). When the page opens, the heading rises in, the door creaks open a little and a speech bubble types out `bubble`. As you scroll, the door moves to the middle, swings open, the things in `inside` (up to 6, each an `icon` and a `label`) come out of it, and you go through the doorway into the light, where the tour comes up to meet you. Put `*stars*` around words in `h1` to highlight them. `priceAnchor` is the price line under the lead (each part between ` · ` on its own line, amounts in bold). On phones the heading, the price line and both buttons stay in view above the door while it plays, and the ticks in `points` show in the tour instead. `address`, `mat`, `openSign` and `bookButton` are the words drawn on the door picture.
-2. **The tour** (`home.tour`): "Come in", with a link to each chapter. Once you're through the door, a bar at the top shows which chapter you're in and how far through you are.
-3. **The five chapters.** Their names are in `home.chapters`: `kicker` is a chapter's name in the tour and above its heading, `short` its name in the bar at the top. Most of the chapters are *scenes*: the picture stays on the screen while you scroll, and plays as you go.
+The page tells the story as you scroll: the front door opens and you go through it into the tour, then the five chapters (Why you need a website, What you get, What it could earn you, What it costs, How it works), the enquiry form, About, common questions and "Do I need to get on a call?". With reduced motion, or without JavaScript, every chapter shows in full.
 
-| Chapter | In `content.json` | What it shows |
-|---|---|---|
-| 1. Why you need a website | `home.why`, then `home.lights` | A customer's search, step by step (`steps`), on a phone that changes as you read. The phone's made-up example (a salon) is in `phone`. Then a dark, closed shop lights up: each of the `rows` turns from "without a website" to "with a website" and switches on part of the shop, and at the end its door opens. `sign` is the name on the shop |
-| 2. What you get | `home.build`, `home.industries`, `home.allDay` | A website builds itself on screen (the salon from `why.phone`), then a business tool beside it (the made-up quote in `tool`, whose total adds itself up), each with what it costs (`price` in `cards`, where amounts show in bold). Then the first three demos, links to the ideas for each kind of business, and one day from morning to night: the clock runs through the moments in `items`, the sky darkens, the shop closes at `closes`, and the website keeps working |
-| 3. What it could earn you | `home.earn` | Two sliders, the sums and a 12-month chart that grows month by month as you scroll to it. `build` is the website option whose price it uses, `carePlan` the plan whose fee it uses, and `defaults` the starting figures |
-| 4. What it costs | `home.costs` | The three ways to pay, and the question in `chooser`: each answer points to a website option and explains why it suits. On phones the three come in one at a time; on wider screens they're dealt out side by side. Then bigger jobs, the founding-client offer and a link to all the prices |
-| 5. How it works | `home.steps` | A big front door opens a little more with each of the four steps, with the step's number on it, until it's wide open with "Open" (`open`) in the doorway |
+To change the home page, edit `src/home/index.html` and run `node build.js`. The build:
 
-After the chapters come the enquiry form, "About Front Door Sites" and common questions.
+- replaces its `<head>` with the site's usual one: the title and description from `home.seo` in `content.json`, the canonical link, icons, share tags and search-engine data. The rest of `home` in `content.json` isn't used any more;
+- changes its links to `https://frontdoorsites.co.za/…` into links starting with `/`, so they work on preview builds too, and checks every one of them like the other pages;
+- keeps the year in the footer up to date;
+- warns if a website price from `content.json` is missing from the page, or if the founding-client offer is off but still on the page. Its prices, demos, FAQ and the offer are written into the page, so `content.json` doesn't change them;
+- allows its inline style and script in the security policy by their hashes (see [Security headers](#security-headers)), so edit them freely and rebuild.
 
-Each moment in `home.allDay.items` has a `time` (24-hour, like `07:30`, in order through the day), an `icon`, the `event` that pops up as a note, and the `title` and `text` that explain it. A moment whose time the build can't read is left out, with a warning.
-
-The icons you can use are listed in `ICONS` in `src/svg.js` (for example `globe`, `calendar`, `form`, `cart`, `clipboard`, `chart`, `clock`, `pin`, `eye`, `chat`, `phone`, `key`).
-
-Everything still works without movement. A scene only plays when everything in it fits on the screen; on a screen too small for it, and for anyone who has asked their phone or computer for reduced motion, it shows its finished state instead: the shop lit, with "without" and "with" side by side, both windows built, the day's moments as a list, the price cards together and the steps one after another. With reduced motion the door stays ajar with its labels around it, and nothing slides or flips. Without JavaScript, every chapter shows in full in the same way.
+Keep it self-contained: no `style="…"` attributes, no `onclick="…"` and no outside scripts or stylesheets (the build warns about these, because the security policy blocks them).
 
 ## Edit the industry pages
 
@@ -209,7 +202,7 @@ Every demo page carries a thin ribbon ("Demo website by Front Door Sites · … 
 
 ### The list of examples
 
-`examples.items` in `content.json` is the one list of examples. The home page shows the first three, `/websites` shows the websites, `/business-tools` the tools, and each industry page the items with its `niche`. On `/examples` the demo tools each get a section, and client work gets a section of its own.
+`examples.items` in `content.json` is the one list of examples. `/websites` shows the websites, `/business-tools` the tools, and each industry page the items with its `niche`. On `/examples` the demo tools each get a section, and client work gets a section of its own. The home page's three demos are drawn into `src/home/index.html`.
 
 ```json
 {
@@ -281,7 +274,7 @@ For a restaurant, send the café (`/examples/tin-kettle/`) or its ordering (`/ex
 
 ### Retake the example card screenshots
 
-The cards on the home page, `/websites`, `/business-tools` and the industry pages use screenshots of the demos. After changing a demo's look:
+The cards on `/websites`, `/business-tools` and the industry pages use screenshots of the demos. After changing a demo's look:
 
 ```bash
 node build.js
@@ -351,6 +344,8 @@ The project name and settings come from `wrangler.toml`.
 
 `wrangler.toml` tells Cloudflare to serve `dist/` as plain files, with clean addresses (`/websites` serves `websites.html`) and `404.html` for unknown pages (the demo café has its own, in `/examples/tin-kettle/`). The build also writes `dist/_headers`. Cloudflare reads it to set security headers (including a strict Content-Security-Policy) and long caching for fonts and assets. If you ever embed something from another website, like a map or a booking widget, add its domain to the Content-Security-Policy in `build.js`, or it will be blocked.
 
+The home page gets its own policy: its inline style and script are allowed by their hashes, and its embedded fonts by `data:`. The hashes are worked out on every build.
+
 The demos get their own rules at the end of `_headers` (written by `demoHeaders()` in `build.js`): they may be shown in a frame on this site only, they're marked `noindex`, they can't send anything anywhere, and each tool's own inline script and styles are allowed by their hashes. Those hashes are worked out on every build, so edit a tool freely and rebuild.
 
 ## Connect frontdoorsites.co.za
@@ -394,6 +389,6 @@ node tools/make-images.mjs
 
 ## Fonts
 
-Headings use **Fraunces**; body text uses **Figtree**. Both are self-hosted from `src/fonts/` (no Google Fonts requests) under the SIL Open Font Licence, and the licence files are included.
+Headings use **Fraunces**; body text uses **Figtree**. Both are self-hosted from `src/fonts/` (no Google Fonts requests) under the SIL Open Font Licence, and the licence files are included. The home page carries its own copies inside `src/home/index.html`.
 
 The demos each have their own fonts, all from Google Fonts and self-hosted the same way, so no demo loads anything from another company (as the privacy policy says): Caprasimo and Work Sans (Tin Kettle), Syne and Manrope (Bright Cuts), Barlow Condensed and Barlow (Coastline Painting) and IBM Plex Sans (Khumalo Plumbing). They're in `src/examples/fonts/`, cut down to the Latin letters, with their licences.

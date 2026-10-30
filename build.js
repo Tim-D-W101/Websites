@@ -819,10 +819,10 @@ ${page.review ? `${page.review}\n` : ''}<html lang="${esc(site.language || 'en-Z
 <meta name="description" content="${description}">
 ${page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${esc(canonical)}">`}
 <meta name="theme-color" content="#124B78">
-<link rel="preload" href="/fonts/fraunces-600.woff2" as="font" type="font/woff2" crossorigin>
+${page.style !== undefined ? `<style>${page.style}</style>` : `<link rel="preload" href="/fonts/fraunces-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/figtree-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${assets.css}">
-<script src="${assets.js}" defer></script>
+<script src="${assets.js}" defer></script>`}
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -839,7 +839,7 @@ ${page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonica
 <meta name="twitter:card" content="summary_large_image">
 ${page.jsonLd ? jsonLd() : ''}
 </head>
-<body class="${bar ? 'has-bar' : ''}${page.bodyClass ? ` ${page.bodyClass}` : ''}">
+${page.document || `<body class="${bar ? 'has-bar' : ''}${page.bodyClass ? ` ${page.bodyClass}` : ''}">
 <a class="skip" href="#main">Skip to content</a>
 ${header(page)}
 <main id="main">
@@ -847,7 +847,7 @@ ${page.body}
 </main>
 ${footer(page)}
 ${bar}
-</body>
+</body>`}
 </html>
 `;
 }
@@ -1206,33 +1206,33 @@ ${door}
   return scene('how', 'section-sand chapter', `id="${ch.id}" aria-labelledby="how-h"`, stage);
 }
 
+// The home page is the approved design in src/home/index.html, used as it is: its markup, its
+// inline style (fonts embedded) and its inline script. Only its <head> becomes the site's usual one
+// (title, description, icons, share tags, structured data). Its links to this site are made
+// relative, so they work on preview builds too and the link check covers them.
+const HOME_FILE = path.join(ROOT, 'src/home/index.html');
+
 function homePage() {
   const H = C.home;
-  const page = { url: '/', out: 'index.html', hasForm: true, jsonLd: true, title: H.seo.title, description: H.seo.description, bodyClass: 'page-home' };
-  const chapters = ['why', 'get', 'earn', 'cost', 'how'].map((id, i) => {
-    const c = (H.chapters || {})[id] || {};
-    if (!isSet(c.kicker)) warn(`home.chapters.${id} needs a kicker (the chapter's name in the tour).`);
-    return { id, n: i + 1, kicker: c.kicker || id, short: c.short };
-  });
-  const ch = Object.fromEntries(chapters.map((c) => [c.id, c]));
-  const about = H.about
-    ? `<section class="section about" aria-labelledby="about-h"><div class="wrap narrow about-inner">${svg.logo('logo about-logo')}<div>${sectionHead('about', H.about.heading)}<p>${t(H.about.text)}${contact.area ? ` ${t(H.about.areaText)}` : ''}</p></div></div></section>`
-    : '';
-  page.body = `${storyBar(chapters)}
-${doorHero(page)}
-${tourSection(chapters)}
-${whySection(ch.why)}
-${lightsSection(page)}
-${buildSection(ch.get)}
-${demosSection()}
-${allDaySection()}
-${earnSection(ch.earn)}
-${costSection(page, ch.cost)}
-${howSection(ch.how)}
-${enquirySection(page, { heading: H.cta.heading, lead: H.cta.lead })}
-${about}
-<section class="section section-sand" aria-labelledby="faqt-h"><div class="wrap narrow">${sectionHead('faqt', H.faqTeaser.heading)}${faqList(generalFaq(H.faqTeaser.ids))}<p class="more-link"><a href="/faq">All questions and answers ${svg.icon('arrow')}</a></p></div></section>`;
-  return page;
+  const rel = path.relative(ROOT, HOME_FILE);
+  const src = fs.readFileSync(HOME_FILE, 'utf8');
+  const style = (/<style>([\s\S]*?)<\/style>/.exec(src) || [])[1];
+  const body = (/<body[\s\S]*<\/body>/.exec(src) || [])[0];
+  if (style === undefined || !body) throw new Error(`${rel} needs a <style> in its <head> and a <body>.`);
+  const document = body
+    .split(`href="${site.url}/`).join('href="/')
+    .replace(/© \d{4} /, `© ${new Date().getFullYear()} `);
+  if (/\son[a-z]+="/i.test(document) || /\sstyle="/i.test(document)) warn(`${rel}: no inline event handlers or style="" attributes (the security policy blocks them).`);
+  if (/<script[^>]+src=|<link[^>]+rel="stylesheet"/i.test(src)) warn(`${rel}: the home page loads no outside scripts or stylesheets; inline them.`);
+  // Its prices and the founding-client offer are written into the page, so check they still match content.json.
+  const text = document.replace(/<[^>]+>/g, ' ');
+  for (const o of options) {
+    for (const n of [o.build, o.monthly].filter(Boolean)) {
+      if (!text.includes(rand(n))) warn(`${rel} doesn't show ${rand(n)} (${o.name} in content.json). Update the home page's prices.`);
+    }
+  }
+  if (!foundingOn && /class="founding"/.test(document)) warn(`${rel} still shows the founding-client offer, which is off in content.json. Take it out of the home page.`);
+  return { url: '/', out: 'index.html', jsonLd: true, title: H.seo.title, description: H.seo.description, style, document };
 }
 
 function websitesPage() {
@@ -1893,10 +1893,7 @@ function demoTools() {
     if (/<script[^>]+src=|<link[^>]+rel="stylesheet"/i.test(html)) warn(`${url}: tools load no outside scripts or stylesheets; inline them.`);
     if (/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\s*\(/.test(html)) warn(`${url}: tools never send anything (found a network call).`);
     if (/\son[a-z]+="/i.test(html) || /\sstyle="/i.test(html)) warn(`${url}: no inline event handlers or style="" attributes (the security policy blocks them).`);
-    // Hashes of the inline <script> and <style> blocks, for the page's security policy.
-    const sha = (s) => `'sha256-${crypto.createHash('sha256').update(s, 'utf8').digest('base64')}'`;
-    const scripts = [...html.matchAll(/<script(?![^>]*type="application\/(?:ld\+)?json")[^>]*>([\s\S]*?)<\/script>/g)].map((m) => sha(m[1]));
-    const styles = [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => sha(m[1]));
+    const { scripts, styles } = inlineHashes(html);
     return { slug, url, out: `examples/tools/${slug}/index.html`, html, scripts, styles };
   }).filter(Boolean);
 }
@@ -1904,6 +1901,14 @@ function demoTools() {
 /* ---------- write files ---------- */
 
 function hash(s) { return crypto.createHash('sha256').update(s).digest('hex').slice(0, 10); }
+// Hashes of a page's inline <script> and <style> blocks, for its security policy.
+function inlineHashes(html) {
+  const sha = (s) => `'sha256-${crypto.createHash('sha256').update(s, 'utf8').digest('base64')}'`;
+  return {
+    scripts: [...html.matchAll(/<script(?![^>]*type="application\/(?:ld\+)?json")[^>]*>([\s\S]*?)<\/script>/g)].map((m) => sha(m[1])),
+    styles: [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => sha(m[1]))
+  };
+}
 function write(rel, data) {
   const file = path.join(OUT, rel);
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -1972,7 +1977,8 @@ function build() {
     ...guidePages(),
     notFoundPage()
   ];
-  for (const p of pages) write(p.out, layout(p));
+  for (const p of pages) { p.html = layout(p); write(p.out, p.html); }
+  const home = inlineHashes(pages.find((p) => p.url === '/').html);
 
   const today = new Date().toISOString().slice(0, 10);
   const urls = pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${site.url}${p.url}</loc><lastmod>${today}</lastmod></url>`);
@@ -1983,7 +1989,11 @@ function build() {
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self' https://wa.me mailto:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+  Content-Security-Policy: ${siteCsp()}
+
+/
+  ! Content-Security-Policy
+  Content-Security-Policy: ${siteCsp(home.scripts.join(' '), home.styles.join(' '), "'self' data:")}
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
@@ -2007,6 +2017,13 @@ ${demoHeaders(tools)}`);
     for (const w of warnings) console.log(`  - ${w}`);
     process.exitCode = 1;
   }
+}
+
+// The site's security policy. The home page's inline <script> and <style> are allowed by their
+// hashes instead, and its fonts are embedded in its style as data: URLs. Its rule comes after "/*",
+// so it replaces the policy for that one address.
+function siteCsp(scripts = "'self'", styles = "'self'", fonts = "'self'") {
+  return `default-src 'self'; script-src ${scripts}; style-src ${styles}; img-src 'self' data:; font-src ${fonts}; connect-src 'self'; form-action 'self' https://wa.me mailto:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'`;
 }
 
 // The demos may be shown in a frame on /examples (same site only), are never indexed, and can't
