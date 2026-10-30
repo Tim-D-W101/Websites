@@ -191,7 +191,7 @@ On `/examples` the website shows on a laptop and a phone, and each tool runs liv
 ```
 src/examples/tin-kettle/content.json   ← the café's words, hours, grill times, menu and prices
 src/examples/tin-kettle/tin-kettle.css ← its own look (not the Front Door Sites styles)
-src/examples/tin-kettle/tin-kettle.js  ← open/closed line, menu tabs, the table request
+src/examples/tin-kettle/tin-kettle.js  ← open/closed line, menu tabs, the table request, sections fading in
 src/examples/tools/<slug>/index.html   ← each tool: one file, its CSS and JavaScript inside it
 src/examples/fonts/                    ← the demos' fonts (Google Fonts, self-hosted, with their licences)
 ```

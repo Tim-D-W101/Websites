@@ -30,11 +30,6 @@
     "label": "Fri–Sat evenings only",
     "note": "The grill is Friday and Saturday evenings only, from 17:00 until we close."
   },
-  "rating": {
-    "text": "4.8 stars from 212 reviews",
-    "stars": 4.8,
-    "tip": "Demo figures. On your site, these come from your Google reviews."
-  },
   "menuIntro": "Everything's made in our kitchen, and you can order any of it for collection.",
   "menu": [
     {
@@ -120,12 +115,9 @@
     "alt": "The Tin Kettle counter with fresh breakfast rolls"
   },
   "reviews": {
+    "_note": "No made-up reviews or ratings: the demo shows where a client's real Google reviews go.",
     "heading": "What people say",
-    "items": [
-      { "name": "Thandi", "stars": 5, "text": "Lovely spot for breakfast. The kettle roll is the best in town, and the coffee is always hot. Friendly staff too." },
-      { "name": "Pieter", "stars": 5, "text": "Went for the Friday grill with the family. Good rump, decent portions, and the kids loved the lemonade." },
-      { "name": "Ayesha", "stars": 4, "text": "Quick, friendly and good value. The garden bowl is a winner. It gets busy on Saturdays, so go early." }
-    ]
+    "note": "Demo: on your site, a selection of your real Google reviews goes here, refreshed when you ask. We never write or make up reviews."
   },
   "find": {
     "heading": "Hours and where to find us",
@@ -139,6 +131,7 @@
     "heading": "Book a table",
     "lead": "Tell us when you're coming and we'll keep a table for you. We confirm every request on WhatsApp.",
     "maxPeople": 12,
+    "closeHeading": "Coming in?",
     "panelHeading": "This is the message Nandi would get on WhatsApp",
     "panelNote": "On your site this goes straight to your phone."
   },
