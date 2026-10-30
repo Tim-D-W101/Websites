@@ -1282,7 +1282,7 @@
         "summary": "A family café and grill: a live open/closed sign, the menu, table requests and online ordering.",
         "url": "/examples/tin-kettle/",
         "image": "img/examples/tin-kettle.webp",
-        "alt": "The Tin Kettle Kitchen demo home page: an awning, the café name, an open-now line and buttons to see the menu or order",
+        "alt": "The Tin Kettle Kitchen demo home page: an awning, the café name, an open-now line and buttons to book a table or see the menu",
         "priceKey": "website",
         "niche": "restaurants",
         "icon": "cup"
@@ -1321,7 +1321,7 @@
         "summary": "Online ordering for collection, with extras, notes and a collection time.",
         "url": "/examples/tools/ordering/",
         "image": "img/examples/ordering.webp",
-        "alt": "The Tin Kettle ordering demo: the breakfast menu with prices and Add buttons",
+        "alt": "The Tin Kettle ordering demo: the breakfast menu with prices and Add buttons, beside a Your order card",
         "priceKey": "bookings-shop",
         "niche": "restaurants",
         "icon": "cart",
