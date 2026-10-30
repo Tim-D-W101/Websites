@@ -819,7 +819,7 @@ ${page.review ? `${page.review}\n` : ''}<html lang="${esc(site.language || 'en-Z
 <meta name="description" content="${description}">
 ${page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${esc(canonical)}">`}
 <meta name="theme-color" content="#124B78">
-${page.style !== undefined ? `<style>${page.style}</style>` : `<link rel="preload" href="/fonts/fraunces-600.woff2" as="font" type="font/woff2" crossorigin>
+${page.head || `<link rel="preload" href="/fonts/fraunces-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/figtree-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${assets.css}">
 <script src="${assets.js}" defer></script>`}
@@ -1207,9 +1207,10 @@ ${door}
 }
 
 // The home page is the approved design in src/home/index.html, used as it is: its markup, its
-// inline style (fonts embedded) and its inline script. Only its <head> becomes the site's usual one
-// (title, description, icons, share tags, structured data). Its links to this site are made
-// relative, so they work on preview builds too and the link check covers them.
+// style (fonts embedded) and its script. Only its <head> becomes the site's usual one (title,
+// description, icons, share tags, structured data). Its style, fonts and script are served as files
+// in /assets/, so the page works under the site's security policy like every other page. Its links
+// to this site are made relative, so they work on preview builds too and the link check covers them.
 const HOME_FILE = path.join(ROOT, 'src/home/index.html');
 
 function homePage() {
@@ -1219,10 +1220,27 @@ function homePage() {
   const style = (/<style>([\s\S]*?)<\/style>/.exec(src) || [])[1];
   const body = (/<body[\s\S]*<\/body>/.exec(src) || [])[0];
   if (style === undefined || !body) throw new Error(`${rel} needs a <style> in its <head> and a <body>.`);
+  // Each embedded font becomes its own file. The heading and body fonts are preloaded, like on the other pages.
+  const preload = [];
+  const css = style.replace(/@font-face\{[^}]*\}/g, (rule) => rule.replace(/url\(data:font\/woff2;base64,([A-Za-z0-9+/=]+)\)/, (m, b64) => {
+    const font = Buffer.from(b64, 'base64');
+    const file = `/assets/home.${hash(font)}.woff2`;
+    write(file, font);
+    if (/font-weight:(400|600)\b/.test(rule)) preload.push(file);
+    return `url(${file})`;
+  }));
+  const cssFile = `/assets/home.${hash(css)}.css`;
+  write(cssFile, css);
   const document = body
     .split(`href="${site.url}/`).join('href="/')
-    .replace(/© \d{4} /, `© ${new Date().getFullYear()} `);
+    .replace(/© \d{4} /, `© ${new Date().getFullYear()} `)
+    .replace(/<script>([\s\S]*?)<\/script>/, (m, js) => {
+      const jsFile = `/assets/home.${hash(js)}.js`;
+      write(jsFile, js);
+      return `<script src="${jsFile}"></script>`;
+    });
   if (/\son[a-z]+="/i.test(document) || /\sstyle="/i.test(document)) warn(`${rel}: no inline event handlers or style="" attributes (the security policy blocks them).`);
+  if (/<script(?![^>]*\ssrc=)(?![^>]*type="application\/(?:ld\+)?json")[^>]*>|<style/i.test(document)) warn(`${rel}: keep to one <style> in the <head> and one <script> in the <body> (the security policy blocks any others).`);
   if (/<script[^>]+src=|<link[^>]+rel="stylesheet"/i.test(src)) warn(`${rel}: the home page loads no outside scripts or stylesheets; inline them.`);
   // Its prices and the founding-client offer are written into the page, so check they still match content.json.
   const text = document.replace(/<[^>]+>/g, ' ');
@@ -1232,7 +1250,8 @@ function homePage() {
     }
   }
   if (!foundingOn && /class="founding"/.test(document)) warn(`${rel} still shows the founding-client offer, which is off in content.json. Take it out of the home page.`);
-  return { url: '/', out: 'index.html', jsonLd: true, title: H.seo.title, description: H.seo.description, style, document };
+  const head = [...preload.map((f) => `<link rel="preload" href="${f}" as="font" type="font/woff2" crossorigin>`), `<link rel="stylesheet" href="${cssFile}">`].join('\n');
+  return { url: '/', out: 'index.html', jsonLd: true, title: H.seo.title, description: H.seo.description, head, document };
 }
 
 function websitesPage() {
@@ -1893,7 +1912,10 @@ function demoTools() {
     if (/<script[^>]+src=|<link[^>]+rel="stylesheet"/i.test(html)) warn(`${url}: tools load no outside scripts or stylesheets; inline them.`);
     if (/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\s*\(/.test(html)) warn(`${url}: tools never send anything (found a network call).`);
     if (/\son[a-z]+="/i.test(html) || /\sstyle="/i.test(html)) warn(`${url}: no inline event handlers or style="" attributes (the security policy blocks them).`);
-    const { scripts, styles } = inlineHashes(html);
+    // Hashes of the inline <script> and <style> blocks, for the page's security policy.
+    const sha = (s) => `'sha256-${crypto.createHash('sha256').update(s, 'utf8').digest('base64')}'`;
+    const scripts = [...html.matchAll(/<script(?![^>]*type="application\/(?:ld\+)?json")[^>]*>([\s\S]*?)<\/script>/g)].map((m) => sha(m[1]));
+    const styles = [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => sha(m[1]));
     return { slug, url, out: `examples/tools/${slug}/index.html`, html, scripts, styles };
   }).filter(Boolean);
 }
@@ -1901,14 +1923,6 @@ function demoTools() {
 /* ---------- write files ---------- */
 
 function hash(s) { return crypto.createHash('sha256').update(s).digest('hex').slice(0, 10); }
-// Hashes of a page's inline <script> and <style> blocks, for its security policy.
-function inlineHashes(html) {
-  const sha = (s) => `'sha256-${crypto.createHash('sha256').update(s, 'utf8').digest('base64')}'`;
-  return {
-    scripts: [...html.matchAll(/<script(?![^>]*type="application\/(?:ld\+)?json")[^>]*>([\s\S]*?)<\/script>/g)].map((m) => sha(m[1])),
-    styles: [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => sha(m[1]))
-  };
-}
 function write(rel, data) {
   const file = path.join(OUT, rel);
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -1977,8 +1991,7 @@ function build() {
     ...guidePages(),
     notFoundPage()
   ];
-  for (const p of pages) { p.html = layout(p); write(p.out, p.html); }
-  const home = inlineHashes(pages.find((p) => p.url === '/').html);
+  for (const p of pages) write(p.out, layout(p));
 
   const today = new Date().toISOString().slice(0, 10);
   const urls = pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${site.url}${p.url}</loc><lastmod>${today}</lastmod></url>`);
@@ -1989,11 +2002,7 @@ function build() {
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-  Content-Security-Policy: ${siteCsp()}
-
-/
-  ! Content-Security-Policy
-  Content-Security-Policy: ${siteCsp(home.scripts.join(' '), home.styles.join(' '), "'self' data:")}
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self' https://wa.me mailto:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
@@ -2017,13 +2026,6 @@ ${demoHeaders(tools)}`);
     for (const w of warnings) console.log(`  - ${w}`);
     process.exitCode = 1;
   }
-}
-
-// The site's security policy. The home page's inline <script> and <style> are allowed by their
-// hashes instead, and its fonts are embedded in its style as data: URLs. Its rule comes after "/*",
-// so it replaces the policy for that one address.
-function siteCsp(scripts = "'self'", styles = "'self'", fonts = "'self'") {
-  return `default-src 'self'; script-src ${scripts}; style-src ${styles}; img-src 'self' data:; font-src ${fonts}; connect-src 'self'; form-action 'self' https://wa.me mailto:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'`;
 }
 
 // The demos may be shown in a frame on /examples (same site only), are never indexed, and can't

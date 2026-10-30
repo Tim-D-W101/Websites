@@ -152,9 +152,9 @@ To change the home page, edit `src/home/index.html` and run `node build.js`. The
 - changes its links to `https://frontdoorsites.co.za/…` into links starting with `/`, so they work on preview builds too, and checks every one of them like the other pages;
 - keeps the year in the footer up to date;
 - warns if a website price from `content.json` is missing from the page, or if the founding-client offer is off but still on the page. Its prices, demos, FAQ and the offer are written into the page, so `content.json` doesn't change them;
-- allows its inline style and script in the security policy by their hashes (see [Security headers](#security-headers)), so edit them freely and rebuild.
+- serves its style, its script and each embedded font as files in `/assets/` (named by their content, so browsers never keep an old copy). That way the home page works under the same security policy as every other page (see [Security headers](#security-headers)).
 
-Keep it self-contained: no `style="…"` attributes, no `onclick="…"` and no outside scripts or stylesheets (the build warns about these, because the security policy blocks them).
+Keep it self-contained: one `<style>` in the `<head>`, one `<script>` in the `<body>`, no `style="…"` attributes, no `onclick="…"` and no outside scripts or stylesheets (the build warns about these, because the security policy blocks them).
 
 ## Edit the industry pages
 
@@ -344,7 +344,7 @@ The project name and settings come from `wrangler.toml`.
 
 `wrangler.toml` tells Cloudflare to serve `dist/` as plain files, with clean addresses (`/websites` serves `websites.html`) and `404.html` for unknown pages (the demo café has its own, in `/examples/tin-kettle/`). The build also writes `dist/_headers`. Cloudflare reads it to set security headers (including a strict Content-Security-Policy) and long caching for fonts and assets. If you ever embed something from another website, like a map or a booking widget, add its domain to the Content-Security-Policy in `build.js`, or it will be blocked.
 
-The home page gets its own policy: its inline style and script are allowed by their hashes, and its embedded fonts by `data:`. The hashes are worked out on every build.
+The home page uses the same policy as every other page: the build serves its style, script and fonts as files instead of inline.
 
 The demos get their own rules at the end of `_headers` (written by `demoHeaders()` in `build.js`): they may be shown in a frame on this site only, they're marked `noindex`, they can't send anything anywhere, and each tool's own inline script and styles are allowed by their hashes. Those hashes are worked out on every build, so edit a tool freely and rebuild.
 
