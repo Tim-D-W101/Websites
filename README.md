@@ -130,16 +130,6 @@ While every `payfast` link in `website.options` is blank, the monthly plan fees 
 
 **Yearly payment** is switched off (`terms.yearlyPaysMonths` is `0`). Set it to, say, `10` to let clients pay for 12 months of a plan at the price of 10: it then shows on the option cards, the FAQ, the Start page and the Terms, and each plan can take a `payfastYearly` link.
 
-## Turn the founding-client offer on or off
-
-```json
-"founding": { "enabled": true, "spotsTotal": 3, "spotsLeft": 3, ... }
-```
-
-- The offer: the first month of Care or Care Plus free. The wording is in `founding.badge` (the gold "**1st** month free" badge on the banner; put `*stars*` around the big part), `founding.title`, `founding.text`, `founding.cardNote` (the note on the Care and Care Plus cards) and `founding.startNote`.
-- `spotsTotal` and `spotsLeft` are for you only. The site never shows how many places are left, so there's no countdown. Each time someone signs up as a founding client, lower `spotsLeft` and rebuild.
-- When `spotsLeft` reaches `0`, or `enabled` is `false`, the banner and the notes on the option cards disappear everywhere except the home page. Take the banner out of `src/home/index.html` by hand (the build warns until you do).
-
 ## The home page
 
 The home page is the approved design (v2), kept as one finished file: **`src/home/index.html`**. Its markup, styles and script are used exactly as they are, and its fonts (Fraunces and Figtree) are embedded in its styles, so it doesn't use `src/styles.css`, `src/site.js` or `src/fonts/`. `src/home/DESIGN-NOTES.md` explains what changed from the version before.
@@ -151,7 +141,7 @@ To change the home page, edit `src/home/index.html` and run `node build.js`. The
 - replaces its `<head>` with the site's usual one: the title and description from `home.seo` in `content.json`, the canonical link, icons, share tags and search-engine data. The rest of `home` in `content.json` isn't used any more;
 - changes its links to `https://frontdoorsites.co.za/…` into links starting with `/`, so they work on preview builds too, and checks every one of them like the other pages;
 - keeps the year in the footer up to date;
-- warns if a website price from `content.json` is missing from the page, or if the founding-client offer is off but still on the page. Its prices, demos, FAQ and the offer are written into the page, so `content.json` doesn't change them;
+- warns if a website price from `content.json` is missing from the page. Its prices, demos and FAQ are written into the page, so `content.json` doesn't change them;
 - serves its style, its script and each embedded font as files in `/assets/` (named by their content, so browsers never keep an old copy). That way the home page works under the same security policy as every other page (see [Security headers](#security-headers)).
 
 Keep it self-contained: one `<style>` in the `<head>`, one `<script>` in the `<body>`, no `style="…"` attributes, no `onclick="…"` and no outside scripts or stylesheets (the build warns about these, because the security policy blocks them).

@@ -160,11 +160,6 @@ const yearly = (monthlyFee) => monthlyFee * yearlyMonths;
 const yearlyFree = `${12 - yearlyMonths} month${12 - yearlyMonths === 1 ? '' : 's'}`;
 effective['terms.yearlyPaysMonths'] = yearlyOn ? 'on' : '';
 
-// Founding clients get their first month of a plan free. spotsLeft only switches the offer
-// off at 0: it's never shown, so there's no countdown on the site.
-const F = C.founding || {};
-const foundingOn = F.enabled === true && Number(F.spotsLeft) > 0;
-
 // One list of examples (examples.items): the Examples page, the home page strip, /websites,
 // /business-tools and the industry pages all read from it.
 const EXP = Array.isArray(C.examples) ? { items: C.examples } : (C.examples || {});
@@ -358,17 +353,6 @@ function faqSection(page, heading, items, group, sand = true) {
 </section>`;
 }
 
-function foundingBanner(page, opts = {}) {
-  if (!foundingOn) return '';
-  const action = !opts.compact && canEnquire ? `<a class="btn btn-navy" href="${enquiryHref(page)}">Get a free quote</a>` : '';
-  return `<aside class="founding${opts.compact ? ' founding-compact' : ''}" aria-labelledby="founding-h">
-<div class="founding-inner">
-${isSet(F.badge) ? `<p class="founding-badge">${t(F.badge).replace(/\*([^*]+)\*/g, '<strong>$1</strong>')}</p>` : ''}
-<div class="founding-text"><h2 id="founding-h">${t(F.title)}</h2><p>${t(F.text)}</p></div>
-${action}
-</div></aside>`;
-}
-
 /* ---------- price cards ---------- */
 
 // Bands are once-off "from" prices ("from R12 000 once-off"), or "Quoted".
@@ -415,14 +399,13 @@ function optionValue(v) {
 }
 
 // An option's price: the build and, on a plan, the monthly fee right beside it in the same
-// type (under it on narrow cards), so the fee never looks optional. Then the minimum term (or "No monthly fee") and the founding note.
+// type (under it on narrow cards), so the fee never looks optional. Then the minimum term (or "No monthly fee").
 // The home page's cards and the full cards on /websites and /pricing both use it.
 function optionPrice(o, yearlyLine = false) {
   const amount = `<p class="plan-price"><span class="plan-amount">${rand(o.build)}</span>${o.monthly ? `<span class="plan-monthly">+&nbsp;${month(o.monthly)}</span>` : ''}</p>`;
   const term = o.monthly ? (isSet(WEB.planTerm) ? `<p class="option-term">${t(WEB.planTerm)}</p>` : '') : `<p class="option-term">${t(WEB.noMonthly)}</p>`;
   const year = yearlyLine && yearlyOn && o.monthly ? `<p class="plan-yearly">or pay <strong>${rand(yearly(o.monthly))}</strong> once a year <span class="plan-save">${yearlyFree} free</span></p>` : '';
-  const founding = foundingOn && o.monthly && isSet(F.cardNote) ? `<p class="option-note">${t(F.cardNote)}</p>` : '';
-  return `<p class="option-label">${t(WEB.priceLabel)}</p>${amount}${term}${year}${founding}`;
+  return `<p class="option-label">${t(WEB.priceLabel)}</p>${amount}${term}${year}`;
 }
 
 function optionCard(o, page) {
@@ -1145,7 +1128,7 @@ function earnSection(ch) {
 
 // 4. What it costs: the three ways to buy a website, and "which suits me?" (site.js; hidden
 // without JavaScript). On phones the cards come in one at a time as you scroll; on wide screens
-// they're dealt out side by side. Then bigger jobs, the founding offer and a link to all prices.
+// they're dealt out side by side. Then bigger jobs and a link to all prices.
 function miniOption(o) {
   const featured = o.featured === true;
   const rows = (WEB.rows || []).filter((r) => ['hosting', 'changes', 'term'].includes(r.key) && isSet(o[r.key]))
@@ -1179,7 +1162,6 @@ function costSection(page, ch) {
   const after = `<div class="wrap scene-after cost-after">
 <p class="fine">${t(K.note)}</p>
 <div class="bigger-line"><h3><a class="tap-area" href="/pricing#tools-prices">${t(BG.heading)}</a></h3><ul class="band-pills">${bandList}</ul><p class="pt-note">${t(BG.intro)} ${t(BG.lead)}</p></div>
-${foundingBanner(page)}
 <p class="more-link"><a href="/pricing">${t(K.more)} ${svg.icon('arrow')}</a></p>
 </div>`;
   return scene('cost', 'chapter', `id="${ch.id}" aria-labelledby="cost-h"`, stage, after);
@@ -1242,14 +1224,13 @@ function homePage() {
   if (/\son[a-z]+="/i.test(document) || /\sstyle="/i.test(document)) warn(`${rel}: no inline event handlers or style="" attributes (the security policy blocks them).`);
   if (/<script(?![^>]*\ssrc=)(?![^>]*type="application\/(?:ld\+)?json")[^>]*>|<style/i.test(document)) warn(`${rel}: keep to one <style> in the <head> and one <script> in the <body> (the security policy blocks any others).`);
   if (/<script[^>]+src=|<link[^>]+rel="stylesheet"/i.test(src)) warn(`${rel}: the home page loads no outside scripts or stylesheets; inline them.`);
-  // Its prices and the founding-client offer are written into the page, so check they still match content.json.
+  // Its prices are written into the page, so check they still match content.json.
   const text = document.replace(/<[^>]+>/g, ' ');
   for (const o of options) {
     for (const n of [o.build, o.monthly].filter(Boolean)) {
       if (!text.includes(rand(n))) warn(`${rel} doesn't show ${rand(n)} (${o.name} in content.json). Update the home page's prices.`);
     }
   }
-  if (!foundingOn && /class="founding"/.test(document)) warn(`${rel} still shows the founding-client offer, which is off in content.json. Take it out of the home page.`);
   const head = [...preload.map((f) => `<link rel="preload" href="${f}" as="font" type="font/woff2" crossorigin>`), `<link rel="stylesheet" href="${cssFile}">`].join('\n');
   return { url: '/', out: 'index.html', jsonLd: true, title: H.seo.title, description: H.seo.description, head, document };
 }
@@ -1268,7 +1249,7 @@ function websitesPage() {
 <div>${sectionHead('inc', W.includesHeading)}${ticks(C.websiteIncludes)}</div>
 <div class="card points-card"><h3>${t(W.mockupCard.heading)}</h3><p>${t(W.mockupCard.text)}</p>${canEnquire ? `<p>${quoteButton(page, 'btn btn-gold', 'Get a free mock-up')}</p>` : ''}</div>
 </div></section>
-<section class="section section-sand" id="prices" aria-labelledby="wb-h"><div class="wrap">${sectionHead('wb', WEB.heading, WEB.lead)}${foundingBanner(page, { compact: true })}${optionsGrid(page)}
+<section class="section section-sand" id="prices" aria-labelledby="wb-h"><div class="wrap">${sectionHead('wb', WEB.heading, WEB.lead)}${optionsGrid(page)}
 ${bigger.length ? `<div class="bigger-web"><h3>${t(W.biggerHeading)}</h3>${bigger.map((b) => bandWide(b, page)).join('')}<p class="fine">${t(BG.lead)}</p></div>` : ''}
 <p class="fine"><a class="tap-area" href="/pricing">How quotes and payment work</a></p></div></section>
 ${stepsSection('wsteps', W.steps.heading, '', W.steps.items, false)}
@@ -1290,7 +1271,7 @@ function toolsPage() {
 <p class="big-callout">${t(P.callout)}</p></div></section>
 ${stepsSection('tsteps', P.steps.heading, '', P.steps.items)}
 <section class="section" aria-labelledby="tp-h"><div class="wrap"><h2 id="tp-h" class="visually-hidden">Good to know</h2><ul class="point-cards">${P.points.map((p) => `<li class="card"><span class="inc-icon">${svg.icon(p.icon)}</span><h3>${t(p.title)}</h3><p>${t(p.text)}</p></li>`).join('')}</ul></div></section>
-<section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${foundingBanner(page, { compact: true })}${bandsGrid('tools', page)}<p class="fine">${t(BG.lead)} ${t(BG.toolsHosting)}</p><p class="fine"><a class="tap-area" href="/pricing">How quotes and payment work</a></p></div></section>
+<section class="section section-sand" id="prices" aria-labelledby="tb-h"><div class="wrap">${sectionHead('tb', P.bandsHeading, P.bandsLead)}${bandsGrid('tools', page)}<p class="fine">${t(BG.lead)} ${t(BG.toolsHosting)}</p><p class="fine"><a class="tap-area" href="/pricing">How quotes and payment work</a></p></div></section>
 ${examplesBlock(toolExamples, 'Tool examples', false, 4)}
 ${faqSection(page, 'Questions about business tools', generalFaq(['tool-what', 'plan', 'cost', 'other-costs', 'own', 'time']), 'tools', toolExamples.length > 0)}
 ${enquirySection(page, { need: 'tool', heading: 'Get a free plan & quote', lead: 'Tell us how things work now and what you’d like to fix. We’ll send a short plan and a fixed quote. No obligation, no calls.' })}`;
@@ -1334,7 +1315,6 @@ ${body}
   const allowance = `<ul class="time-list">${options.map((o) => `<li><span>${esc(planName(o))}</span><span>${freePill(t(o.changes))}</span></li>`).join('')}</ul>`;
   page.body = `${pageHero(P.h1, P.lead)}
 <div class="section section-tight"><div class="wrap">
-${foundingBanner(page, { compact: true })}
 ${group('websites', WEB.name, t(WEB.lead), `${optionsGrid(page)}<div class="card includes-card"><h3>Every website includes</h3>${ticks(C.websiteIncludes, 'ticks ticks-2col')}</div>`)}
 ${group('tools', BG.heading, `${t(BG.intro)} ${t(BG.lead)} ${t(BG.toolsHosting)}`, `<div class="plans plans-4">${bands.map((b) => bandCard(b, page)).join('')}</div>`)}
 </div></div>
@@ -1508,7 +1488,6 @@ function startPage() {
     ? `<section class="section section-sand" aria-labelledby="times-h"><div class="wrap narrow">${sectionHead('times', S.timesHeading, S.timesNote)}<div class="table-wrap"><table class="times-table"><thead><tr><th scope="col">Job</th><th scope="col">Starts from</th><th scope="col">Typical build time</th></tr></thead><tbody>${timedJobs.map((j) => `<tr><th scope="row">${esc(j.name)} <small>${esc(groups[j.group].name)}</small></th><td>${jobPrice(j)}</td><td>${esc(typo(j.buildTime))}</td></tr>`).join('')}</tbody></table></div></div></section>`
     : '';
   page.body = `<section class="hero hero-simple"><div class="wrap narrow"><h1>${t(S.h1)}</h1><p class="lead">${t(S.lead)}</p></div></section>
-${foundingOn ? `<div class="wrap narrow"><p class="founding-note">${svg.icon('check')}<span>${t(F.startNote)}</span></p></div>` : ''}
 <section class="section section-tight"><div class="wrap narrow"><ol class="start-steps">${items}</ol></div></section>
 ${times}`;
   return page;
