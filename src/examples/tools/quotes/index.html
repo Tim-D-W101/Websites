@@ -234,7 +234,7 @@ noscript p { padding: 1rem; }
 <body>
 <!-- demo:ribbon -->
 <header class="top"><div class="top-in">
-<p class="logo"><span class="logo-mark" data-icon="roller"></span><span><b>Coastline Painting</b><small>Interiors · Fixed prices</small></span></p>
+<p class="logo"><span class="logo-mark" data-icon="roller"></span><span><b>Coastline Painting</b><small>Interior painting</small></span></p>
 </div></header>
 <noscript><p>This demo needs JavaScript to run.</p></noscript>
 
@@ -311,13 +311,13 @@ noscript p { padding: 1rem; }
 </div>
 <button class="owner-btn" id="owner-btn" type="button" aria-expanded="false" aria-controls="owner"><span data-icon="chat"></span>See what the owner receives<span class="chev" data-icon="chev"></span></button>
 <div class="owner" id="owner" hidden>
-<div class="chat"><p class="chat-top"><span class="chat-av" id="owner-av">S</span><span><span id="owner-from">Customer</span><small>WhatsApp · new quote request</small></span></p><div class="chat-body"><p class="bubble"><span id="owner-msg"></span><time id="owner-time">12:00</time></p></div></div>
+<div class="chat"><p class="chat-top"><span class="chat-av" id="owner-av">S</span><span><span id="owner-from">Customer</span><small>WhatsApp, new quote request</small></span></p><div class="chat-body"><p class="bubble"><span id="owner-msg"></span><time id="owner-time">12:00</time></p></div></div>
 <p class="owner-note"><span data-icon="phone"></span><span>On your system, every request lands on your phone like this, with the job already measured up.</span></p>
 </div>
 <button class="btn btn-line" type="button" id="again">Back to the calculator</button>
 </main>
 
-<footer class="foot"><span>Coastline Painting · Free estimates</span><button class="link" type="button" id="reset">Reset demo</button></footer>
+<footer class="foot"><span>Coastline Painting</span><button class="link" type="button" id="reset">Reset demo</button></footer>
 
 <div class="mini" id="mini" hidden><div class="mini-in"><p><small>Your estimate</small><b id="mini-range">R0 – R0</b></p><button class="btn btn-primary" type="button" id="mini-btn">Get a firm quote</button></div></div>
 <div class="toasts" role="status" aria-live="polite" id="toasts"></div>
@@ -546,7 +546,7 @@ noscript p { padding: 1rem; }
     if (j.patch) rows.push(['Patching (+15% on walls)', rand(j.walls - j.wallsBase)]);
     if (j.ceilings) { rows.push(['Ceiling area', area(j.ceilingArea)]); rows.push(['Ceilings at ' + rand(RATE.ceilings) + '/m²', rand(j.ceilingCost)]); }
     rows.push(['Estimate', rand(j.estimate)]);
-    $('print').innerHTML = '<div class="p-head"><div><b>Coastline Painting</b><span>Interiors · Fixed prices</span></div><div class="p-meta">Estimate<br>' + date + '</div></div>' +
+    $('print').innerHTML = '<div class="p-head"><div><b>Coastline Painting</b><span>Interior painting</span></div><div class="p-meta">Estimate<br>' + date + '</div></div>' +
       '<h1>Painting estimate</h1><p class="p-job">' + esc(jobText(j)) + '</p>' +
       '<p class="p-range">' + rangeText(j) + '</p><p class="p-note">A range of 10% either side of the estimate. We confirm a fixed price after a quick look at the rooms.</p>' +
       '<table class="p-table"><tbody>' + rows.map(function (r) { return '<tr><th>' + esc(r[0]) + '</th><td>' + esc(r[1]) + '</td></tr>'; }).join('') + '</tbody></table>' +

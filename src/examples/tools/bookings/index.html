@@ -48,7 +48,7 @@ p { margin: 0; text-wrap: pretty; }
 .i { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; }
 
 /* the black frame: phone header, desktop panel */
-.shell { min-height: 100vh; }
+.shell { min-height: 100vh; min-height: 100svh; }
 .brand { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; background: var(--black); color: var(--on-black); }
 .logo { display: flex; align-items: center; gap: .75rem; }
 .logo-mark { display: grid; place-items: center; flex: none; width: 2.25rem; height: 2.25rem; border: 1.5px solid #5A524C; border-radius: 50%; }
@@ -196,7 +196,7 @@ noscript p { padding: 1rem; }
 @media (min-width: 900px) {
   .shell { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); min-height: calc(100vh - 2rem); }
   .brand { display: none; }
-  .panel { position: sticky; top: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 3rem; height: 100vh; padding: 3rem clamp(2.5rem, 4vw, 4rem) 3.5rem; background: var(--black); color: var(--on-black); }
+  .panel { position: sticky; top: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 3rem; height: 100vh; height: 100svh; padding: 3rem clamp(2.5rem, 4vw, 4rem) 3.5rem; background: var(--black); color: var(--on-black); }
   .panel .logo b { font-size: 1.25rem; }
   .pitch h2 { max-width: 11ch; font-size: clamp(2.25rem, 3.2vw, 3rem); line-height: 1.05; letter-spacing: -.02em; color: var(--on-black); }
   .pitch p { max-width: 32ch; margin-top: 1.5rem; font-size: 1.0625rem; color: var(--on-black-2); }
@@ -221,8 +221,8 @@ noscript p { padding: 1rem; }
 <aside class="panel" aria-label="About Bright Cuts">
 <p class="logo"><span class="logo-mark" data-icon="scissors"></span><span><b>Bright Cuts</b><small>Barber &amp; salon</small></span></p>
 <div class="pitch">
-<h2>Book in, skip the wait.</h2>
-<p>Pick your service, your barber and a time that’s really free. No calls, no <span class="nw">back-and-forth</span>.</p>
+<h2>Book your next cut.</h2>
+<p>Pick a service, a barber and a time that’s free. We’ll send a reminder the day before.</p>
 </div>
 <ul><li><span>Tuesday to Saturday</span><span>09:00–17:30</span></li><li><span>Sunday and Monday</span><span>Closed</span></li></ul>
 </aside>
@@ -239,7 +239,7 @@ noscript p { padding: 1rem; }
 
 <section class="step" id="s1" aria-labelledby="s1-h">
 <h1 id="s1-h" tabindex="-1">What are we doing today?</h1>
-<p class="lead">Choose a service. Prices include everything.</p>
+<p class="lead">Choose a service, then who you’d like and when.</p>
 <ul class="choices" id="services"></ul>
 </section>
 

@@ -93,3 +93,22 @@ identity and load files from another company, which the privacy policy rules out
 - **Calm:** a centred sign-in card with one "Demo: use demo / demo" note, hairline cards, sentence-case labels,
   softer status tints, each with its own symbol so colour isn't the only cue, and a connected status track. Empty
   searches, notes and parts get proper empty states.
+
+## De-AI pass (2026-11-01)
+
+A second pass to remove what still read as generated. Full findings are in `/workspace/demos/fds-demo-audit.md`.
+The UI UX Pro Max generator was re-run per industry with low variance and motion dials. It confirmed Minimalism &
+Swiss and a subtle 300–400ms reveal for all five. Its fonts and palettes were again not used (identity, privacy policy).
+
+- **Tin Kettle:**
+  - Photo placeholders are flat palette fields with a "Photo to come: …" caption (no gradients or noise).
+  - The first special leads and the other two are compact rows (no row of identical cards).
+  - "What to come in for" is a heading beside a plain list (no icon-topped columns).
+  - Reviews are one honest dashed slot (no empty stars or skeleton bars).
+  - The hero's eyebrow became a subtitle under the name, and cards rest without shadows.
+  - In-page links and menu tabs scroll with an eased stop (ease-out quart, 450–1000ms). A wheel, touch or key cancels it, and reduced motion jumps. Wheel scrolling is never hijacked.
+- **Ordering:** the menu reads like the printed menu (a charcoal rule under each heading, hairlines between dishes, no boxes), and the category tabs use the same eased scroll.
+- **Bright Cuts:** headline and lead rewritten without the "No calls, no back-and-forth" formula.
+- **Coastline:** "Fixed prices" removed (the tool shows a range).
+- **Khumalo:** today's jobs are one timetable panel instead of a two-column grid of stripe-edged cards.
+- Reference sites: no live reference site was opened in this pass. It reworked existing demos inside their established identity rather than designing new ones.

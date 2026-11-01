@@ -1,6 +1,6 @@
 /* Tin Kettle Kitchen (demo website): the live open/closed line, today's hours, menu tabs,
    the table request and its WhatsApp preview, demo toasts and the sections fading in.
-   Plain JavaScript. Nothing is sent or stored: the table request only shows what would be sent. */
+   In-page links and menu tabs scroll with an eased stop. Plain JavaScript. Nothing is sent or stored: the table request only shows what would be sent. */
 (function () {
   'use strict';
 
@@ -105,6 +105,44 @@
     }
   }
 
+  /* ---------- in-page scrolling that eases to a stop ----------
+     A quick start and a long, soft landing (ease-out quart). A wheel, touch or key press hands
+     control straight back. With reduced motion it simply jumps. */
+  var glideId = 0; // bumped to cancel the glide in progress
+  function easeOutQuart(p) { return 1 - Math.pow(1 - p, 4); }
+  function glide(y) {
+    var to = Math.max(0, Math.min(y, document.documentElement.scrollHeight - window.innerHeight));
+    var from = window.pageYOffset, dist = to - from;
+    if (calm || Math.abs(dist) < 2) { window.scrollTo({ top: to, behavior: 'instant' }); return; }
+    var id = ++glideId, start = null;
+    var duration = Math.min(1000, 450 + Math.abs(dist) * 0.3);
+    function cancel() { glideId++; }
+    ['wheel', 'touchstart', 'keydown'].forEach(function (ev) { window.addEventListener(ev, cancel, { once: true, passive: true }); });
+    window.requestAnimationFrame(function frame(now) {
+      if (id !== glideId) return;
+      if (start === null) start = now;
+      var p = Math.min(1, (now - start) / duration);
+      window.scrollTo({ top: from + dist * easeOutQuart(p), behavior: 'instant' });
+      if (p < 1) window.requestAnimationFrame(frame);
+    });
+  }
+  // Clear of the sticky header on wide screens (the same gap as scroll-padding-top in the CSS).
+  function topOf(el) {
+    var head = document.querySelector('.tk-header');
+    var offset = head && getComputedStyle(head).position === 'sticky' ? head.offsetHeight + 16 : 0;
+    return el.getBoundingClientRect().top + window.pageYOffset - offset;
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#"]');
+    var id = a && a.getAttribute('href').slice(1);
+    var target = id && document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    glide(topOf(target));
+    if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+  });
+
   /* ---------- menu tabs: without JavaScript every category shows, one under the other ---------- */
   var tabBox = document.querySelector('[data-tk-tabs]');
   if (tabBox) initTabs(tabBox);
@@ -133,6 +171,9 @@
       if (!b) return;
       var n = Array.prototype.indexOf.call(tabs, b);
       select(n, false);
+      // Scrolled down a long list? Bring the new category's top back under the tabs.
+      var panelTop = panels[n].getBoundingClientRect().top, listBottom = list.getBoundingClientRect().bottom;
+      if (panelTop < listBottom) glide(window.pageYOffset + panelTop - listBottom - 16);
       if (history.replaceState) history.replaceState(null, '', '#' + b.getAttribute('data-tk-tab'));
     });
     list.addEventListener('keydown', function (e) {
