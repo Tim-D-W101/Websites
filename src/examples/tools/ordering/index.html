@@ -74,9 +74,9 @@ a:hover { text-decoration-thickness: 2px; }
 .cat h2 { margin-bottom: .75rem; font-size: 1.5rem; }
 .cat-note { display: flex; gap: .5rem; align-items: flex-start; margin-bottom: .75rem; padding: .75rem 1rem; border-radius: var(--r-box); background: var(--sand); font-size: .9375rem; font-weight: 500; line-height: 1.5; }
 .cat-note .i { margin-top: .1rem; color: var(--terra-d); }
-.items { margin: 0; padding: 0 1rem; list-style: none; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); }
+/* Read like the printed menu: a charcoal rule under each heading, hairlines between dishes, no boxes. */
+.items { margin: 0; padding: 0; list-style: none; border-top: 1.5px solid var(--char); }
 .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "head head" "body add"; gap: 0 1rem; padding: 1rem 0; border-bottom: 1px solid var(--line); cursor: pointer; }
-.item:last-child { border-bottom: 0; }
 .item-head { grid-area: head; display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
 .item-name { font: 600 1.0625rem/1.35 var(--body); color: var(--char); }
 .item-body { grid-area: body; min-width: 0; }
@@ -249,7 +249,6 @@ noscript p { padding: 1rem; }
   .awning { height: 34px; background-size: 64px 34px; }
   .intro { padding-top: 2.5rem; }
   .chips { margin: 0 -1.5rem; padding: .75rem 1.5rem; }
-  .items { padding: 0 1.5rem; }
   .item { grid-template-columns: minmax(0, 1fr) 5.25rem; grid-template-areas: "head add" "body add"; gap: 0 1.5rem; padding: 1.25rem 0; }
   .item.is-off { grid-template-areas: "head ." "body ." "add add"; }
   .add { align-self: center; margin: 0; }
@@ -717,9 +716,28 @@ noscript p { padding: 1rem; }
     var b = e.target.closest('[data-cat]');
     if (!b) return;
     var sec = $('cat-' + b.getAttribute('data-cat'));
-    var y = sec.getBoundingClientRect().top + window.pageYOffset - $('chips').offsetHeight + 1;
-    window.scrollTo({ top: y, behavior: motion ? 'smooth' : 'auto' });
+    glide(sec.getBoundingClientRect().top + window.pageYOffset - $('chips').offsetHeight + 1);
   });
+  // Scroll that eases to a stop (ease-out quart). A wheel, touch or key press hands control
+  // straight back; with reduced motion it jumps.
+  var glideId = 0; // bumped to cancel the glide in progress
+  function easeOutQuart(p) { return 1 - Math.pow(1 - p, 4); }
+  function glide(y) {
+    var to = Math.max(0, Math.min(y, document.documentElement.scrollHeight - window.innerHeight));
+    var from = window.pageYOffset, dist = to - from;
+    if (!motion || Math.abs(dist) < 2) { window.scrollTo({ top: to, behavior: 'instant' }); return; }
+    var id = ++glideId, start = null;
+    var duration = Math.min(1000, 450 + Math.abs(dist) * 0.3);
+    function cancel() { glideId++; }
+    ['wheel', 'touchstart', 'keydown'].forEach(function (ev) { window.addEventListener(ev, cancel, { once: true, passive: true }); });
+    window.requestAnimationFrame(function frame(now) {
+      if (id !== glideId) return;
+      if (start === null) start = now;
+      var p = Math.min(1, (now - start) / duration);
+      window.scrollTo({ top: from + dist * easeOutQuart(p), behavior: 'instant' });
+      if (p < 1) window.requestAnimationFrame(frame);
+    });
+  }
   var spyQueued = false;
   function spy() {
     spyQueued = false;

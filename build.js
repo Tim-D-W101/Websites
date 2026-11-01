@@ -1572,7 +1572,6 @@ const TK_ICONS = {
   cup: '<path d="M4.5 9.5h12v4.2a5.3 5.3 0 0 1-5.3 5.3H9.8a5.3 5.3 0 0 1-5.3-5.3z"/><path d="M16.5 10.8h1.4a2.4 2.4 0 0 1 0 4.8h-1.6"/><path d="M8.2 3.2c-.9 1.1.9 2.2 0 3.3M12.2 3.2c-.9 1.1.9 2.2 0 3.3"/><path d="M3.5 21h15"/>',
   fish: '<path d="M21.2 12c-2.1 3.4-5 5.3-8.4 5.3-3.1 0-5.6-1.9-7.6-5.3 2-3.4 4.5-5.3 7.6-5.3 3.4 0 6.3 1.9 8.4 5.3z"/><path d="M5.2 12 2.4 8.6v6.8z"/><path d="M16.8 11.2h.01"/><path d="M10.6 9.4c.9.8 1.4 1.7 1.4 2.6s-.5 1.8-1.4 2.6"/>',
   flame: '<path d="M12 21.2c-3.8 0-6.6-2.7-6.6-6.3 0-3.4 2.4-5.4 3.7-7.6.4 1.9 1.3 3 2.4 3.4-.2-3.3 1.3-6.2 3.9-7.9-.2 2.9 1 4.7 2.3 6.4 1 1.4 1.9 3.1 1.9 5.2 0 3.8-3.1 6.8-7.6 6.8z"/><path d="M12 21.2c-1.6 0-2.7-1.1-2.7-2.6 0-1.6 1.2-2.5 2.2-3.8.9 1.4 3.2 2 3.2 3.9 0 1.4-1.2 2.5-2.7 2.5z"/>',
-  star: '<path d="m12 2.8 2.8 5.8 6.3.9-4.6 4.5 1.1 6.3L12 17.3l-5.6 3 1.1-6.3-4.6-4.5 6.3-.9z"/>',
   pin: '<path d="M12 21.5s-6.6-5.8-6.6-11.2a6.6 6.6 0 0 1 13.2 0c0 5.4-6.6 11.2-6.6 11.2z"/><circle cx="12" cy="10.2" r="2.5"/>',
   phone: '<path d="M8.6 3.5H6.2A2.2 2.2 0 0 0 4 5.8c.4 8 6.2 13.8 14.2 14.2a2.2 2.2 0 0 0 2.3-2.2v-2.4a1 1 0 0 0-.7-1l-3-1a1 1 0 0 0-1.1.3l-1.3 1.6a12 12 0 0 1-5.5-5.5l1.6-1.3a1 1 0 0 0 .3-1.1l-1-3a1 1 0 0 0-1-.7z"/>',
   chat: '<path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.4L3.5 20.5l1.6-4.4a8.4 8.4 0 1 1 15.4-4.5z"/><path d="M8.6 11.8h.01M12 11.8h.01M15.4 11.8h.01"/>',
@@ -1598,7 +1597,7 @@ function tkPhoto(slot, cls = '', tone = '') {
     if (size) return `<div class="tk-photo ${cls}"><img src="/${esc(rel)}" width="${size.w}" height="${size.h}" loading="lazy" decoding="async" alt="${esc(slot.alt || '')}"></div>`;
     warn(`Tin Kettle photo ${rel}: use a .webp file in src/${path.dirname(rel)}/. Showing the placeholder.`);
   }
-  return `<div class="tk-photo tk-ph${tone ? ` tk-ph-${tone}` : ''} ${cls}" aria-hidden="true">${tkIcon(slot.icon || 'kettle')}<span class="tk-ph-cap">Your photo here</span></div>`;
+  return `<div class="tk-photo tk-ph${tone ? ` tk-ph-${tone}` : ''} ${cls}" aria-hidden="true">${tkIcon(slot.icon || 'kettle')}<span class="tk-ph-cap">Photo to come: ${esc(typo(slot.alt || 'your photo'))}</span></div>`;
 }
 
 function tkHoursTable(caption) {
@@ -1728,13 +1727,11 @@ function tkHome() {
     if (!it) { warn(`Tin Kettle special: no menu item "${s.item}"`); return ''; }
     return `<li class="tk-special">${tkPhoto(s, '', ['', 'sun', 'olive'][i % 3])}<div class="tk-special-body"><div class="tk-special-top"><h3>${tkT(it.name)}</h3><span class="tk-price">${rand(it.price)}</span></div><p>${tkT(s.note)}</p><a class="tk-link" href="${TK_ORDER}?add=${esc(it.id)}">${tkIcon('bag')}Order this<span class="tk-sr">: ${tkT(it.name)}</span></a></div></li>`;
   }).join('');
-  // Where a client's real Google reviews go. The demo never shows made-up reviews or ratings.
-  const ghost = `<li class="tk-ghost"><span class="tk-ghost-stars">${tkIcon('star').repeat(5)}</span><span class="tk-ghost-line"></span><span class="tk-ghost-line"></span><span class="tk-ghost-line tk-ghost-short"></span><span class="tk-ph-cap">Your review here</span></li>`;
   return `<div class="tk-awning" aria-hidden="true"></div>
 <section class="tk-hero" aria-labelledby="tk-hero-h"><div class="tk-wrap tk-hero-grid">
 <div>
-<p class="tk-kind">${tkT(TK.kind)} in ${tkT(TK.town.split(',')[0])}</p>
 <h1 id="tk-hero-h">${tkT(TK.name)}</h1>
+<p class="tk-kind">${tkT(TK.kind)} in ${tkT(TK.town.split(',')[0])}</p>
 <p class="tk-status" data-tk-status><span class="tk-status-dot" aria-hidden="true"></span><span data-tk-status-text>Open every day. Our hours are below.</span></p>
 <p class="tk-promise">${tkT(TK.promise)}</p>
 <div class="tk-btns">${tkBookButton()}<a class="tk-btn tk-btn-line" href="${TK_URL}menu">See the menu</a></div>
@@ -1746,9 +1743,9 @@ ${tkPhoto(TK.hero, 'tk-hero-photo')}
 <ul class="tk-specials">${specials}</ul>
 <p class="tk-more"><a href="${TK_URL}menu">See the full menu</a></p>
 </div></section>
-<section class="tk-section" aria-labelledby="tk-why-h"><div class="tk-wrap tk-reveal">
+<section class="tk-section" aria-labelledby="tk-why-h"><div class="tk-wrap tk-why-wrap tk-reveal">
 <h2 id="tk-why-h">${tkT(Y.heading)}</h2>
-<ul class="tk-why">${Y.items.map((w) => `<li><span class="tk-why-icon">${tkIcon(w.icon)}</span><h3>${tkT(w.title)}</h3><p>${tkT(w.text)}</p></li>`).join('')}</ul>
+<ul class="tk-why">${Y.items.map((w) => `<li><h3>${tkT(w.title)}</h3><p>${tkT(w.text)}</p></li>`).join('')}</ul>
 </div></section>
 <section class="tk-section tk-section-cream" aria-labelledby="tk-about-h"><div class="tk-wrap tk-about tk-reveal">
 ${tkPhoto(A, '', 'olive')}
@@ -1756,8 +1753,7 @@ ${tkPhoto(A, '', 'olive')}
 </div></section>
 <section class="tk-section" aria-labelledby="tk-reviews-h"><div class="tk-wrap tk-reveal">
 <h2 id="tk-reviews-h">${tkT(R.heading)}</h2>
-<p class="tk-demo-note">${tkIcon('info')}<span>${tkT(R.note)}</span></p>
-<ul class="tk-ghosts" aria-hidden="true">${ghost.repeat(3)}</ul>
+<div class="tk-reviews-slot"><p class="tk-demo-note">${tkIcon('info')}<span>${tkT(R.note)}</span></p></div>
 </div></section>
 <section class="tk-section tk-section-cream" aria-labelledby="tk-find-h"><div class="tk-wrap tk-reveal">
 <h2 id="tk-find-h">${tkT(F.heading)}</h2>
@@ -1795,7 +1791,7 @@ ${c.extras ? extras : ''}
 <div class="tk-tabs" role="tablist" aria-label="Menu sections" data-tk-tablist hidden>${tabs}</div>
 ${panels}
 <ul class="tk-legend">${Object.entries(TK.tags).map(([k, v]) => `<li><span class="tk-tag">${esc(k)}</span> ${esc(v)}</li>`).join('')}</ul>
-<div class="tk-menu-cta"><div><h2>Hungry now?</h2><p>Order for collection and skip the queue. Pay when you pick it up.</p></div><a class="tk-btn tk-btn-line" href="${TK_ORDER}">${tkIcon('bag')}Start an order</a></div>
+<div class="tk-menu-cta"><div><h2>Order for collection</h2><p>Choose your food and a pick-up time. Pay when you collect.</p></div><a class="tk-btn tk-btn-line" href="${TK_ORDER}">${tkIcon('bag')}Start an order</a></div>
 </div></section>`;
 }
 

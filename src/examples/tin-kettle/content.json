@@ -87,16 +87,16 @@
     "heading": "Today's specials",
     "items": [
       { "item": "line-fish", "note": "Today's catch, grilled with lemon butter.", "icon": "fish", "alt": "Grilled line fish with lemon and chips" },
-      { "item": "kettle-roll", "note": "Our most-ordered breakfast. Add an egg for R12.", "icon": "plate", "alt": "A breakfast roll with bacon and tomato relish" },
+      { "item": "kettle-roll", "note": "Bacon and tomato relish on a toasted roll. Add an egg for R12.", "icon": "plate", "alt": "A breakfast roll with bacon and tomato relish" },
       { "item": "lemonade", "note": "Squeezed fresh every morning.", "icon": "cup", "alt": "A glass of lemonade with ice and mint" }
     ]
   },
   "why": {
-    "heading": "Why people come back",
+    "heading": "What to come in for",
     "items": [
-      { "icon": "cup", "title": "Coffee worth the stop", "text": "Flat whites and rooibos cappuccinos from 07:30, made properly every time." },
-      { "icon": "fish", "title": "Fish off the morning boats", "text": "The line fish changes every day, depending on what came in." },
-      { "icon": "flame", "title": "A weekend grill", "text": "Rump, peri-peri chicken and pap over the coals, Friday and Saturday nights." }
+      { "icon": "cup", "title": "Coffee from 07:30", "text": "Flat whites and rooibos cappuccinos, from the moment the doors open." },
+      { "icon": "fish", "title": "The line fish", "text": "It changes every day, depending on what came in that morning." },
+      { "icon": "flame", "title": "The weekend grill", "text": "Rump, peri-peri chicken and pap over the coals, on Friday and Saturday evenings from 17:00." }
     ]
   },
   "about": {
