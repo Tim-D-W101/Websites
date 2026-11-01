@@ -9,3 +9,7 @@ directory = "./dist"
 html_handling = "auto-trailing-slash"
 # Unknown addresses get dist/404.html with a 404 status.
 not_found_handling = "404-page"
+
+# PR branches are built by Cloudflare with `npx wrangler preview`, which
+# needs this block (it can stay empty). Without it every PR build fails.
+[previews]
