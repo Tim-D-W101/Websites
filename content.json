@@ -46,17 +46,6 @@
     "noticeAddress": "PO Box 3867, Mtunzini, 3867",
     "lastUpdated": "2026-10-17"
   },
-  "founding": {
-    "_note": "spotsTotal and spotsLeft are for you only and never show on the site. When spotsLeft reaches 0, the offer switches off everywhere. Put *stars* around the big part of badge.",
-    "enabled": true,
-    "spotsTotal": 3,
-    "spotsLeft": 3,
-    "badge": "*1st* month free",
-    "title": "Founding-client offer on Care and Care Plus",
-    "text": "We're new, so our first clients get their first month of Care or Care Plus free. If you're happy with your site, we'd love an honest Google review.",
-    "cardNote": "1st month free for founding clients",
-    "startNote": "Founding client? Your first month of Care or Care Plus is free. Your quote shows it."
-  },
   "groups": {
     "websites": {
       "name": "Websites",

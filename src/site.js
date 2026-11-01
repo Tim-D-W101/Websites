@@ -1179,7 +1179,7 @@
   function initReveal() {
     var selector = '.chapter-head, .lights-head, .allday-head, .tour-list > li, .idea, .mini, .fit, ' +
       '.includes > li, .point-cards > li, .plan, .example, .pt-col, .about-inner, .faq-list, .big-callout, .punch, ' +
-      '.earn, .calc, .open-demo, .points-card, .start-step, .founding, .price-group-head, .times-table, ' +
+      '.earn, .calc, .open-demo, .points-card, .start-step, .price-group-head, .times-table, ' +
       '.shop, .flip-row, .build-item, .moment, .ideas-strip, .bigger-line, ' +
       '.ex-website-text, .ex-shot, .ex-tool-device, .ex-tool-text, .ex-flow-step, .ex-flow-line';
     var els = document.querySelectorAll(selector);

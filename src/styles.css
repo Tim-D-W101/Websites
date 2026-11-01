@@ -296,35 +296,6 @@ img, svg { max-width: 100%; }
   color: var(--navy-800); font-size: .85rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-/* ---------- founding offer ---------- */
-.founding-wrap { margin-top: -1rem; }
-.hero-simple + .founding-wrap { margin-top: 1.5rem; }
-.founding {
-  position: relative; overflow: hidden; margin: 0 0 1.5rem;
-  background: var(--navy-900); color: #E6EDF3; border-radius: var(--radius); padding: 1.25rem 1.25rem 1.25rem 1.75rem;
-}
-/* the warm light through the door gap */
-.founding::before {
-  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px;
-  background: linear-gradient(#FEC458, #FFE58E 50%, #FEC458);
-}
-.founding-inner { position: relative; display: grid; gap: 1rem; align-items: center; }
-.founding-badge {
-  margin: 0; padding: .6rem 1rem; border-radius: 14px; background: var(--gold); color: var(--navy-900);
-  font-weight: 700; text-align: center; justify-self: start;
-}
-.founding-badge strong { display: block; font-family: var(--head); font-size: 2rem; line-height: 1; }
-.founding h2 { color: #fff; font-size: 1.35rem; margin-bottom: .3rem; }
-.founding p { margin: 0; }
-.founding :focus-visible { outline-color: var(--gold); }
-.founding .btn-navy { background: var(--gold); color: var(--navy-900); }
-.founding .btn-navy:hover { background: var(--gold-hover); }
-@media (min-width: 760px) {
-  .founding { padding: 1.5rem 1.75rem 1.5rem 2.25rem; }
-  .founding-inner { grid-template-columns: auto 1fr auto; gap: 1.5rem; }
-  .founding-compact .founding-inner { grid-template-columns: auto 1fr; }
-}
-
 /* ---------- icon tiles and "from" prices ---------- */
 .niche-icon {
   display: inline-grid; place-items: center; flex: none; width: 3rem; height: 3rem; margin-bottom: .75rem;
@@ -531,11 +502,6 @@ input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--ba
 @media (min-width: 1150px) { .examples-n4 { grid-template-columns: repeat(4, 1fr); } }
 
 /* ---------- start ---------- */
-.founding-note {
-  display: flex; gap: .6rem; align-items: flex-start; margin: 0 0 1rem; padding: 1rem 1.25rem;
-  border-radius: 14px; background: var(--gold-200); color: var(--navy-900); font-weight: 700;
-}
-.founding-note .icon { margin-top: .15rem; }
 .start-steps { list-style: none; margin: 0; padding: 0; }
 .start-step { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 1rem; padding-bottom: 2.25rem; }
 .start-step:not(:last-child)::before { content: ""; position: absolute; left: calc(1.4rem - 1.5px); top: 3.25rem; bottom: .5rem; width: 3px; border-radius: 3px; background: var(--sand-300); }
@@ -1748,7 +1714,6 @@ textarea[aria-invalid="true"] { border-color: var(--bad); }
 }
 .cost-after { display: grid; gap: 1.25rem; }
 .cost-after .fine { margin: 0; }
-.cost-after .founding { margin: 0; }
 .bigger-line { padding: 1.25rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); }
 .bigger-line h3 { margin-bottom: .75rem; font-size: 1.2rem; }
 .bigger-line h3 a { color: inherit; }
