@@ -707,7 +707,8 @@ let assets = {};
 function header(page) {
   const current = (href) => page.url === href || (href === '/guides/' && page.url.startsWith('/guides/'));
   const items = navItems.map((i) => `<li><a href="${i.href}"${current(i.href) ? ' aria-current="page"' : ''}>${esc(i.label)}</a></li>`).join('');
-  const cta = quoteButton(page, 'btn btn-gold btn-sm', 'Free quote');
+  // The main "Free quote" button leads to the free mock-up page, /start.
+  const cta = canEnquire ? `<a class="btn btn-gold btn-sm" href="/start"${current('/start') ? ' aria-current="page"' : ''}>Free quote</a>` : '';
   return `<header class="site-header">
 <div class="wrap header-inner">
 <a class="brand" href="/">${svg.logo('logo')}<span class="brand-name">Front Door <span>Sites</span></span><span class="visually-hidden"> home</span></a>
@@ -743,7 +744,8 @@ ${items.length ? `<div><h2>Get in touch</h2><ul class="contact-list">${items.joi
 function mobileBar(page) {
   const parts = [];
   if (contact.wa) parts.push(`<a class="btn btn-navy" href="${esc(waGeneral())}">${svg.whatsapp()}WhatsApp</a>`);
-  if (canEnquire) parts.push(`<a class="btn btn-gold" href="${enquiryHref(page)}">Free quote</a>`);
+  // Pages with a form jump to it; the others go to the free mock-up page (which needs no button to itself).
+  if (canEnquire && page.url !== '/start') parts.push(`<a class="btn btn-gold" href="${page.hasForm ? '#enquiry' : '/start'}">Free quote</a>`);
   return parts.length ? `<aside class="mobile-bar" aria-label="Quick contact">${parts.join('')}</aside>` : '';
 }
 
@@ -1475,9 +1477,9 @@ function startPage() {
   const afterList = `<ul class="time-list">${options.map((o) => `<li><span>${esc(o.name)}</span><span>${o.monthly ? month(o.monthly) : t(o.hosting)}${yearlyOn && o.monthly ? ` <small>or ${rand(yearly(o.monthly))}/year</small>` : ''}</span></li>`).join('')}</ul><p><a class="tap-area" href="/pricing#websites-prices">Compare the options ${svg.icon('arrow')}</a></p>`;
   const items = S.steps.map((s, i) => {
     let extra = shown(s.extra).map((x) => `<p class="callout">${svg.icon('clock')}<span>${t(x)}</span></p>`).join('');
-    if (s.id === 'tell' && canEnquire) extra += `<p>${quoteButton(page, 'btn btn-gold', 'Tell us what you need')}</p>`;
+    if (s.id === 'tell' && contact.wa) extra += `<p><a class="btn btn-navy" href="${esc(waGeneral())}">${svg.whatsapp()}WhatsApp us</a></p>`;
     if (s.id === 'after') extra += `${afterList}${payBlock}`;
-    return `<li class="start-step" id="step-${esc(s.id)}"><div class="start-num" aria-hidden="true">${i + 1}</div><div class="start-body"><h2>${t(s.title)}</h2><p>${t(s.text)}</p>${extra}</div></li>`;
+    return `<li class="start-step" id="step-${esc(s.id)}"><div class="start-num" aria-hidden="true">${i + 1}</div><div class="start-body"><h3>${t(s.title)}</h3><p>${t(s.text)}</p>${extra}</div></li>`;
   }).join('');
   // The website row shows the once-off price and the lowest build price with a plan.
   const jobPrice = (j) => {
@@ -1487,8 +1489,14 @@ function startPage() {
   const times = timedJobs.length
     ? `<section class="section section-sand" aria-labelledby="times-h"><div class="wrap narrow">${sectionHead('times', S.timesHeading, S.timesNote)}<div class="table-wrap"><table class="times-table"><thead><tr><th scope="col">Job</th><th scope="col">Starts from</th><th scope="col">Typical build time</th></tr></thead><tbody>${timedJobs.map((j) => `<tr><th scope="row">${esc(j.name)} <small>${esc(groups[j.group].name)}</small></th><td>${jobPrice(j)}</td><td>${esc(typo(j.buildTime))}</td></tr>`).join('')}</tbody></table></div></div></section>`
     : '';
+  // The free mock-up in three steps, ending in one big WhatsApp button (or email, if there's no WhatsApp).
+  const flow = S.flow.map((s, i) => `<li class="start-step"><div class="start-num" aria-hidden="true">${i + 1}</div><div class="start-body"><h2>${t(s.title)}</h2><p>${t(s.text)}</p>${shown(s.extra).map((x) => `<p class="callout">${svg.icon('clock')}<span>${t(x)}</span></p>`).join('')}</div></li>`).join('');
+  const go = contact.wa
+    ? `<a class="btn btn-gold btn-lg btn-block start-go" href="${esc(waGeneral())}">${svg.whatsapp()}${esc(S.button)}</a><p class="start-go-note">WhatsApp ${esc(waDisplay(contact.wa))}${contact.hours ? ` · Replies ${esc(contact.hours)}` : ''}${contact.email ? `<br>Or email <a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a>` : ''}</p>`
+    : contact.email ? `<a class="btn btn-gold btn-lg btn-block start-go" href="mailto:${esc(contact.email)}">${svg.icon('mail')}${esc(S.button)}</a>` : '';
   page.body = `<section class="hero hero-simple"><div class="wrap narrow"><h1>${t(S.h1)}</h1><p class="lead">${t(S.lead)}</p></div></section>
-<section class="section section-tight"><div class="wrap narrow"><ol class="start-steps">${items}</ol></div></section>
+<section class="section section-tight start-flow" aria-label="Three steps"><div class="wrap narrow"><ol class="start-steps">${flow}</ol>${go}</div></section>
+<section class="section start-how" aria-labelledby="how-h"><div class="wrap narrow">${sectionHead('how', S.howHeading, S.howLead)}<ol class="start-steps">${items}</ol></div></section>
 ${times}`;
   return page;
 }

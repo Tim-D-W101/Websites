@@ -26,3 +26,11 @@ Owner feedback: "everything's a mess, everything is big, all the writing jumps a
 - **Fixes:** on mobile the About card now stacks (logo above the text, so the paragraph gets the full width), and its "Common questions" button no longer touches the card.
 - **Unchanged:** all copy, prices and section order (the visible text matches v1 word for word).
 - **Screenshots:** `shots/v2/` contains `v2-*` and `live-*` for hero, middle (demos) and pricing at 1440 and 390. The live snapshot has no `/img/examples/` images, so its demo cards show alt text.
+
+## Scroll polish (2026-11-03)
+
+Owner feedback: "it lacks the premium feel, when one scrolls through it isn't nice and smooth." See `CHANGES-PREVIEW.md` at the repo root for the full list. In short: link jumps glide on a timed curve; the door and the scenes follow the scroll through a damped playhead; the door is 140svh with a softer flood; pinned scenes are 20–30% shorter; there's one reveal curve that starts just before content arrives; parallax runs on three decorative pieces only; spacing uses one fluid rhythm; and the tour bar ends with a WhatsApp button. Also fixed: the door's stage was covering the "Why" heading on wide screens.
+
+## Phones and the start page (2026-11-03)
+
+On phones (767px and narrower) nothing pins except the door, which now has a short 25svh pin. Every scroll scene and the Why journey shows its finished state and rises in once. Desktop keeps all its scenes. The main "Free quote" buttons now lead to `/start`, which opens with the free mock-up in three steps and one big WhatsApp button. Details are in `CHANGES-PREVIEW.md`.
