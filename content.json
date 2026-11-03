@@ -1374,16 +1374,39 @@
   },
   "startPage": {
     "seo": {
-      "title": "How It Works: From Quote to Go-Live | Front Door Sites",
-      "description": "How a project with Front Door Sites works: tell us what you need, get a free mock-up or plan and a fixed quote, pay a {deposit} deposit, approve, and go live."
+      "title": "Get Your Free Mock-up | Front Door Sites",
+      "description": "Get a free mock-up of your website, or a free plan for a business tool, with a fixed quote. Tell us about your business on WhatsApp. No obligation, no calls."
     },
-    "h1": "From first message to go-live",
-    "lead": "Here's exactly what happens, step by step.",
+    "h1": "Get your free mock-up",
+    "lead": "We build a free mock-up first, so you see your site before you pay anything.",
+    "flow": [
+      {
+        "title": "Tell us about your business",
+        "text": "Send a WhatsApp, an email or a voice note. A few lines is enough."
+      },
+      {
+        "title": "We make a free mock-up",
+        "text": "A sample of your website, built from your public info, like your Google Maps listing or Facebook page. For a tool, a short written plan. Both come with a fixed quote.",
+        "extra": {
+          "text": "Usually within {quoteTime}.",
+          "requires": [
+            "process.quoteTime"
+          ]
+        }
+      },
+      {
+        "title": "You decide",
+        "text": "It's free and there's no obligation. We only start once you've said yes."
+      }
+    ],
+    "button": "Get my free mock-up",
+    "howHeading": "From first message to go-live",
+    "howLead": "Here's exactly what happens, step by step.",
     "steps": [
       {
         "id": "tell",
         "title": "Tell us what you need",
-        "text": "Use the form, or send a WhatsApp, an email or a voice note. A few lines is enough."
+        "text": "Send a WhatsApp, an email or a voice note. A few lines is enough."
       },
       {
         "id": "quote",

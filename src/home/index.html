@@ -54,6 +54,32 @@
 .final{position:relative;overflow:hidden;overflow:clip}
 .final-inner{position:relative}
 .deco-glow-final{left:50%;top:-8rem;width:44rem;height:30rem;margin-left:-22rem;background:radial-gradient(closest-side,rgba(254,196,88,.18),rgba(254,196,88,0))}
+/* Phones (767px and narrower): no pinned scenes. The script leaves them static, so every scene shows its
+   finished state and only rises in once. The door keeps a short pin. Spacing is a little tighter. */
+@media (max-width:767px){
+:root{--space-section:3rem;--space-head:2rem}
+.scene:not(.is-live) .scene-after{padding-bottom:0}
+/* the glow behind the shop reached 48px past the screen's edge, which made phones zoom the page out */
+.lights{overflow:hidden}
+.door-hero.is-live{height:125vh;height:125svh}
+.door-hero.is-live + .tour{min-height:70vh;min-height:70svh;margin-top:-70vh;margin-top:-70svh}
+.section-lead{font-size:1.0625rem}
+.journey:not(.is-live) .phone{height:22rem}
+.journey-card{padding:1rem 1.1rem}
+.journey-card p{font-size:1rem}
+.journey-num{width:2rem;height:2rem;font-size:1rem}
+.moments{gap:.75rem}
+.moment{padding:1rem 1.1rem}
+.moment-time{margin-bottom:.4rem}
+.moment-icon{width:2.2rem;height:2.2rem}
+.minis{gap:1.25rem}
+.mini{padding:1.25rem}
+.how-steps{gap:.75rem}
+.how-steps .step{display:grid;grid-template-columns:3.25rem minmax(0,1fr);column-gap:1rem;padding:1.1rem}
+.how-steps .step-art{grid-row:1 / span 3;width:3.25rem;height:3.25rem;margin:0;border-radius:12px}
+.how-steps .step-art svg{width:2.4rem;height:2.4rem}
+.how-steps .step p:last-child{margin:0}
+}
 </style>
 </head>
 <body class="has-bar page-home">
@@ -61,10 +87,10 @@
 <header class="site-header">
 <div class="wrap header-inner">
 <a class="brand" href="https://frontdoorsites.co.za/"><svg class="logo" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><defs><linearGradient id="lg36" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FEC458"/><stop offset=".5" stop-color="#FFE58E"/><stop offset="1" stop-color="#FEC458"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="#F0D1A2"/><rect x="15" y="14" width="70" height="72" rx="9" fill="none" stroke="#124B78" stroke-width="5"/><path d="M15 28h70" stroke="#124B78" stroke-width="4.5"/><g fill="#316A97"><circle cx="24" cy="21" r="2.6"/><circle cx="31.5" cy="21" r="2.6"/><circle cx="39" cy="21" r="2.6"/></g><path d="M36 84V38h12v46" fill="url(#lg36)" stroke="#124B78" stroke-width="3.5" stroke-linejoin="round"/><path d="M47 35.5l19 4.5v39.5L49.5 84H47z" fill="#0D436F" stroke="#0D436F" stroke-width="1.5" stroke-linejoin="round"/><circle cx="52" cy="60" r="2.4" fill="#417DAF"/></svg><span class="brand-name">Front Door <span>Sites</span></span><span class="visually-hidden"> home</span></a>
-<nav class="nav-desktop" aria-label="Main"><ul><li><a href="https://frontdoorsites.co.za/websites">Websites</a></li><li><a href="https://frontdoorsites.co.za/business-tools">Business tools</a></li><li><a href="https://frontdoorsites.co.za/examples">Examples</a></li><li><a href="https://frontdoorsites.co.za/pricing">Pricing</a></li><li><a href="https://frontdoorsites.co.za/faq">FAQ</a></li></ul><a class="btn btn-gold btn-sm" href="#enquiry">Free quote</a></nav>
+<nav class="nav-desktop" aria-label="Main"><ul><li><a href="https://frontdoorsites.co.za/websites">Websites</a></li><li><a href="https://frontdoorsites.co.za/business-tools">Business tools</a></li><li><a href="https://frontdoorsites.co.za/examples">Examples</a></li><li><a href="https://frontdoorsites.co.za/pricing">Pricing</a></li><li><a href="https://frontdoorsites.co.za/faq">FAQ</a></li></ul><a class="btn btn-gold btn-sm" href="https://frontdoorsites.co.za/start">Free quote</a></nav>
 <details class="menu">
 <summary><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>Menu</span></summary>
-<nav class="menu-panel" aria-label="Menu"><ul><li><a href="https://frontdoorsites.co.za/websites">Websites</a></li><li><a href="https://frontdoorsites.co.za/business-tools">Business tools</a></li><li><a href="https://frontdoorsites.co.za/examples">Examples</a></li><li><a href="https://frontdoorsites.co.za/pricing">Pricing</a></li><li><a href="https://frontdoorsites.co.za/faq">FAQ</a></li><li><a href="https://frontdoorsites.co.za/start">How it works</a></li></ul><a class="btn btn-gold btn-sm" href="#enquiry">Free quote</a></nav>
+<nav class="menu-panel" aria-label="Menu"><ul><li><a href="https://frontdoorsites.co.za/websites">Websites</a></li><li><a href="https://frontdoorsites.co.za/business-tools">Business tools</a></li><li><a href="https://frontdoorsites.co.za/examples">Examples</a></li><li><a href="https://frontdoorsites.co.za/pricing">Pricing</a></li><li><a href="https://frontdoorsites.co.za/faq">FAQ</a></li><li><a href="https://frontdoorsites.co.za/start">How it works</a></li></ul><a class="btn btn-gold btn-sm" href="https://frontdoorsites.co.za/start">Free quote</a></nav>
 </details>
 </div>
 </header>
@@ -84,7 +110,7 @@
 <h1 id="hero-h">No website? Customers find <span class="hl">someone else</span>.</h1>
 <p class="lead">We build you a website with your prices, your best work and a one-tap WhatsApp button, set up so Google can find you.</p>
 <p class="price-anchor"><span><span>Websites from <strong>R7 500</strong> once-off</span></span><span class="sep" aria-hidden="true">·</span><span><span>or pay less upfront: <strong>R4 999 + R399/month</strong></span></span></p>
-<div class="cta-row"><a class="btn btn-gold btn-lg" href="#enquiry">Get a free quote</a><a class="btn btn-ghost btn-lg" href="#tour">Show me around<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
+<div class="cta-row"><a class="btn btn-gold btn-lg" href="https://frontdoorsites.co.za/start">Get a free quote</a><a class="btn btn-ghost btn-lg" href="#tour">Show me around<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
 <ul class="hero-points"><li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span>Free mock-up before you pay</span></li><li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span>No commission on your sales</span></li><li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span>Yours once it’s paid for</span></li></ul>
 </div>
 <div class="door-visual">
@@ -430,7 +456,7 @@
 </div>
 <div class="wrap footer-base"><p>© 2026 Front Door Sites · frontdoorsites.co.za</p><p>No cookies. No tracking.</p></div>
 </footer>
-<aside class="mobile-bar" aria-label="Quick contact"><a class="btn btn-navy" href="https://wa.me/27732426068?text=Hi%2C%20I%20have%20a%20question%20about%20a%20website%20or%20business%20tool." target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>WhatsApp</a><a class="btn btn-gold" href="#enquiry">Free quote</a></aside>
+<aside class="mobile-bar" aria-label="Quick contact"><a class="btn btn-navy" href="https://wa.me/27732426068?text=Hi%2C%20I%20have%20a%20question%20about%20a%20website%20or%20business%20tool." target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>WhatsApp</a><a class="btn btn-gold" href="https://frontdoorsites.co.za/start">Free quote</a></aside>
 <script>
 /* Front Door Sites home page: menu, smooth scrolling, the front door, the tour bar, the scenes that
    play as you scroll, the earnings calculator, "which way to pay" and the enquiry form.
@@ -442,6 +468,8 @@
   var reduceQuery = matchMedia('(prefers-reduced-motion: reduce)');
   var motion = !reduceQuery.matches;
   var finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  // Phones: the scroll scenes and the journey don't pin. They show their finished state and rise in once.
+  var phoneQuery = matchMedia('(max-width: 767px)');
 
   function clamp(x, lo, hi) { return x < lo ? lo : x > hi ? hi : x; }
   function easeInOut(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
@@ -838,7 +866,7 @@
 
   /* ---------- why: the phone follows the step you're reading ---------- */
   var journey = $('[data-journey]');
-  if (journey) initJourney(journey);
+  if (journey && !phoneQuery.matches) initJourney(journey);
 
   function initJourney(el) {
     var steps = $$('.journey-step', el);
@@ -1050,7 +1078,8 @@
      screen, the scene goes live (.is-live): the track grows and the stage sticks, and p goes from 0
      to 1 as you scroll through it. A stage taller than the screen sticks by its bottom edge (--stick),
      so its heading scrolls away first. A scene that can't go live keeps its finished, static layout,
-     unless it asks to "flow": then it still plays as one part of it comes up the screen. */
+     unless it asks to "flow": then it still plays as one part of it comes up the screen. On phones
+     no scene goes live or flows: each keeps its finished layout and only rises in once. */
   var SCENES = { lights: lightsScene, build: buildScene, allday: allDayScene, earnings: earnScene, cost: costScene, how: howScene };
   if (motion) [].forEach.call($$('[data-scene]'), function (el) {
     var kind = SCENES[el.getAttribute('data-scene')];
@@ -1080,7 +1109,11 @@
         [].forEach.call($$('[data-stage] > .wrap > *', el), function (part) {
           if (part !== head && part.getClientRects().length) rest = Math.min(rest, part.getBoundingClientRect().top - from);
         });
-        if (vw >= 320 && (stageH <= svh + 1 || stageH - svh <= rest - bar)) {
+        if (phoneQuery.matches) {
+          el.classList.remove('is-live');
+          mode = '';
+          stick = 0;
+        } else if (vw >= 320 && (stageH <= svh + 1 || stageH - svh <= rest - bar)) {
           mode = 'live';
           stick = 0;
           if (stageH > svh + 1) {
@@ -1542,8 +1575,9 @@
       });
     }, { rootMargin: '0px 0px 10% 0px' });
     [].forEach.call($$('.chapter-head, .lights-head, .allday-head, .tour-list > li, .mini, .fit, .example, .about-inner, ' +
-      '.faq-list, .punch, .earn, .shop, .flip-row, .build-item, .moment, .ideas-strip, .bigger-line, .next, .final-inner, .mockup-intro'), function (el) {
-      if (el.closest('[data-door], [data-journey], .scene.is-live, [hidden]')) return;
+      '.faq-list, .punch, .earn, .shop, .flip-row, .build-item, .moment, .ideas-strip, .bigger-line, .next, .final-inner, .mockup-intro, ' +
+      '.journey-phone, .journey-card, .how-steps .step'), function (el) {
+      if (el.closest('[data-door], .journey.is-live, .scene.is-live, [hidden]')) return;
       if (el.getBoundingClientRect().top < vh) return;
       el.classList.add('rv');
       io.observe(el);

@@ -29,7 +29,7 @@ tools/shoot-examples.mjs ← optional: retakes the example card screenshots
 build.js                ← the build
 ```
 
-Pages: Home, `/websites`, `/business-tools`, `/guesthouses`, `/salons`, `/restaurants`, `/examples`, `/pricing`, `/faq`, `/start` (how it works), `/privacy`, `/terms`, a 404 page, `sitemap.xml` and `robots.txt`. Plus the demos linked from `/examples`: a made-up café's website and four working tools (never indexed, and not in the sitemap).
+Pages: Home, `/websites`, `/business-tools`, `/guesthouses`, `/salons`, `/restaurants`, `/examples`, `/pricing`, `/faq`, `/start` (get your free mock-up, then how it works), `/privacy`, `/terms`, a 404 page, `sitemap.xml` and `robots.txt`. Plus the demos linked from `/examples`: a made-up café's website and four working tools (never indexed, and not in the sitemap).
 
 ## Build and preview
 

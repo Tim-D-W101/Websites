@@ -508,7 +508,12 @@ input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--ba
 .start-num { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 50%; background: var(--navy-700); color: #fff; font-family: var(--head); font-size: 1.3rem; }
 .start-step:last-child .start-num { background: var(--gold); color: var(--navy-900); }
 .start-body { min-width: 0; }
-.start-body h2 { margin: .35rem 0 .5rem; font-size: 1.45rem; }
+.start-body :is(h2, h3) { margin: .35rem 0 .5rem; font-size: 1.45rem; }
+.start-flow .start-step:last-child { padding-bottom: 1.75rem; }
+.start-go { min-height: 60px; font-size: 1.125rem; }
+.start-go .icon { width: 1.3em; height: 1.3em; }
+.start-go-note { margin: .85rem 0 0; text-align: center; color: var(--muted); font-size: .9375rem; }
+.start-how { border-top: 1px solid var(--line); }
 .start-body .cta-row { margin-top: .75rem; }
 .pkg-list { display: grid; gap: .75rem; margin-bottom: 1rem; }
 .pkg-group { padding: .75rem 1rem; border: 1px solid var(--line); border-radius: 14px; background: var(--white); }
