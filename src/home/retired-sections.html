@@ -1,0 +1,368 @@
+<!--
+  Retired from the home page (src/home/index.html) on 10 Nov 2026. Nothing here ships: build.js only reads
+  src/home/index.html. Kept so the cut can be undone.
+
+  What's here, in the order they used to sit on the page:
+    1. #tour        "Here's the quick tour" (five cards under the door)
+    2. #difference  "Still wondering if you need one?" (the lights-on shop)
+    3. #allday      "What your website does for you" (the day clock)
+  Plus the styles and script that only these used, and the pinned-scene version of "Two things we build"
+  (#get is now two static cards; its .build.is-live styles and buildScene() are kept below).
+
+  To bring one back: put its markup back in index.html (#tour straight after the door; #difference after
+  #why; #allday after #demos), paste its rules back into the <style>, its scene function back above
+  earnScene() and its entry into SCENES (lights: lightsScene, allday: allDayScene, build: buildScene), and
+  its selectors back into the reveal list (.lights-head, .allday-head, .tour-list > li, .shop, .flip-row,
+  .moment) and the scene heading lookup (.lights-head, .allday-head). Re-point the next-step buttons.
+  The door lands on whichever section follows it only if that section has the class "demos".
+-->
+
+<!-- 1. #tour -->
+<section class="section tour" id="tour" aria-labelledby="tour-h"><div class="wrap">
+<div class="tour-head center"><p class="kicker kicker-plain">Come in</p><h2 id="tour-h">Here’s the quick tour</h2><p class="section-lead">Keep scrolling and we’ll walk you through it, one step at a time. Or jump straight to the part you want.</p></div>
+<div class="tour-extra"><ul class="hero-points"><li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span>Free mock-up before you pay</span></li><li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span>No commission on your sales</span></li><li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span>Yours once it’s paid for</span></li></ul></div>
+<ol class="tour-list"><li><a href="#why"><span class="tour-num" aria-hidden="true">1</span><span class="tour-label">Why you need a website</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></li><li><a href="#get"><span class="tour-num" aria-hidden="true">2</span><span class="tour-label">What you get</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></li><li><a href="#earn"><span class="tour-num" aria-hidden="true">3</span><span class="tour-label">What it could earn you</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></li><li><a href="#cost"><span class="tour-num" aria-hidden="true">4</span><span class="tour-label">What it costs</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></li><li><a href="#how"><span class="tour-num" aria-hidden="true">5</span><span class="tour-label">How it works</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></li></ol>
+</div></section>
+
+<!-- 2. #difference -->
+<section class="section scene lights section-night" id="difference" aria-labelledby="lights-h" data-scene="lights">
+<div class="scene-track" data-track><div class="scene-stage" data-stage><div class="wrap lights-grid">
+<div class="lights-head"><h2 id="lights-h">Still wondering if you need one?</h2><p class="section-lead">Here’s the difference a website makes.</p><p class="scene-hint" aria-hidden="true">Keep scrolling to switch the lights on.<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></p></div>
+<div class="shop"><svg class="shop-art" viewBox="0 0 480 380" aria-hidden="true" focusable="false">
+<defs>
+<linearGradient id="sg15" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6D6"/><stop offset=".55" stop-color="#FFE58E"/><stop offset="1" stop-color="#FEC458"/></linearGradient>
+<radialGradient id="sl16" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE58E" stop-opacity=".95"/><stop offset="1" stop-color="#FFE58E" stop-opacity="0"/></radialGradient>
+<linearGradient id="ss17" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE58E" stop-opacity=".85"/><stop offset="1" stop-color="#FEC458" stop-opacity="0"/></linearGradient>
+<radialGradient id="sr18" cx=".5" cy=".9" r=".9"><stop offset="0" stop-color="#FFFDF4"/><stop offset=".45" stop-color="#FFE58E"/><stop offset="1" stop-color="#FEC458"/></radialGradient>
+</defs>
+<circle cx="440" cy="26" r="13" fill="#F6E7B8"/><circle cx="447" cy="21" r="11" fill="#0A2A44"/>
+<g fill="#F6E7B8"><circle cx="36" cy="22" r="1.6"/><circle cx="92" cy="30" r="1.2"/><circle cx="352" cy="14" r="1.4"/><circle cx="470" cy="70" r="1.2"/><circle cx="14" cy="88" r="1.1"/><circle cx="214" cy="18" r="1"/></g>
+<rect x="40" y="52" width="400" height="290" rx="6" fill="#163650"/>
+<rect x="28" y="42" width="424" height="18" rx="5" fill="#0F2B44"/>
+<rect x="120" y="70" width="240" height="50" rx="12" fill="#1D3E5B"/>
+<text class="shop-name shop-name-off" x="240" y="104" font-size="26" text-anchor="middle">Your Business</text>
+<g class="shop-l3"><rect x="120" y="70" width="240" height="50" rx="12" fill="#124B78" stroke="#FEC458" stroke-width="3"/><text class="shop-name" x="240" y="104" font-size="26" text-anchor="middle">Your Business</text></g>
+<g class="shop-l5"><rect x="160" y="127" width="160" height="21" rx="10.5" fill="#FFF3D6"/><text class="shop-url" x="240" y="141.5" text-anchor="middle">yourbusiness.co.za</text></g>
+<g class="shop-awning-off"><path d="M44.0 154H76.7L88.3 186H58.0z" fill="#22435F"/><path d="M58.0 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#22435F"/><path d="M76.7 154H109.3L118.7 186H88.3z" fill="#1A3851"/><path d="M88.3 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#1A3851"/><path d="M109.3 154H142.0L149.0 186H118.7z" fill="#22435F"/><path d="M118.7 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#22435F"/><path d="M142.0 154H174.7L179.3 186H149.0z" fill="#1A3851"/><path d="M149.0 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#1A3851"/><path d="M174.7 154H207.3L209.7 186H179.3z" fill="#22435F"/><path d="M179.3 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#22435F"/><path d="M207.3 154H240.0L240.0 186H209.7z" fill="#1A3851"/><path d="M209.7 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#1A3851"/><path d="M240.0 154H272.7L270.3 186H240.0z" fill="#22435F"/><path d="M240.0 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#22435F"/><path d="M272.7 154H305.3L300.7 186H270.3z" fill="#1A3851"/><path d="M270.3 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#1A3851"/><path d="M305.3 154H338.0L331.0 186H300.7z" fill="#22435F"/><path d="M300.7 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#22435F"/><path d="M338.0 154H370.7L361.3 186H331.0z" fill="#1A3851"/><path d="M331.0 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#1A3851"/><path d="M370.7 154H403.3L391.7 186H361.3z" fill="#22435F"/><path d="M361.3 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#22435F"/><path d="M403.3 154H436.0L422.0 186H391.7z" fill="#1A3851"/><path d="M391.7 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#1A3851"/></g>
+<g class="shop-l4"><path d="M44.0 154H76.7L88.3 186H58.0z" fill="#FFF3D6"/><path d="M58.0 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FFF3D6"/><path d="M76.7 154H109.3L118.7 186H88.3z" fill="#FEC458"/><path d="M88.3 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FEC458"/><path d="M109.3 154H142.0L149.0 186H118.7z" fill="#FFF3D6"/><path d="M118.7 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FFF3D6"/><path d="M142.0 154H174.7L179.3 186H149.0z" fill="#FEC458"/><path d="M149.0 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FEC458"/><path d="M174.7 154H207.3L209.7 186H179.3z" fill="#FFF3D6"/><path d="M179.3 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FFF3D6"/><path d="M207.3 154H240.0L240.0 186H209.7z" fill="#FEC458"/><path d="M209.7 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FEC458"/><path d="M240.0 154H272.7L270.3 186H240.0z" fill="#FFF3D6"/><path d="M240.0 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FFF3D6"/><path d="M272.7 154H305.3L300.7 186H270.3z" fill="#FEC458"/><path d="M270.3 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FEC458"/><path d="M305.3 154H338.0L331.0 186H300.7z" fill="#FFF3D6"/><path d="M300.7 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FFF3D6"/><path d="M338.0 154H370.7L361.3 186H331.0z" fill="#FEC458"/><path d="M331.0 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FEC458"/><path d="M370.7 154H403.3L391.7 186H361.3z" fill="#FFF3D6"/><path d="M361.3 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FFF3D6"/><path d="M403.3 154H436.0L422.0 186H391.7z" fill="#FEC458"/><path d="M391.7 185.5h30.3v5a15.17 15.17 0 0 1-30.3 0z" fill="#FEC458"/></g>
+<rect x="60" y="222" width="212" height="108" rx="6" fill="#0D263C"/>
+<path d="M76 232h34l-50 70z" fill="#1B4565" opacity=".55"/>
+<g class="shop-l1">
+<rect x="60" y="222" width="212" height="108" rx="6" fill="url(#sg15)"/>
+<g fill="#FFFBF3" stroke="#124B78" stroke-width="3"><rect x="72" y="236" width="52" height="40" rx="4"/><rect x="140" y="236" width="52" height="40" rx="4"/><rect x="208" y="236" width="52" height="40" rx="4"/></g>
+<g fill="#F0D1A2"><path d="M78 270l12-14 9 9 7-6 12 11z"/><circle cx="166" cy="252" r="7"/><path d="M146 270l20-12 20 12z"/><path d="M214 270l10-16 8 8 6-4 16 12z"/></g>
+<g fill="#124B78"><rect x="76" y="288" width="44" height="15" rx="7.5"/><rect x="144" y="288" width="44" height="15" rx="7.5"/><rect x="212" y="288" width="44" height="15" rx="7.5"/></g>
+<g class="shop-tag" fill="#FFE58E" text-anchor="middle"><text x="98" y="299.5">R350</text><text x="166" y="299.5">R650</text><text x="234" y="299.5">R280</text></g>
+</g>
+<rect x="60" y="222" width="212" height="108" rx="6" fill="none" stroke="#0F2B44" stroke-width="6"/>
+<path d="M292 212h-6v8" fill="none" stroke="#0F2B44" stroke-width="4" stroke-linecap="round"/>
+<g class="shop-l2"><circle cx="286" cy="234" r="40" fill="url(#sl16)"/></g>
+<path d="M279 222h14l-3 24h-8z" fill="#2C4762" stroke="#0F2B44" stroke-width="3" stroke-linejoin="round"/>
+<path class="shop-l2" d="M282 226h8l-2 16h-4z" fill="#FFE58E"/>
+<rect x="312" y="214" width="100" height="128" fill="#0B2034"/>
+<rect class="shop-l6" x="312" y="214" width="100" height="128" fill="url(#sr18)"/>
+<g class="shop-door"><rect x="314" y="216" width="96" height="126" fill="#0D436F"/><rect x="326" y="230" width="72" height="44" rx="3" fill="#0B2A44"/><rect class="shop-l2" x="326" y="230" width="72" height="44" rx="3" fill="#FFE58E" opacity=".45"/><rect x="326" y="286" width="72" height="42" rx="3" fill="none" stroke="#124B78" stroke-width="3"/><circle cx="400" cy="282" r="4.5" fill="#FEC458"/>
+<g class="shop-sign"><path d="M350 238l12-10 12 10" fill="none" stroke="#E2C998" stroke-width="2"/><rect x="334" y="238" width="56" height="22" rx="5" fill="#2C4762"/><text class="shop-sign-text" x="362" y="253.5" text-anchor="middle" fill="#9FB2C2">Closed</text><g class="shop-l2"><rect x="334" y="238" width="56" height="22" rx="5" fill="#1E6B3A"/><text class="shop-sign-text" x="362" y="253.5" text-anchor="middle" fill="#FFFFFF">Open</text></g></g></g>
+<path d="M308 342V210h108v132" fill="none" stroke="#0F2B44" stroke-width="8" stroke-linejoin="round"/>
+<rect x="0" y="342" width="480" height="38" fill="#0D2235"/>
+<path d="M0 342h480" stroke="#1B4060" stroke-width="3"/>
+<path class="shop-l1" d="M60 342h212l40 38H20z" fill="url(#ss17)" opacity=".55"/>
+<path class="shop-l6" d="M312 342h100l52 38H262z" fill="url(#ss17)"/>
+<g transform="translate(397.5 61.8) scale(.62)"><path d="M58 402l-8-62 14 40 2-58 12 58 12-46-4 64" fill="#3F6F48"/><path d="M66 402l-22-40 30 28M78 402l26-46-18 48" fill="none" stroke="#335E3B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 400h68l-7 52H43z" fill="#8E4A28"/><path d="M33 396h74v10H33z" fill="#77401F"/></g>
+</svg></div>
+<div class="lights-rows"><p class="flip-heads" aria-hidden="true"><span class="flip-a">Without a website</span><span class="flip-b">With a website</span></p><ul class="flip-rows"><li class="flip-row"><span class="flip-a"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg><span><span class="visually-hidden">Without a website: </span>People can’t easily find your prices or your work</span></span><span class="flip-b"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span><span class="visually-hidden">With a website: </span>People see your prices and your best work, any time</span></span></li><li class="flip-row"><span class="flip-a"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg><span><span class="visually-hidden">Without a website: </span>Questions after hours wait until morning</span></span><span class="flip-b"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span><span class="visually-hidden">With a website: </span>Enquiries and bookings can come in day and night</span></span></li><li class="flip-row"><span class="flip-a"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg><span><span class="visually-hidden">Without a website: </span>You’re one more name in a list</span></span><span class="flip-b"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span><span class="visually-hidden">With a website: </span>You stand out with a site of your own</span></span></li><li class="flip-row"><span class="flip-a"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg><span><span class="visually-hidden">Without a website: </span>Your best posts get buried in a busy feed</span></span><span class="flip-b"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span><span class="visually-hidden">With a website: </span>Everything’s in one place, easy to find</span></span></li><li class="flip-row"><span class="flip-a"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg><span><span class="visually-hidden">Without a website: </span>You’re on someone else’s platform</span></span><span class="flip-b"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span><span class="visually-hidden">With a website: </span>Your own .co.za address, in your name</span></span></li></ul></div>
+</div></div></div><div class="wrap scene-after"><p class="next"><a class="btn btn-next" href="#get">What you get<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></p></div>
+</section>
+
+<!-- 3. #allday -->
+<section class="section scene allday" id="allday" aria-labelledby="allday-h" data-times="450 615 780 1005 1334" data-closes="1080" data-scene="allday">
+<div class="scene-track" data-track><div class="scene-stage" data-stage><div class="sky" aria-hidden="true"><i class="sky-dusk"></i><i class="sky-night"></i><i class="sky-stars"></i></div>
+<div class="wrap allday-grid">
+<div class="allday-head"><h2 id="allday-h">What your website does for you</h2><p class="section-lead">Think of it as a shopfront that never closes. And it’s yours.</p></div>
+<div class="clock-card" aria-hidden="true">
+<div class="clock"><div class="sky-wheel"><i class="sun"></i><i class="moon"></i></div><svg class="clock-art" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+<circle cx="100" cy="100" r="94" fill="#FFFBF3" stroke="#124B78" stroke-width="8"/>
+<g stroke="#124B78" stroke-width="4" stroke-linecap="round"><path d="M100 13v15" transform="rotate(0 100 100)"/><path d="M100 16v9" transform="rotate(30 100 100)"/><path d="M100 16v9" transform="rotate(60 100 100)"/><path d="M100 13v15" transform="rotate(90 100 100)"/><path d="M100 16v9" transform="rotate(120 100 100)"/><path d="M100 16v9" transform="rotate(150 100 100)"/><path d="M100 13v15" transform="rotate(180 100 100)"/><path d="M100 16v9" transform="rotate(210 100 100)"/><path d="M100 16v9" transform="rotate(240 100 100)"/><path d="M100 13v15" transform="rotate(270 100 100)"/><path d="M100 16v9" transform="rotate(300 100 100)"/><path d="M100 16v9" transform="rotate(330 100 100)"/></g>
+<g class="clock-hand clock-hour"><path d="M100 104V58" stroke="#0A2A44" stroke-width="9" stroke-linecap="round"/></g>
+<g class="clock-hand clock-min"><path d="M100 108V30" stroke="#124B78" stroke-width="6" stroke-linecap="round"/></g>
+<circle cx="100" cy="100" r="9" fill="#FEC458" stroke="#0A2A44" stroke-width="3"/>
+</svg></div>
+<p class="clock-time" data-day-clock>22:14</p>
+<p class="clock-signs"><span class="sign sign-shop"><span>Your shop</span><b class="sign-open">Open</b><b class="sign-closed">Closed</b></span><span class="sign sign-web"><span>Your website</span><b class="sign-open">Open</b></span></p>
+<ul class="toasts"><li class="toast"><span class="toast-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span><span>Found you on Google Maps</span></li><li class="toast"><span class="toast-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span><span>Looking at your prices and photos</span></li><li class="toast"><span class="toast-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/></svg></span><span>“How much?” It’s on your site</span></li><li class="toast"><span class="toast-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M11 18h2"/></svg></span><span>New WhatsApp message</span></li><li class="toast"><span class="toast-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><span>New booking: Saturday, 9:30</span></li></ul>
+</div>
+<ol class="moments"><li class="moment"><p class="moment-time"><span class="moment-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span><time>07:30</time></p><h3>Helps people find you</h3><p>Set up so Google can find and understand it, with your Google Business Profile set up for Maps.</p></li><li class="moment"><p class="moment-time"><span class="moment-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span><time>10:15</time></p><h3>Shows you at your best</h3><p>Your services, prices, photos and real reviews in one place, so people choose you with confidence.</p></li><li class="moment"><p class="moment-time"><span class="moment-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/></svg></span><time>13:00</time></p><h3>Saves you time</h3><p>Fewer “how much?” and “are you open?” messages, because the answers are already on your site.</p></li><li class="moment"><p class="moment-time"><span class="moment-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M11 18h2"/></svg></span><time>16:45</time></p><h3>One tap to reach you</h3><p>A WhatsApp button, tap-to-call and directions, so the next step is always easy.</p></li><li class="moment"><p class="moment-time"><span class="moment-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><time>22:14</time></p><h3>Works while you sleep</h3><p>It answers questions and takes enquiries at 10 pm, on Sundays and while you’re busy with a customer.</p></li></ol>
+</div></div></div><div class="wrap scene-after"><p class="next"><a class="btn btn-next" href="#earn">What it could earn you<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></p></div>
+</section>
+
+<!-- Styles used only by the sections above (and #get's pinned scene). Media queries kept as they were. -->
+<style>
+.tour-num{display:inline-grid;place-items:center;flex:none;width:2.2rem;height:2.2rem;border-radius:9px;background:linear-gradient(150deg,#FFE58E,var(--gold) 70%);color:var(--navy-900);font-family:var(--head);font-size:1.15rem;letter-spacing:0;text-transform:none;box-shadow:inset 0 -3px 0 rgba(10,42,68,.16),0 3px 10px -4px rgba(10,42,68,.35)}
+.kicker-plain{display:inline-block;padding:.3rem .9rem;border-radius:999px;background:var(--gold-200);color:var(--navy-900)}
+@media (max-width:899px){.door-hero.is-live + .tour .tour-extra{display:grid}}
+.tour-head{max-width:42rem;margin:0 auto 2rem}
+.tour-head h2{font-size:clamp(2rem,1.4rem + 2.6vw,3.2rem)}
+.tour-extra{display:none;justify-items:center;gap:1rem;margin:-.5rem auto 2rem;text-align:center}
+.tour-extra .price-anchor{align-items:center;margin:0}
+.tour-extra .hero-points{justify-content:center;margin:0}
+.tour-list{list-style:none;margin:0 auto;padding:0;max-width:72rem;display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem}
+.tour-list>li{flex:1 1 12rem;max-width:18rem}
+@media (min-width:1000px){.tour-list>li{flex-basis:0}}
+@media (max-width:519px){.tour-list>li{max-width:none}}
+.tour-list a{display:flex;align-items:center;gap:.8rem;height:100%;padding:.85rem 1rem;border:1px solid var(--line);border-radius:14px;background:var(--white);box-shadow:var(--shadow);color:var(--navy-900);font-weight:700;line-height:1.3;text-decoration:none;transition:transform .2s,box-shadow .2s,border-color .2s}
+.tour-list a:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 14px 24px -16px rgba(10,42,68,.45);color:var(--navy-900)}
+.tour-list .icon{margin-left:auto;color:var(--navy-500);transition:transform .2s}
+.tour-list a:hover .icon{transform:translateX(3px)}
+.scene-hint{display:none}
+.scene.is-live .scene-hint{display:inline-flex;align-items:center;gap:.4rem;margin:1rem 0 0;color:var(--gold);font-weight:700;font-size:.95rem;transition:opacity .4s}
+.scene-hint .icon{width:1.1em;height:1.1em}
+@media (prefers-reduced-motion:no-preference){.scene.is-live .scene-hint .icon{animation:nudge 1.2s ease-in-out infinite}}
+.lights-grid{display:grid;gap:1.5rem}
+.lights-head .section-lead{margin-bottom:0}
+.shop{position:relative;width:min(100%,34rem);margin-inline:auto}
+.shop::before{content:"";position:absolute;inset:-12% -18% -6%;z-index:-1;pointer-events:none;border-radius:50%;background:radial-gradient(closest-side,rgba(254,196,88,.3),rgba(254,196,88,0));transition:opacity 1s}
+.lights.is-live .shop::before{opacity:0}
+.lights.is-live.lit-1 .shop::before{opacity:.3}
+.lights.is-live.lit-5 .shop::before{opacity:.8}
+.lights.is-live.is-open .shop::before{opacity:1}
+.lights .lights-grid{isolation:isolate}
+.shop-art{display:block;width:100%;height:auto}
+.shop-name{font-family:var(--head);font-weight:600;fill:#FFE58E}
+.shop-name-off{fill:#3E5A74}
+.shop-url{font:700 12px var(--body);fill:var(--navy-900)}
+.shop-sign-text{font:700 11px var(--body)}
+.shop-tag{font:700 10px var(--body)}
+.shop-door{transform-box:view-box;transform-origin:314px 279px;transform:scaleX(.16);transition:transform 1s cubic-bezier(.3,1.1,.5,1)}
+.flip-heads{display:none}
+.flip-rows{list-style:none;margin:0;padding:0;display:grid;gap:.65rem}
+.flip-row{display:grid;gap:.35rem}
+.flip-a,.flip-b{display:flex;gap:.6rem;align-items:flex-start;padding:.8rem 1rem;border-radius:14px;font-weight:700;line-height:1.35}
+.flip-a{background:#18395A;color:#A9BCCC}
+.flip-a>.icon{margin-top:.12rem;color:#F0948A;stroke-width:2.5}
+.flip-b{background:var(--gold-200);color:var(--navy-900)}
+.flip-b>.icon{margin-top:.12rem;color:var(--ok);stroke-width:3}
+@media (min-width:900px){.shop{width:min(100%,38rem)}.lights-grid{grid-template-columns:1.1fr .9fr;grid-template-areas:"shop head" "shop rows";gap:1.75rem 4rem;align-items:center}.lights-head{grid-area:head;align-self:end}.shop{grid-area:shop}.lights-rows{grid-area:rows;align-self:start}}
+.lights.is-live .scene-track::after{height:170vh;height:170svh}
+@media (min-width:900px){.lights.is-live .scene-track::after{height:120vh;height:120svh}}
+.lights.is-live .flip-row{grid-template-columns:1fr;perspective:900px}
+.lights.is-live :is(.flip-a,.flip-b){grid-area:1 / 1;-webkit-backface-visibility:hidden;backface-visibility:hidden;transition:transform .75s cubic-bezier(.3,1.25,.5,1)}
+.lights.is-live .flip-b{transform:rotateX(-180deg)}
+.lights.is-live .flip-row.is-on .flip-a{transform:rotateX(180deg)}
+.lights.is-live .flip-row.is-on .flip-b{transform:rotateX(0deg);box-shadow:0 10px 28px -12px rgba(254,196,88,.7)}
+.lights.is-live.lit-1 .scene-hint{opacity:0}
+.lights.is-live :is(.shop-l1,.shop-l2,.shop-l3,.shop-l4,.shop-l5,.shop-l6){transition:opacity .7s ease}
+.lights.is-live:not(.lit-1) .shop-l1,.lights.is-live:not(.lit-2) .shop-l2,.lights.is-live:not(.lit-3) .shop-l3,.lights.is-live:not(.lit-4) .shop-l4,.lights.is-live:not(.lit-5) .shop-l5,.lights.is-live:not(.is-open) .shop-l6{opacity:0}
+.lights.is-live:not(.is-open) .shop-door{transform:none}
+@media (max-width:899px){.lights.is-live .lights-grid{gap:1rem}.lights.is-live .shop{width:min(100%,26rem)}.lights.is-live .flip-rows{grid-template-areas:"row"}.lights.is-live .flip-row{grid-area:row;opacity:0;transform:translateY(1.25rem);transition:opacity .4s,transform .5s cubic-bezier(.2,.7,.2,1)}.lights.is-live .flip-row.is-current{opacity:1;transform:none}.lights.is-live :is(.flip-a,.flip-b){padding:1rem 1.1rem;font-size:1.05rem}}
+@media (max-width:899px) and (max-height:740px){.lights.is-live .lights-head .section-lead{display:none}}
+.build.is-live .scene-track::after{height:175vh;height:175svh}
+@media (min-width:900px){.build.is-live .scene-track::after{height:130vh;height:130svh}}
+.build.is-live .mk-p{opacity:clamp(0,var(--k) * 3,1);transform:translate(calc((1 - var(--e)) * var(--fx,0px)),calc((1 - var(--e)) * var(--fy,3rem))) rotate(calc((1 - var(--e)) * var(--fr,0deg))) scale(calc(1 - (1 - var(--e)) * .2))}
+.build.is-live .mk-url{--fy:-1rem}
+.build.is-live .mk-nav{--fy:-5rem;--fr:-3deg}
+.build.is-live .mk-hero{--fx:-9rem;--fy:2rem;--fr:-9deg}
+.build.is-live .mk-h{--fx:8rem;--fy:-2rem}
+.build.is-live .mk-prices li{--fx:11rem;--fy:.5rem;--fr:5deg}
+.build.is-live .mk-prices li:nth-child(even){--fx:13rem;--fy:-1rem;--fr:-4deg}
+.build.is-live .mk-gallery i{--fx:-4rem;--fy:7rem;--fr:-16deg}
+.build.is-live .mk-gallery i:nth-child(2){--fx:0rem;--fy:9rem;--fr:12deg}
+.build.is-live .mk-gallery i:nth-child(3){--fx:4rem;--fy:8rem;--fr:-10deg}
+.build.is-live .mk-btn{--fx:3rem;--fy:8rem;--fr:6deg}
+.build.is-live .mk-wa{--fx:4rem;--fy:4rem}
+.build.is-live .mk-side{--fx:-6rem;--fy:0rem}
+.build.is-live .mk-title{--fy:-4rem}
+.build.is-live .mk-lines li{--fx:12rem;--fy:0rem;--fr:4deg}
+.build.is-live .mk-total{--fy:5rem}
+.build.is-live .mk-send{--fy:7rem;--fr:-4deg}
+.build.is-live .mk-sent{--fx:3rem;--fy:-2rem;--fr:10deg}
+.build.is-live .build-caption{--c:clamp(0,(var(--p,0) - var(--cs)) / .06,1);opacity:var(--c);transform:translateY(calc((1 - var(--c)) * 1.25rem))}
+.build.is-live .build-site .build-caption{--cs:.31}
+.build.is-live .build-tool .build-caption{--cs:.82}
+.build.is-live .build-item:focus-within,.build.is-live .build-caption:focus-within{opacity:1;transform:none}
+.build.is-live .build-tool .mock{opacity:calc(.3 + .7 * clamp(0,(var(--p,0) - .48) / .05,1))}
+@media (max-width:899px){.build.is-live .build-items{grid-template-areas:"item"}.build.is-live .build-item{grid-area:item}.build.is-live .build-site{--out:clamp(0,(var(--p,0) - .45) / .05,1);opacity:calc(1 - var(--out));transform:translateY(calc(var(--out) * -2.5rem))}.build.is-live .build-tool{--in:clamp(0,(var(--p,0) - .48) / .05,1);opacity:var(--in);transform:translateY(calc((1 - var(--in)) * 2.5rem))}.build.is-live .build-tool .mock{opacity:1}.build.is-live:not(.is-second) .build-tool,.build.is-live.is-second .build-site{pointer-events:none}.build.is-live .build-caption>p:not(.niche-price):not(.more-link){display:none}.build.is-live .chapter-head{margin-bottom:1.25rem}}
+.allday-grid{display:grid;gap:1.5rem}
+.allday-head .section-lead{margin-bottom:0}
+.moments{list-style:none;margin:0;padding:0;display:grid;gap:1rem}
+.moment{padding:1.25rem 1.25rem 1.35rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--white);box-shadow:var(--shadow)}
+.moment-time{display:flex;align-items:center;gap:.65rem;margin:0 0 .75rem;color:var(--navy-700)}
+.moment-icon{display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:12px;background:linear-gradient(150deg,var(--gold-200),#FFE19B);color:var(--navy-800)}
+.moment time{font-family:var(--head);font-weight:600;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.moment h3{margin-bottom:.3rem}
+.moment p:last-child{margin:0;color:var(--muted)}
+@media (min-width:640px){.moments{grid-template-columns:1fr 1fr}}
+@media (min-width:1000px){.moments{grid-template-columns:repeat(3,1fr)}}
+.sky,.clock-card{display:none}
+.allday.is-live{background:#FBEBCB}
+.allday.is-live .scene-track::after{height:180vh;height:180svh}
+@media (min-width:900px){.allday.is-live .scene-track::after{height:130vh;height:130svh}}
+.allday.is-live .scene-stage{isolation:isolate}
+.allday.is-live .sky{display:block;position:absolute;inset:0;z-index:-1;background:linear-gradient(#FBDDA1,#FCEFD6 55%,#FCF8F0)}
+.sky>i{position:absolute;inset:0}
+.sky-dusk{background:linear-gradient(#E98B55,#F5B46A 45%,#FBDDA8);opacity:var(--dusk,0)}
+.sky-night{background:linear-gradient(#06182A,#0A2A44 55%,#123A5E);opacity:var(--night,0)}
+.sky-stars{opacity:var(--night,0);background:radial-gradient(1.5px 1.5px at 8% 14%,#FFF6D6 60%,transparent 70%),radial-gradient(1px 1px at 22% 34%,#fff 60%,transparent 70%),radial-gradient(1.5px 1.5px at 37% 9%,#fff 60%,transparent 70%),radial-gradient(1px 1px at 55% 26%,#FFF6D6 60%,transparent 70%),radial-gradient(2px 2px at 71% 12%,#fff 60%,transparent 70%),radial-gradient(1px 1px at 84% 30%,#fff 60%,transparent 70%),radial-gradient(1.5px 1.5px at 93% 8%,#FFF6D6 60%,transparent 70%),radial-gradient(1px 1px at 64% 44%,#fff 60%,transparent 70%),radial-gradient(1px 1px at 14% 56%,#fff 60%,transparent 70%),radial-gradient(1.5px 1.5px at 46% 52%,#FFF6D6 60%,transparent 70%)}
+.allday.is-live .clock-card{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"clock time" "signs signs" "toasts toasts";gap:.75rem 1.25rem;align-items:center}
+.clock{grid-area:clock;position:relative;width:9.5rem;aspect-ratio:1;margin:1.6rem}
+.clock-art{display:block;width:100%;height:100%;filter:drop-shadow(0 14px 22px rgba(10,42,68,.3))}
+.clock-hand{transform-box:view-box;transform-origin:100px 100px}
+.clock-hour{transform:rotate(calc(var(--hh,0) * 1deg))}
+.clock-min{transform:rotate(calc(var(--mm,0) * 1deg))}
+.sky-wheel{position:absolute;inset:-1.6rem;border-radius:50%;border:2px dashed rgba(10,42,68,.16);transform:rotate(calc(var(--sky,0) * 1deg))}
+.sun,.moon{position:absolute;left:50%;width:2.3rem;height:2.3rem;margin-left:-1.15rem;border-radius:50%}
+.sun{top:-1.15rem;background:radial-gradient(circle,#FFF6D6 0 30%,#FEC458 46%,rgba(254,196,88,.45) 58%,rgba(254,196,88,0) 72%);opacity:calc(1 - var(--night,0))}
+.moon{bottom:-1.15rem;transform:scale(.8) rotate(calc(var(--sky,0) * -1deg));opacity:var(--night,0);box-shadow:inset .62rem -.2rem 0 0 #F6E7B8,0 0 1.4rem -.2rem rgba(246,231,184,.45)}
+.clock-time{grid-area:time;margin:0;font-family:var(--head);font-weight:600;font-size:clamp(2.6rem,1.8rem + 3vw,3.6rem);line-height:1;color:var(--navy-900);font-variant-numeric:tabular-nums;transition:color .5s}
+.clock-signs{grid-area:signs;display:flex;flex-wrap:wrap;gap:.4rem;margin:0}
+.sign{display:inline-flex;align-items:center;gap:.5rem;white-space:nowrap;padding:.3rem .4rem .3rem .8rem;border-radius:999px;background:rgba(255,255,255,.8);color:var(--navy-900);font-weight:700;font-size:.9rem}
+.sign b{padding:.1rem .6rem;border-radius:999px;background:var(--ok);color:#fff;font-size:.82rem}
+.sign b.sign-closed{display:none;background:#6E7F8D}
+.allday.is-closed .sign-shop .sign-open{display:none}
+.allday.is-closed .sign-shop .sign-closed{display:inline}
+.toasts{grid-area:toasts;position:relative;list-style:none;margin:.25rem 0 0;padding:0;height:3.4rem}
+.toast{--d:9;position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:.6rem;padding:.55rem .9rem .55rem .55rem;border-radius:16px;background:#fff;color:var(--navy-900);font-weight:700;font-size:.95rem;line-height:1.25;box-shadow:0 14px 28px -16px rgba(10,42,68,.55),0 0 0 1px rgba(10,42,68,.06);opacity:clamp(0,1 - var(--d) * .38,1);transform:translateY(calc(var(--d) * -.55rem)) scale(calc(1 - var(--d) * .05));transition:opacity .45s,transform .55s cubic-bezier(.2,1.2,.4,1)}
+.toast.is-new{animation:toast-in .55s cubic-bezier(.2,1.3,.4,1)}
+.toast-icon{display:grid;place-items:center;flex:none;width:2.2rem;height:2.2rem;border-radius:10px;background:var(--gold-200);color:var(--navy-800)}
+.toast-icon .icon{width:1.1rem;height:1.1rem}
+.allday.is-live .moments{grid-template-columns:1fr;grid-template-areas:"moment"}
+.allday.is-live .moment{grid-area:moment;opacity:0;transform:translateY(1rem);transition:opacity .45s,transform .55s cubic-bezier(.2,.7,.2,1)}
+.allday.is-live .moment.is-on{opacity:1;transform:none}
+.allday.is-dark .allday-head h2,.allday.is-dark .clock-time{color:#fff}
+.allday.is-dark .allday-head .section-lead{color:#C9D5DF}
+.allday.is-dark .sky-wheel{border-color:rgba(255,255,255,.2)}
+.allday .allday-head :is(h2,.section-lead){transition:color .5s}
+@media (min-width:900px){.allday.is-live .allday-grid{grid-template-columns:1fr 1fr;grid-template-areas:"head clock" "moment clock";gap:2rem 4rem;align-items:center}.allday.is-live .allday-head{grid-area:head;align-self:end}.allday.is-live .clock-card{grid-area:clock;grid-template-columns:1fr;grid-template-areas:"clock" "time" "signs" "toasts";justify-items:center;text-align:center}.allday.is-live .clock{width:min(15rem,30svh);margin:2.5rem}.allday.is-live .clock-signs{justify-content:center}.allday.is-live .toasts{width:22rem}.allday.is-live .moments{grid-area:moment;align-self:start}}
+@media (max-width:899px) and (max-height:740px){.allday.is-live .allday-head .section-lead{display:none}.allday.is-live .clock{width:7.5rem}}
+.tour-head h2{font-size:var(--h2);line-height:1.12;margin-bottom:.5em}
+.tour-num{width:2rem;height:2rem;border-radius:8px;font-size:1rem;box-shadow:inset 0 -2px 0 rgba(10,42,68,.14)}
+.kicker-plain{background:transparent;padding:0;color:var(--navy-700);font-size:.9375rem}
+.clock-time{font-size:clamp(2.25rem,1.8rem + 2vw,3rem)}
+@media (max-width:899px){.lights.is-live .scene-track::after{height:140vh;height:140svh}.build.is-live .scene-track::after,.allday.is-live .scene-track::after{height:150vh;height:150svh}}
+.scene.is-live .scene-hint .icon{animation:none}
+.toast{transform:translateY(calc(var(--d) * -.5rem));transition:opacity .45s ease-out,transform .45s ease-out}
+.toast.is-new{animation-timing-function:ease-out}
+.allday.is-live .moment{transform:translateY(12px);transition:opacity .45s ease-out,transform .45s ease-out}
+.allday.is-live .moment.is-on{transform:none}
+.lights.is-live :is(.flip-a,.flip-b){transform:none;transition:opacity .45s ease-out,box-shadow .45s ease-out}
+.lights.is-live .flip-b,.lights.is-live .flip-row.is-on .flip-a{transform:none;opacity:0}
+.lights.is-live .flip-row.is-on .flip-b{transform:none;opacity:1}
+@media (max-width:899px){.lights.is-live .flip-row{transform:translateY(12px);transition:opacity .45s ease-out,transform .45s ease-out}.lights.is-live .flip-row.is-current{transform:none}}
+.build.is-live .mk-p{transform:translateY(calc((1 - var(--e)) * 12px))}
+.build.is-live .build-caption{transform:translateY(calc((1 - var(--c)) * 12px))}
+.build.is-live .build-site{transform:translateY(calc(var(--out) * -12px))}
+.build.is-live .build-tool{transform:translateY(calc((1 - var(--in)) * 12px))}
+.lights.is-live .scene-track::after{height:110vh;height:110svh}
+.build.is-live .scene-track::after,.allday.is-live .scene-track::after{height:115vh;height:115svh}
+@media (min-width:900px){.lights.is-live .scene-track::after{height:90vh;height:90svh}
+.build.is-live .scene-track::after,.allday.is-live .scene-track::after{height:95vh;height:95svh}}
+@media (max-width:767px){.lights{overflow:hidden}
+.moments{gap:.75rem}
+.moment{padding:1rem 1.1rem}
+.moment-time{margin-bottom:.4rem}
+.moment-icon{width:2.2rem;height:2.2rem}}
+@keyframes toast-in{from{opacity:0;transform:translateY(1.25rem) scale(.9)}}
+@keyframes toast-in{from{opacity:0;transform:translateY(12px)}}
+</style>
+
+<!-- Script: the three scenes (lights on, the pinned "Two things we build", the day clock). -->
+<script>
+  // Lights on: a row comes up every so often and turns over to "with a website" a moment later,
+  // switching on part of the shop (lit-1 to lit-5). After the last one the shop's door opens.
+  // On phones only the newest row shows (is-current).
+  function lightsScene(el) {
+    var rows = $$('.flip-row', el);
+    var n = rows.length;
+    var step = 0.68 / Math.max(1, n);
+    var state = '';
+    return {
+      draw: function (p) {
+        var q = (p - 0.06) / step;
+        var shown = clamp(Math.floor(q) + 1, 1, n);
+        var on = clamp(Math.floor(q - 0.35) + 1, 0, n);
+        var open = p >= 0.78;
+        var key = shown + ' ' + on + ' ' + open;
+        if (key === state) return;
+        state = key;
+        for (var i = 0; i < n; i++) {
+          rows[i].classList.toggle('is-current', i === shown - 1);
+          rows[i].classList.toggle('is-on', i < on);
+        }
+        for (var k = 1; k <= 5; k++) el.classList.toggle('lit-' + k, open || k <= on);
+        el.classList.toggle('is-open', open);
+      }
+    };
+  }
+
+  // A website builds itself, then a business tool: every piece (.mk-p) flies in at its own moment
+  // (--s). The tool's total adds itself up as its lines arrive. On phones the tool takes the
+  // website's place halfway through (is-second).
+  function buildScene(el) {
+    var items = $$('.build-item', el);
+    var starts = [0.03, 0.54];
+    [].forEach.call(items, function (item, i) {
+      var pieces = $$('.mk-p', item);
+      for (var j = 0; j < pieces.length; j++) pieces[j].style.setProperty('--s', (starts[i % 2] + 0.27 * j / Math.max(1, pieces.length - 1)).toFixed(3));
+    });
+    var total = $('[data-total]', el);
+    var amount = total ? Number(total.getAttribute('data-total')) : 0;
+    var lines = $$('.mk-lines .mk-p', el);
+    var from = lines.length ? Number(lines[0].style.getPropertyValue('--s')) : 0.6;
+    var to = total ? Number(total.parentNode.style.getPropertyValue('--s')) + 0.07 : 0.8;
+    var shown = '';
+    var second = null;
+    return {
+      draw: function (p) {
+        var two = p >= 0.49;
+        if (two !== second) { second = two; el.classList.toggle('is-second', two); }
+        if (!total) return;
+        var t = rand(Math.round(amount * clamp((p - from) / Math.max(0.01, to - from), 0, 1) / 10) * 10);
+        if (t !== shown) { shown = t; total.textContent = t; }
+      },
+      mode: function (m) { if (!m && total) { total.textContent = rand(amount); shown = ''; } }
+    };
+  }
+
+  // One day: the clock runs through the moments (data-times, minutes after midnight), stopping at each
+  // for a while. The sky follows the time of day. The shop closes at data-closes; the website doesn't.
+  function allDayScene(el) {
+    var times = el.getAttribute('data-times').split(' ').map(Number);
+    var closes = Number(el.getAttribute('data-closes'));
+    var moments = $$('.moment', el);
+    var toasts = $$('.toast', el);
+    var clock = $('[data-day-clock]', el);
+    var n = times.length;
+    var now = -1, minute = -1, closed = null, dark = null;
+    function pad(x) { return (x < 10 ? '0' : '') + x; }
+    function set(k, v) { el.style.setProperty(k, v); }
+    function show(m) {
+      now = m;
+      for (var i = 0; i < n; i++) {
+        moments[i].classList.toggle('is-on', i === m);
+        toasts[i].style.setProperty('--d', i > m ? 9 : m - i);
+        toasts[i].classList.toggle('is-new', i === m);
+      }
+    }
+    return {
+      draw: function (p) {
+        var f = clamp(p / 0.9, 0, 1) * (n - 1);
+        var i = Math.min(Math.floor(f), n - 2);
+        var run = easeInOut(clamp((f - i - 0.4) / 0.6, 0, 1));
+        var t = times[i] + (times[i + 1] - times[i]) * run;
+        var m = run >= 1 ? i + 1 : i;
+        if (m !== now) show(m);
+        var whole = Math.round(t) % 1440;
+        if (whole !== minute) { minute = whole; clock.textContent = pad(Math.floor(whole / 60)) + ':' + pad(whole % 60); }
+        set('--hh', (t / 60 % 12 * 30).toFixed(2));
+        set('--mm', (t % 60 * 6).toFixed(2));
+        set('--sky', ((t - 720) / 4).toFixed(2));
+        // a warm glow around sunrise and sunset; dark from about eight
+        var night = clamp((t - 1110) / 100, 0, 1);
+        set('--dusk', Math.max(0, 1 - Math.abs(t - 1110) / 140, 1 - Math.abs(t - 400) / 80).toFixed(3));
+        set('--night', night.toFixed(3));
+        if ((night > 0.55) !== dark) { dark = night > 0.55; el.classList.toggle('is-dark', dark); }
+        if ((t >= closes) !== closed) { closed = t >= closes; el.classList.toggle('is-closed', closed); }
+      }
+    };
+  }
+
+</script>
