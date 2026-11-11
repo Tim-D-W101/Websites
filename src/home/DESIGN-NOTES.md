@@ -34,3 +34,10 @@ Owner feedback: "it lacks the premium feel, when one scrolls through it isn't ni
 ## Phones and the start page (2026-11-03)
 
 On phones (767px and narrower) nothing pins except the door, which now has a short 25svh pin. Every scroll scene and the Why journey shows its finished state and rises in once. Desktop keeps all its scenes. The main "Free quote" buttons now lead to `/start`, which opens with the free mock-up in three steps and one big WhatsApp button. Details are in `CHANGES-PREVIEW.md`.
+
+## Quieter door, land on the demos (2026-11-10)
+
+- **Door:** the six labels that flew out of the door are gone. The pin is longer (410svh desktop, 220svh phones) so the door centres and opens by about 55%, then you walk in; the light only floods in over the last third of the walk. Same damped playhead, no second easing loop. The door is painted timber now (grain, raised panels, frame shading), with brass handle, lever, letter slot and hinges, and a warmer light inside. CSS and the existing inline SVG only.
+- **Order:** door → demos (`#demos`, you land on them as the light clears) → phone journey (`#why`) → Two things we build (`#get`, now two static cards) → calculator → pricing → how it works → enquiry → about → FAQ → close. "Show me around" goes to `#demos`.
+- **Retired:** the tour cards (`#tour`), lights-on (`#difference`) and the day clock (`#allday`), plus the pinned version of `#get`. Their markup, styles and script are in `retired-sections.html`, with how to put them back.
+- **Top bar:** the numbered 1–5 bar is now slim links on wide screens only (Examples, Pricing, How it works, WhatsApp us). Nothing extra on phones; their WhatsApp bar stays.
