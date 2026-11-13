@@ -129,10 +129,33 @@ img, svg { max-width: 100%; }
   cursor: pointer; transition: background-color .15s, border-color .15s, transform .15s;
 }
 .btn:active { transform: translateY(1px); }
-.btn-gold { background: var(--gold); color: var(--navy-900); box-shadow: inset 0 -3px 0 rgba(10, 42, 68, .14); }
-.btn-gold:hover { background: var(--gold-hover); color: var(--navy-900); }
-.btn-navy { background: var(--navy-700); color: #fff; }
-.btn-navy:hover { background: var(--navy-900); color: #fff; }
+/* Primary buttons: brass and navy with a little depth. A top highlight, a bevel at the foot and two
+   layered shadows; the hover lift and press are further down with the other motion. */
+.btn-gold {
+  background: linear-gradient(180deg, #FFD98C 0%, #FEC458 48%, #F4B445 100%); color: var(--navy-900);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), inset 0 -2px 0 rgba(122, 82, 12, .28), 0 1px 2px rgba(10, 42, 68, .18), 0 6px 14px -6px rgba(10, 42, 68, .38);
+}
+.btn-gold:hover {
+  background: linear-gradient(180deg, #FFE3A3 0%, #FFD27A 48%, #F8BD53 100%); color: var(--navy-900);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), inset 0 -2px 0 rgba(122, 82, 12, .26), 0 2px 4px rgba(10, 42, 68, .16), 0 10px 20px -8px rgba(10, 42, 68, .4);
+}
+.btn-gold:active {
+  background: linear-gradient(180deg, #F2B544 0%, #FEC458 100%);
+  box-shadow: inset 0 2px 3px rgba(122, 82, 12, .3), inset 0 -1px 0 rgba(255, 255, 255, .3), 0 1px 1px rgba(10, 42, 68, .12);
+}
+.btn-navy {
+  background: linear-gradient(180deg, #1A5A8C 0%, #124B78 55%, #0E3F66 100%); color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), inset 0 -2px 0 rgba(4, 26, 46, .5), 0 1px 2px rgba(10, 42, 68, .22), 0 6px 14px -6px rgba(10, 42, 68, .45);
+}
+.btn-navy:hover {
+  background: linear-gradient(180deg, #22689E 0%, #17568A 55%, #124B78 100%); color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 -2px 0 rgba(4, 26, 46, .5), 0 2px 4px rgba(10, 42, 68, .2), 0 10px 20px -8px rgba(10, 42, 68, .5);
+}
+.btn-navy:active {
+  background: linear-gradient(180deg, #0E3F66 0%, #124B78 100%);
+  box-shadow: inset 0 2px 3px rgba(4, 26, 46, .55), 0 1px 1px rgba(10, 42, 68, .15);
+}
 .btn-ghost { background: transparent; color: var(--navy-900); border-color: var(--navy-700); }
 .btn-ghost:hover { background: var(--sand-100); color: var(--navy-900); }
 .btn-lg { min-height: 54px; padding: .85rem 1.5rem; font-size: 1.0625rem; }
@@ -758,16 +781,14 @@ textarea[aria-invalid="true"] { border-color: var(--bad); }
    Motion and polish, on every page
    ===================================================================== */
 
-/* gold buttons: a quick shine on hover */
-.btn-gold { position: relative; overflow: hidden; isolation: isolate; }
-.btn-gold::after {
-  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .65) 50%, transparent 65%);
-  transform: translateX(-130%); transition: transform .7s ease;
-}
-.btn-gold:hover::after { transform: translateX(130%); }
+/* primary buttons: a 1px lift on hover and a press that sits down (the depth itself is with .btn-gold) */
+.btn-gold, .btn-navy { transition: background-color .18s, box-shadow .18s, transform .18s cubic-bezier(.2, .7, .2, 1); }
 .btn-gold:hover, .btn-navy:hover { transform: translateY(-1px); }
 .btn-gold:active, .btn-navy:active { transform: translateY(1px); }
+@media (prefers-reduced-motion: reduce) {
+  .btn-gold, .btn-navy { transition: none; }
+  .btn-gold:hover, .btn-navy:hover { transform: none; }
+}
 
 /* things below the fold rise in as they scroll into view (site.js adds .rv, then .rv-in) */
 .rv { opacity: 0; transform: translateY(26px); }
