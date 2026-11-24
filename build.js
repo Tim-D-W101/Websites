@@ -184,14 +184,20 @@ const examples = (EXP.items || []).filter((e) => {
     status: (legacy ? e.kind : e.status) === 'client' ? 'client' : 'demo'
   };
 });
-const guides = (C.guides || []).filter((g) => {
-  if (!isSet(g.slug) || !isSet(g.title)) { warn('A guide is missing its slug or title, so it was skipped.'); return false; }
-  if (!/^[a-z0-9-]+$/.test(g.slug)) { warn(`Guide slug "${g.slug}" should only use a-z, 0-9 and dashes. Skipped.`); return false; }
-  const file = path.resolve(ROOT, g.file || `content/guides/${g.slug}.html`);
-  if (!fs.existsSync(file)) { warn(`Guide "${g.title}": file not found (${path.relative(ROOT, file)}). Skipped.`); return false; }
-  g.body = fs.readFileSync(file, 'utf8');
-  return true;
-});
+// Guides and blog posts: one HTML file each in content/guides/ or content/blog/, listed in content.json.
+function articles(list, dir, kind) {
+  const Kind = kind[0].toUpperCase() + kind.slice(1);
+  return (list || []).filter((g) => {
+    if (!isSet(g.slug) || !isSet(g.title)) { warn(`A ${kind} is missing its slug or title, so it was skipped.`); return false; }
+    if (!/^[a-z0-9-]+$/.test(g.slug)) { warn(`${Kind} slug "${g.slug}" should only use a-z, 0-9 and dashes. Skipped.`); return false; }
+    const file = path.resolve(ROOT, g.file || `content/${dir}/${g.slug}.html`);
+    if (!fs.existsSync(file)) { warn(`${Kind} "${g.title}": file not found (${path.relative(ROOT, file)}). Skipped.`); return false; }
+    g.body = fs.readFileSync(file, 'utf8');
+    return true;
+  });
+}
+const guides = articles(C.guides, 'guides', 'guide');
+const posts = articles(C.blog, 'blog', 'blog post');
 
 function longDate(iso) {
   const d = new Date(`${iso}T12:00:00Z`);
@@ -704,13 +710,16 @@ const navItems = [
   { href: '/examples', label: 'Examples' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/faq', label: 'FAQ' },
+  ...(posts.length ? [{ href: '/blog', label: 'Blog' }] : []),
   ...(guides.length ? [{ href: '/guides/', label: 'Guides' }] : [])
 ];
+// These sections also count as current on their article pages.
+const sections = ['/guides/', '/blog'];
 
 let assets = {};
 
 function header(page) {
-  const current = (href) => page.url === href || (href === '/guides/' && page.url.startsWith('/guides/'));
+  const current = (href) => page.url === href || (sections.includes(href) && page.url.startsWith(href.replace(/\/?$/, '/')));
   const items = navItems.map((i) => `<li><a href="${i.href}"${current(i.href) ? ' aria-current="page"' : ''}>${esc(i.label)}</a></li>`).join('');
   // The main "Free quote" button leads to the free mock-up page, /start.
   const cta = canEnquire ? `<a class="btn btn-gold btn-sm" href="/start"${current('/start') ? ' aria-current="page"' : ''}>Free quote</a>` : '';
@@ -740,7 +749,7 @@ function footer() {
 ${items.length ? `<div><h2>Get in touch</h2><ul class="contact-list">${items.join('')}</ul></div>` : ''}
 <div><h2>What we build</h2><ul><li><a href="/websites">Websites</a></li><li><a href="/business-tools">Business tools</a></li><li><a href="/pricing">Pricing</a></li><li><a href="/examples">Examples</a></li></ul>
 <h2 class="footer-sub">Industries</h2><ul>${niches.map((n) => `<li><a href="/${n.id}">${esc(n.name)}</a></li>`).join('')}</ul></div>
-<div><h2>More</h2><ul><li><a href="/start">How it works</a></li><li><a href="/faq">FAQ</a></li>${guides.length ? '<li><a href="/guides/">Guides</a></li>' : ''}<li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li></ul></div>
+<div><h2>More</h2><ul><li><a href="/start">How it works</a></li><li><a href="/faq">FAQ</a></li>${posts.length ? '<li><a href="/blog">Blog</a></li>' : ''}${guides.length ? '<li><a href="/guides/">Guides</a></li>' : ''}<li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li></ul></div>
 </div>
 <div class="wrap footer-base"><p>© ${year} ${esc(site.name)} · ${esc(site.domain)}</p><p>No cookies. No tracking.</p></div>
 </footer>`;
@@ -1526,22 +1535,28 @@ function notFoundPage() {
   return page;
 }
 
-function guidePages() {
-  if (!guides.length) return [];
-  const G = C.guidesPage;
-  const index = { url: '/guides/', out: 'guides/index.html', title: G.seo.title, description: G.seo.description };
-  const sorted = guides.slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
-  index.body = `${pageHero(G.h1, G.lead)}
-<section class="section section-tight"><div class="wrap narrow"><ul class="guide-list">${sorted.map((g) => `<li><h2><a href="/guides/${g.slug}">${t(g.title)}</a></h2>${isSet(g.description) ? `<p>${t(g.description)}</p>` : ''}${isSet(g.date) ? `<p class="updated">${esc(longDate(g.date))}</p>` : ''}</li>`).join('')}</ul></div></section>`;
-  const articles = sorted.map((g) => {
-    const page = { url: `/guides/${g.slug}`, out: `guides/${g.slug}.html`, hasForm: false, title: `${g.title} | ${site.name}`, description: g.description || G.seo.description };
-    page.body = `<article>${pageHero(g.title, g.description, isSet(g.date) ? `<p class="updated">${esc(longDate(g.date))}</p>` : '', '<a href="/guides/">Guides</a>')}
+// An index page and one page per article. An article may set "seoTitle" (used as the
+// whole <title>) and "lead" (the intro under the heading; otherwise its description).
+function articlePages(list, P, index, base, label) {
+  if (!list.length) return [];
+  const indexPage = { ...index, title: P.seo.title, description: P.seo.description };
+  const sorted = list.slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+  const date = (g) => (isSet(g.date) ? `<p class="updated"><time datetime="${esc(g.date)}">${esc(longDate(g.date))}</time></p>` : '');
+  indexPage.body = `${pageHero(P.h1, P.lead)}
+<section class="section section-tight"><div class="wrap narrow"><ul class="guide-list">${sorted.map((g) => `<li><h2><a href="${base}${g.slug}">${t(g.title)}</a></h2>${isSet(g.description) ? `<p>${t(g.description)}</p>` : ''}${date(g)}</li>`).join('')}</ul></div></section>`;
+  const pages = sorted.map((g) => {
+    const page = { url: `${base}${g.slug}`, out: `${base.slice(1)}${g.slug}.html`, hasForm: false, title: isSet(g.seoTitle) ? g.seoTitle : `${g.title} | ${site.name}`, description: g.description || P.seo.description };
+    page.body = `<article>${pageHero(g.title, isSet(g.lead) ? g.lead : g.description, date(g), `<a href="${index.url}">${label}</a>`)}
 <section class="section section-tight"><div class="wrap narrow prose">${fillHtml(g.body.replace(/<!--[\s\S]*?-->/g, ''))}</div></section></article>
 ${canEnquire ? `<section class="section section-sand"><div class="wrap narrow center">${sectionHead('next', 'Want this done for you?', 'Tell us what you need and get a free mock-up or plan, with a fixed quote. No obligation, no calls.')}${ctaRow(page)}</div></section>` : ''}`;
     return page;
   });
-  return [index, ...articles];
+  return [indexPage, ...pages];
 }
+
+const guidePages = () => articlePages(guides, C.guidesPage, { url: '/guides/', out: 'guides/index.html' }, '/guides/', 'Guides');
+// The blog index is /blog (blog.html), like /pricing; its posts are /blog/<slug>.
+const blogPages = () => articlePages(posts, C.blogPage, { url: '/blog', out: 'blog.html' }, '/blog/', 'Blog');
 
 /* =====================================================================
    Demos: the Tin Kettle Kitchen website and the four tools on /examples.
@@ -1981,6 +1996,7 @@ function build() {
     startPage(),
     legalPage('privacy'),
     legalPage('terms'),
+    ...blogPages(),
     ...guidePages(),
     notFoundPage()
   ];

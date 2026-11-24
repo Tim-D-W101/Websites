@@ -14,6 +14,7 @@ It has no npm dependencies, no frameworks, no cookies and no trackers. You need 
 content.json            ← edit this: prices, website options, terms, FAQ, industry ideas, examples, contact details
 content/pages/          ← privacy.html and terms.html (drafts: review before launch)
 content/guides/         ← guide articles (none yet)
+content/blog/           ← blog posts
 src/styles.css          ← all styles
 src/home/index.html     ← the home page, used as it is (its own styles, fonts and script inside)
 src/site.js             ← menu, calculators, enquiry form, open/closed sign, the Examples page,
@@ -36,6 +37,7 @@ Pages: Home, `/websites`, `/business-tools`, `/guesthouses`, `/salons`, `/restau
 ```bash
 node build.js            # builds into dist/
 node build.js --serve    # builds, then previews at http://localhost:8080
+node build.js --preview  # every page noindexed; only for wrangler.preview.toml, never wrangler.toml
 ```
 
 The build prints how many pages it made, then lists anything **still to fill in**. Those items are hidden on the site until you fill them in.
@@ -289,6 +291,29 @@ Guides are hidden until the first one exists. Then a "Guides" link appears in th
   }
 ]
 ```
+
+## Add a blog post
+
+The blog works like guides. While `blog` in `content.json` is empty, it stays hidden. Once it has a post, a "Blog" link appears in the menu and footer, along with `/blog` (the list of posts, newest first) and `/blog/your-slug` for each post.
+
+1. Write the post in plain HTML in `content/blog/your-slug.html` (`<h2>`, `<h3>`, `<p>`, `<ul>`, `<ol>`, `<a>`). Start at the first `<h2>`, because the heading and intro come from `content.json`. Files starting with `_` are never published.
+2. Add it to `blog` in `content.json`:
+
+```json
+"blog": [
+  {
+    "slug": "how-much-does-a-guesthouse-website-cost-south-africa",
+    "title": "How much does a guesthouse website cost in South Africa? (2026 guide)",
+    "seoTitle": "Guesthouse website cost in South Africa (2026 guide)",
+    "description": "The meta description, also shown under the post on /blog.",
+    "lead": "The intro under the heading (optional; the description is used if blank).",
+    "date": "2026-11-21",
+    "file": "content/blog/how-much-does-a-guesthouse-website-cost-south-africa.html"
+  }
+]
+```
+
+`seoTitle` is optional. If you set it, it is the page's whole `<title>`, without "| Front Door Sites" added. Use root-relative links (`/pricing`) for pages on this site, without UTM tags. The `/blog` page's title and intro are in `blogPage`. Guides and posts can also use `seoTitle` and `lead`.
 
 ## Privacy and terms
 

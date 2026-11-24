@@ -1486,5 +1486,24 @@
     "h1": "Guides",
     "lead": "Plain-English guides to getting more customers online and saving time with simple tools."
   },
-  "guides": []
+  "guides": [],
+  "blogPage": {
+    "seo": {
+      "title": "Blog for South African Guesthouse and Small-Business Owners | Front Door Sites",
+      "description": "Plain-English articles for South African guesthouses and small businesses: what a website costs, what to ask before you sign, and taking bookings direct."
+    },
+    "h1": "Blog",
+    "lead": "Plain-English articles for South African guesthouse and small-business owners."
+  },
+  "blog": [
+    {
+      "slug": "how-much-does-a-guesthouse-website-cost-south-africa",
+      "title": "How much does a guesthouse website cost in South Africa? (2026 guide)",
+      "seoTitle": "Guesthouse website cost in South Africa (2026 guide)",
+      "description": "A plain 2026 guide to guesthouse website prices in South Africa: typical costs, hidden fees, booking-site commission, and Front Door Sites from R7 500.",
+      "lead": "If you run a guesthouse, B&B or holiday let, you've probably wondered what a website would cost. This 2026 guide covers typical South African prices, what pushes the cost up, once-off versus monthly plans, hidden extras, and how your own site can help guests book direct.",
+      "date": "2026-11-21",
+      "file": "content/blog/how-much-does-a-guesthouse-website-cost-south-africa.html"
+    }
+  ]
 }
