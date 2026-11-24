@@ -6,6 +6,8 @@
     node build.js                  build into dist/
     node build.js --serve          build, then preview at http://localhost:8080
     node build.js --serve 3000     ...on another port
+    node build.js --preview        noindex every page, robots.txt Disallow: / (for preview
+                                   deploys with wrangler.preview.toml, never wrangler.toml)
     node build.js --content other.json --out other-dist   (for testing)
 */
 'use strict';
@@ -28,6 +30,9 @@ function arg(name, fallback) {
 const CONTENT_FILE = path.resolve(ROOT, arg('--content', 'content.json'));
 const OUT = path.resolve(ROOT, arg('--out', 'dist'));
 const SERVE = arg('--serve', false);
+// Preview builds are noindexed and not the production worker. Never deploy a
+// --preview build with wrangler.toml (that worker is production).
+const PREVIEW = argv.includes('--preview');
 
 const warnings = new Set();
 const warn = (msg) => warnings.add(msg);
@@ -1979,18 +1984,21 @@ function build() {
     ...guidePages(),
     notFoundPage()
   ];
+  if (PREVIEW) for (const p of pages) p.noindex = true;
   for (const p of pages) write(p.out, layout(p));
 
   const today = new Date().toISOString().slice(0, 10);
   const urls = pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${site.url}${p.url}</loc><lastmod>${today}</lastmod></url>`);
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
-  write('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${site.url}/sitemap.xml\n`);
+  write('robots.txt', PREVIEW
+    ? 'User-agent: *\nDisallow: /\n'
+    : `User-agent: *\nAllow: /\n\nSitemap: ${site.url}/sitemap.xml\n`);
   write('_headers', `/*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self' https://wa.me mailto:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+${PREVIEW ? '  X-Robots-Tag: noindex\n' : ''}  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self' https://wa.me mailto:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
@@ -2006,7 +2014,7 @@ ${demoHeaders(tools)}`);
 
   const n = pages.length;
   const where = OUT.startsWith(ROOT + path.sep) ? path.relative(ROOT, OUT) : OUT;
-  console.log(`Built ${n} pages, the ${TK.name} demo (${demoPages.length} pages) and ${tools.length} demo tools into ${where}/ in ${Date.now() - started} ms.`);
+  console.log(`Built ${n} pages, the ${TK.name} demo (${demoPages.length} pages) and ${tools.length} demo tools into ${where}/ in ${Date.now() - started} ms.${PREVIEW ? ' Preview build: noindex and robots Disallow.' : ''}`);
   const todo = placeholderReport();
   if (todo.length) console.log(`Still to fill in (hidden on the site until then): ${todo.join(', ')}`);
   if (warnings.size) {
