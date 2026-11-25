@@ -1204,7 +1204,7 @@
     }
   ],
   "examples": {
-    "_note": "The /examples page. items is the one list of examples: the home page strip, /websites (websites only), /business-tools (tools only) and the industry pages (by niche) all read from it. Add real client work with \"status\": \"client\" (see README.md).",
+    "_note": "The /examples page. items is the one list of examples: the home page strip, /websites (websites only), /business-tools (tools only) and the industry pages (by niche) all read from it. Add real client work with \"status\": \"client\" (see README.md). Items with \"status\": \"concept\" are the scroll experiences: they show in their own group (scroll) and on their industry page, never on /websites or /business-tools.",
     "seo": {
       "title": "Working Demos: Websites & Business Tools | Front Door Sites",
       "description": "Tap around a demo restaurant website and four working business tools: bookings, online ordering, a quote calculator and a staff app. Every business is made up."
@@ -1261,7 +1261,50 @@
       "heading": "Your turn",
       "lead": "Tell us what wastes your time and we'll show you what we'd build. Free mock-up or plan, fixed quote, no calls needed."
     },
+    "scroll": {
+      "nav": "Scroll experiences",
+      "heading": "Scroll experiences",
+      "lead": "Websites that move as you scroll. Each one is a concept demo for a made-up brand, with AI-generated film.",
+      "tags": ["Concept demo", "Fictional brand"],
+      "button": "Try the demo"
+    },
     "items": [
+      {
+        "id": "spekboom-house",
+        "kind": "website",
+        "status": "concept",
+        "title": "Spekboom House",
+        "business": "Spekboom House",
+        "summary": "Walk through a guesthouse as you scroll, from the garden gate to the stoep at sunset.",
+        "url": "https://preview.frontdoorsites.co.za/guesthouse-demo/",
+        "image": "img/examples/spekboom-house.webp",
+        "alt": "The Spekboom House lounge in warm afternoon light: a cream sofa, leather armchairs, a whitewashed fireplace and tall sash windows",
+        "niche": "guesthouses"
+      },
+      {
+        "id": "shisa-stack",
+        "kind": "website",
+        "status": "concept",
+        "title": "Shisa Stack",
+        "business": "Shisa Stack",
+        "summary": "A burger builds itself layer by layer as you scroll, then you build yours and order on WhatsApp.",
+        "url": "https://preview.frontdoorsites.co.za/burger-demo/",
+        "image": "img/examples/shisa-stack.webp",
+        "alt": "A finished Shisa Stack burger on black: a sesame bun, red onion, tomato, lettuce, dripping sauce, cheddar and a beef patty",
+        "niche": "restaurants"
+      },
+      {
+        "id": "copperline",
+        "kind": "website",
+        "status": "concept",
+        "title": "Copperline Coffee Roasters",
+        "business": "Copperline Coffee Roasters",
+        "summary": "Scrolling pours a flat white and the latte art forms, then you pick a roast and order ahead.",
+        "url": "https://preview.frontdoorsites.co.za/scroll-demo/",
+        "image": "img/examples/copperline.webp",
+        "alt": "Steamed milk pouring into a copper-rimmed black cup as a rosetta forms in the flat white",
+        "niche": "restaurants"
+      },
       {
         "id": "tin-kettle",
         "kind": "website",

@@ -211,7 +211,7 @@ Every demo page carries a thin ribbon ("Demo website by Front Door Sites · … 
 }
 ```
 
-- `kind` is `website` or `tool`, and `status` is `demo` or `client`.
+- `kind` is `website` or `tool`, and `status` is `demo`, `client` or `concept`. A `concept` is a scroll experience: a made-up brand on its own preview address (`url` starting with `https://`). It shows with a "Concept demo" and "Fictional brand" label and a "Try the demo" link that opens in a new tab, with no price, in the "Scroll experiences" section first on `/examples` (words in `examples.scroll`) and on its `niche` page, never on `/websites` or `/business-tools`. The home page's three are written into `src/home/index.html`, under the other demos.
 - `priceKey` sets the "from" price shown with it: `website` (the business website: from R3 999 with Care Plus, or R7 500 once-off), `tools` (business tools in general), a band id like `small-tool` or `business-system`, or a website option id like `once-off`. A tool whose key matches nothing shows the general business tools price.
 - `niche` (optional: `guesthouses`, `salons` or `restaurants`) also shows it on that industry page.
 - Demo tools also have the words for their section on `/examples`: `nav` (its name in the bar at the top), `type`, `problem` (the owner's problem, in their words), `fixes`, `tryThis` and `want` (what the enquiry form is filled in with when someone taps "Get one like this").

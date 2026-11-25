@@ -511,6 +511,8 @@ input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--ba
 .example-price strong { font-family: var(--head); font-weight: 600; font-size: 1.2rem; color: var(--navy-900); }
 .example-note { font-size: .92rem; margin: 0; }
 .example-more { display: inline-flex; align-items: center; gap: .35rem; margin-top: .75rem; font-weight: 700; color: var(--navy-700); }
+.example-concept .example-more { align-self: flex-start; min-height: 44px; margin-top: auto; text-decoration: none; }
+.example-concept .example-more:hover { text-decoration: underline; }
 .tag { display: inline-block; margin: 0 0 .5rem; padding: .15rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .tag-demo { background: var(--sand-200); color: var(--navy-900); }
 .tag-client { background: var(--navy-700); color: #fff; }

@@ -172,16 +172,17 @@ const examples = (EXP.items || []).filter((e) => {
   if (!isSet(e.title || e.name)) { warn('An example has no title, so it was skipped.'); return false; }
   return true;
 }).map((e, i) => {
-  // "kind": website | tool, "status": demo | client (older entries used kind for demo/client).
+  // "kind": website | tool, "status": demo | client | concept (older entries used kind for demo/client).
   const legacy = e.kind === 'demo' || e.kind === 'client';
   const title = e.title || e.name;
+  const status = legacy ? e.kind : e.status;
   return {
     ...e,
     id: isSet(e.id) ? e.id : `example-${i + 1}`,
     title,
     summary: e.summary || e.blurb || '',
     kind: e.kind === 'tool' ? 'tool' : 'website',
-    status: (legacy ? e.kind : e.status) === 'client' ? 'client' : 'demo'
+    status: status === 'client' || status === 'concept' ? status : 'demo'
   };
 });
 // Guides and blog posts: one HTML file each in content/guides/ or content/blog/, listed in content.json.
@@ -528,7 +529,22 @@ function exampleHref(e) {
   return `/examples#${exampleAnchor(e)}`;
 }
 
+// A scroll experience: a concept demo of a made-up brand, hosted on its own preview address.
+function conceptCard(e) {
+  const S = EXP.scroll || {};
+  if (!isUrl(e.url)) warn(`Example "${e.title}": a concept demo's url must start with https://`);
+  return `<article class="example example-concept" data-kind="${e.kind}">
+<div class="example-shot"><div class="browser-bar" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url">${esc(isSet(e.business) ? e.business : e.title)}</span></div>${exampleImage(e)}</div>
+<div class="example-body">
+<p class="tags">${(S.tags || ['Concept demo', 'Fictional brand']).map((x) => `<span class="tag tag-demo">${t(x)}</span>`).join('<span class="visually-hidden"> · </span>')}</p>
+<h3>${t(e.title)}</h3>
+${isSet(e.summary) ? `<p>${t(e.summary)}</p>` : ''}
+<a class="example-more stretched" href="${esc(e.url)}"${ext}>${t(S.button || 'Try the demo')}<span class="visually-hidden">: ${t(e.title)}</span> ${svg.icon('arrow')}${newTab}</a>
+</div></article>`;
+}
+
 function exampleCard(e) {
+  if (e.status === 'concept') return conceptCard(e);
   const niche = niches.find((n) => n.id === e.niche);
   const isDemo = e.status !== 'client';
   const href = exampleHref(e);
@@ -1255,7 +1271,7 @@ function websitesPage() {
   const W = C.websitesPage;
   const page = { url: '/websites', out: 'websites.html', hasForm: true, title: W.seo.title, description: W.seo.description, bodyClass: 'page-websites' };
   // Sections alternate white and sand, so the FAQ's colour depends on whether examples show.
-  const webExamples = examples.filter((e) => e.kind === 'website');
+  const webExamples = examples.filter((e) => e.kind === 'website' && e.status !== 'concept');
   const bigger = bands.filter((b) => b.group === 'websites');
   page.body = `${splitHero('hero-niche', `${svg.icon('globe')}${t(W.hero.eyebrow)}`, W.hero.h1, W.hero.lead, {
     cta: ctaRow(page, [{ href: '#prices', label: 'See prices' }], 'Get a free mock-up'),
@@ -1278,7 +1294,7 @@ ${enquirySection(page, { need: 'website', heading: 'Get a free mock-up', lead: '
 function toolsPage() {
   const P = C.toolsPage;
   const page = { url: '/business-tools', out: 'business-tools.html', hasForm: true, title: P.seo.title, description: P.seo.description, bodyClass: 'page-tools' };
-  const toolExamples = examples.filter((e) => e.kind === 'tool');
+  const toolExamples = examples.filter((e) => e.kind === 'tool' && e.status !== 'concept');
   page.body = `${splitHero('hero-niche', `${svg.icon('grid')}${t(P.hero.eyebrow)}`, P.hero.h1, P.hero.lead, {
     cta: ctaRow(page, [{ href: '#prices', label: 'See prices' }], 'Get a free plan & quote'),
     extra: `<p class="hero-from">${tMoney(P.hero.from)}</p>`
@@ -1313,7 +1329,7 @@ function nichePage(n) {
 ${n.openStatus ? openStatusSection(n) : ''}
 ${calculatorSection(n)}
 <section class="section" id="ideas" aria-labelledby="ideas-h"><div class="wrap">${sectionHead('ideas', 'What we can build for you', ideasLead)}${ideas}<p class="more-link"><a href="/pricing">See all prices ${svg.icon('arrow')}</a></p></div></section>
-${examplesBlock(nicheExamples, `${n.name}: examples`, true)}
+${examplesBlock(nicheExamples, `${n.name}: examples`, true, 4)}
 ${faqSection(page, `Questions from ${n.singular} owners`, n.faq.concat(generalFaq(['cost', 'need-plan', 'own', 'time'])), undefined, !nicheExamples.length)}
 ${enquirySection(page, { businessType: n.businessType, heading: `Get a free quote for your ${n.singular}`, lead: C.enquiry.lead })}`;
   return page;
@@ -1402,9 +1418,12 @@ function examplesPage() {
   const siteDemo = demos.find((e) => e.id === W.item) || demos.find((e) => e.kind === 'website');
   const tools = demos.filter((e) => e.kind === 'tool');
   const clients = examples.filter((e) => e.status === 'client');
+  const concepts = examples.filter((e) => e.status === 'concept');
+  const S = E.scroll || {};
   if (!siteDemo) warn(`examples.website.item: no demo website "${W.item}" in examples.items.`);
 
   const links = [
+    ...(concepts.length ? [{ href: '#scroll', label: S.nav || S.heading }] : []),
     ...(siteDemo ? [{ href: '#website', label: W.nav }] : []),
     ...tools.map((e) => ({ href: `#${e.id}`, label: e.nav || e.title })),
     ...(clients.length ? [{ href: '#clients', label: 'Client work' }] : []),
@@ -1419,6 +1438,9 @@ function examplesPage() {
 <div class="cta-row cta-center">${siteDemo ? `<a class="btn btn-gold btn-lg" href="#website">${t(H.websiteButton)}</a>` : ''}${tools.length ? `<a class="btn btn-ghost btn-lg" href="#tools">${t(H.toolButton)}${svg.icon('down')}</a>` : ''}</div>
 <p class="ex-hero-note">${svg.icon('lock')}<span>${t(H.note)}</span></p>
 </div></section>`;
+
+  // Scroll experiences first: concept demos that open on their own preview address.
+  const scroll = concepts.length ? `<section class="section section-sand ex-scroll" id="scroll" aria-labelledby="scroll-h"><div class="wrap">${sectionHead('scroll', S.heading, S.lead)}<div class="examples examples-n${Math.min(concepts.length, 3)}">${concepts.map(exampleCard).join('')}</div></div></section>` : '';
 
   const website = siteDemo ? `<section class="section ex-website" id="website" aria-labelledby="website-h"><div class="wrap ex-website-grid">
 <div class="ex-website-shot">${deviceShot(siteDemo)}</div>
@@ -1461,6 +1483,7 @@ ${e.fixes ? `<p class="ex-fix-h">${t(T.fixHeading)}</p>${ticks(e.fixes)}` : ''}
 
   page.body = `${hero}
 ${nav}
+${scroll}
 ${website}
 ${toolsSection}
 ${flow}
