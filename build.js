@@ -2067,7 +2067,7 @@ ${demoHeaders(tools)}`);
 // send anything anywhere. Each tool's inline script and style are allowed by their hashes.
 // These rules come after "/*", so they replace its frame and security policy for these paths.
 function demoHeaders(tools) {
-  const base = "img-src 'self' data:; font-src 'self'; connect-src https://cloudflareinsights.com; form-action 'none'; frame-ancestors 'self'; base-uri 'none'; object-src 'none'";
+  const base = "img-src 'self' data:; font-src 'self'; connect-src https://cloudflareinsights.com https://frontdoorsites.co.za/cdn-cgi/rum; form-action 'none'; frame-ancestors 'self'; base-uri 'none'; object-src 'none'";
   const rule = (pathPattern, csp) => `
 ${pathPattern}
   ! X-Frame-Options
