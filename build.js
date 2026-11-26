@@ -2037,7 +2037,7 @@ function build() {
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-${PREVIEW ? '  X-Robots-Tag: noindex\n' : ''}  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self' https://wa.me mailto:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+${PREVIEW ? '  X-Robots-Tag: noindex\n' : ''}  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; form-action 'self' https://wa.me mailto:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
@@ -2067,7 +2067,7 @@ ${demoHeaders(tools)}`);
 // send anything anywhere. Each tool's inline script and style are allowed by their hashes.
 // These rules come after "/*", so they replace its frame and security policy for these paths.
 function demoHeaders(tools) {
-  const base = "img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; frame-ancestors 'self'; base-uri 'none'; object-src 'none'";
+  const base = "img-src 'self' data:; font-src 'self'; connect-src https://cloudflareinsights.com; form-action 'none'; frame-ancestors 'self'; base-uri 'none'; object-src 'none'";
   const rule = (pathPattern, csp) => `
 ${pathPattern}
   ! X-Frame-Options
@@ -2077,8 +2077,8 @@ ${pathPattern}
   Content-Security-Policy: ${csp}
 `;
   return [
-    rule(`${TK_URL}*`, `default-src 'self'; script-src 'self'; style-src 'self'; ${base}`),
-    ...tools.map((tool) => rule(`${tool.url}*`, `default-src 'self'; script-src ${tool.scripts.join(' ') || "'none'"}; style-src ${tool.styles.join(' ') || "'none'"}; ${base}`))
+    rule(`${TK_URL}*`, `default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; ${base}`),
+    ...tools.map((tool) => rule(`${tool.url}*`, `default-src 'self'; script-src ${[...tool.scripts, 'https://static.cloudflareinsights.com'].join(' ')}; style-src ${tool.styles.join(' ') || "'none'"}; ${base}`))
   ].join('');
 }
 

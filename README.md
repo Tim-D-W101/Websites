@@ -357,7 +357,7 @@ The project name and settings come from `wrangler.toml`.
 
 ### Security headers
 
-`wrangler.toml` tells Cloudflare to serve `dist/` as plain files, with clean addresses (`/websites` serves `websites.html`) and `404.html` for unknown pages (the demo café has its own, in `/examples/tin-kettle/`). The build also writes `dist/_headers`. Cloudflare reads it to set security headers (including a strict Content-Security-Policy) and long caching for fonts and assets. If you ever embed something from another website, like a map or a booking widget, add its domain to the Content-Security-Policy in `build.js`, or it will be blocked.
+`wrangler.toml` tells Cloudflare to serve `dist/` as plain files, with clean addresses (`/websites` serves `websites.html`) and `404.html` for unknown pages (the demo café has its own, in `/examples/tin-kettle/`). The build also writes `dist/_headers`. Cloudflare reads it to set security headers (including a strict Content-Security-Policy) and long caching for fonts and assets. If you ever embed something from another website, like a map or a booking widget, add its domain to the Content-Security-Policy in `build.js`, or it will be blocked. The Cloudflare Web Analytics beacon, which Cloudflare adds to every page on the live domain, is already allowed in every policy (its script from `static.cloudflareinsights.com` and its reports to `cloudflareinsights.com`).
 
 The home page uses the same policy as every other page: the build serves its style, script and fonts as files instead of inline.
 
